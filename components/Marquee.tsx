@@ -1,13 +1,9 @@
 'use client';
 
-const ITEMS = [
-  'Lead Response', 'AUTOMATED', 'Booking System', '24/7', 'No-Shows', 'SLASHED',
-  'Instagram DMs', 'HANDLED', 'Invoices', 'CHASED', 'Aftercare', 'AUTOMATED',
-  'Reviews', 'ON AUTOPILOT', 'Admin', 'ELIMINATED', '5,000+ UK Clinics', 'UNDERSERVED',
-];
+import { MARQUEE_ITEMS } from '@/lib/data';
 
 export default function Marquee() {
-  const doubled = [...ITEMS, ...ITEMS];
+  const doubled = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
   return (
     <div className="mt-10 bg-[#C4973F] border-y-2 border-[#1A1814] overflow-hidden py-3.5">
       <div className="marquee-track flex items-center gap-6 whitespace-nowrap w-max">

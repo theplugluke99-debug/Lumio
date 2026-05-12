@@ -2,37 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useCountUp } from '@/hooks/useCountUp';
-
-const STATS = [
-  {
-    countTarget: 3.6, countDecimals: 1, prefix: '£', suffix: 'bn', commas: false,
-    value: '£3.6bn',
-    label: 'UK aesthetics market annually — and most clinics are still running on WhatsApp',
-    insight: "A £3.6bn industry with zero automation. That's the gap Lumio fills.",
-    source: 'WifiTalents, 2026',
-  },
-  {
-    countTarget: 5000, countDecimals: 0, prefix: '', suffix: '+', commas: true,
-    value: '5,000+',
-    label: 'Independent aesthetic clinics in the UK with no automation system',
-    insight: "Most have no way to follow up a single missed enquiry. That's your opportunity.",
-    source: 'PolicyBee, 2026',
-  },
-  {
-    countTarget: 23, countDecimals: 0, prefix: '', suffix: '%', commas: false,
-    value: '23%',
-    label: 'Average no-show rate in aesthetic clinics — pure revenue walking out the door',
-    insight: 'Every empty slot costs £150–£400. A smart reminder sequence prevents most of them.',
-    source: 'ProspyrMed, 2024',
-  },
-  {
-    countTarget: 185, countDecimals: 0, prefix: '£', suffix: '', commas: false,
-    value: '£185',
-    label: 'Average revenue per treatment in UK aesthetic clinics — per single booking',
-    insight: 'At £185 a treatment, Lumio pays for itself after just a handful of recovered leads.',
-    source: 'Aesthetic Medicine, 2024',
-  },
-];
+import { STATS } from '@/lib/data';
 
 type StatDef = typeof STATS[0] & { delay: number; triggered: boolean };
 

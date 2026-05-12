@@ -1,4 +1,5 @@
 import Logo from '@/components/ui/Logo';
+import { NAV_LINKS } from '@/lib/data';
 
 export default function Footer() {
   return (
@@ -8,25 +9,14 @@ export default function Footer() {
           <Logo small light />
           <p className="text-sm text-[#8A8278] max-w-xs">Work flows differently in the right light.</p>
           <p className="text-xs text-[#8A8278]">
-            <a href="mailto:hello@lumio.london" className="hover:text-[#C4973F] transition-colors">
-              hello@lumio.london
-            </a>
+            <a href="mailto:hello@lumio.london" className="hover:text-[#C4973F] transition-colors">hello@lumio.london</a>
             {' · '}
-            <a href="https://lumio.london" className="hover:text-[#C4973F] transition-colors">
-              lumio.london
-            </a>
+            <a href="https://lumio.london" className="hover:text-[#C4973F] transition-colors">lumio.london</a>
           </p>
         </div>
         <nav className="flex flex-col gap-3 text-sm text-[#8A8278]">
-          {[
-            { label: 'Services', href: '#services' },
-            { label: 'How it works', href: '#process' },
-            { label: 'Pricing', href: '#pricing' },
-            { label: 'Free audit', href: '/audit' },
-          ].map(({ label, href }) => (
-            <a key={label} href={href} className="hover:text-[#C4973F] transition-colors">
-              {label}
-            </a>
+          {NAV_LINKS.map(({ label, href }) => (
+            <a key={label} href={href} className="hover:text-[#C4973F] transition-colors">{label}</a>
           ))}
         </nav>
       </div>
