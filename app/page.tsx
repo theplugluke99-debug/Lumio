@@ -3,6 +3,29 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
+/* ─── useCountUp ─── */
+function useCountUp(target: number, duration: number, delay: number, triggered: boolean) {
+  const [count, setCount] = useState(0);
+  const hasRun = useRef(false);
+  useEffect(() => {
+    if (!triggered || hasRun.current) return;
+    hasRun.current = true;
+    const timer = setTimeout(() => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setCount(eased * target);
+        if (p < 1) requestAnimationFrame(tick);
+        else setCount(target);
+      };
+      requestAnimationFrame(tick);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [triggered, target, duration, delay]);
+  return count;
+}
+
 /* ─── CursorGlow ─── */
 function CursorGlow() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -114,8 +137,9 @@ function Hero() {
             <a href="#services" className="hover:text-white transition-colors">Services</a>
             <a href="#process" className="hover:text-white transition-colors">How it works</a>
             <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="/audit" className="font-semibold text-[#C4973F]/90 hover:text-[#E8B44B] transition-colors">Free audit</a>
           </div>
-          <a href="#audit"
+          <a href="/audit"
             className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
             Book free audit →
           </a>
@@ -143,7 +167,7 @@ function Hero() {
             </p>
 
             <div className="reveal-4 flex flex-wrap items-center gap-4">
-              <GoldButton href="#audit">Get my free clinic audit</GoldButton>
+              <GoldButton href="/audit">Get my free clinic audit</GoldButton>
               <a href="#services" className="text-sm text-white/50 hover:text-white/80 transition-colors">
                 See what&apos;s possible ↓
               </a>
@@ -222,24 +246,28 @@ function Marquee() {
 /* ─── Stats ─── */
 const STATS = [
   {
+    countTarget: 3.6, countDecimals: 1, prefix: '£', suffix: 'bn', commas: false,
     value: '£3.6bn',
     label: 'UK aesthetics market annually — and most clinics are still running on WhatsApp',
     insight: 'A £3.6bn industry with zero automation. That\'s the gap Lumio fills.',
     source: 'WifiTalents, 2026',
   },
   {
+    countTarget: 5000, countDecimals: 0, prefix: '', suffix: '+', commas: true,
     value: '5,000+',
     label: 'Independent aesthetic clinics in the UK with no automation system',
     insight: 'Most have no way to follow up a single missed enquiry. That\'s your opportunity.',
     source: 'PolicyBee, 2026',
   },
   {
+    countTarget: 23, countDecimals: 0, prefix: '', suffix: '%', commas: false,
     value: '23%',
     label: 'Average no-show rate in aesthetic clinics — pure revenue walking out the door',
     insight: 'Every empty slot costs £150–£400. A smart reminder sequence prevents most of them.',
     source: 'ProspyrMed, 2024',
   },
   {
+    countTarget: 23, countDecimals: 0, prefix: '', suffix: '%', commas: false,
     value: '23%',
     label: 'Growth in non-invasive UK procedures in 2025 — demand has never been higher',
     insight: 'Clinics that can\'t keep up with demand are losing to the ones that can. Lumio is the difference.',
@@ -247,8 +275,19 @@ const STATS = [
   },
 ];
 
-function StatCard({ value, label, insight, source }: typeof STATS[0]) {
+type StatDef = typeof STATS[0] & { delay: number; triggered: boolean };
+
+function StatCard({ value, label, insight, source, countTarget, countDecimals, prefix, suffix, commas, delay, triggered }: StatDef) {
   const [hovered, setHovered] = useState(false);
+  const count = useCountUp(countTarget, 2000, delay, triggered);
+
+  const display = () => {
+    if (!triggered) return value;
+    const raw = countDecimals > 0 ? count.toFixed(countDecimals) : String(Math.floor(count));
+    const formatted = commas ? Number(raw).toLocaleString('en-GB') : raw;
+    return `${prefix}${formatted}${suffix}`;
+  };
+
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -256,7 +295,7 @@ function StatCard({ value, label, insight, source }: typeof STATS[0]) {
       className="group rounded-[2rem] border border-[#1A1814]/8 bg-white/65 shadow-sm p-7 flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1"
       style={{ boxShadow: hovered ? '0 0 0 2px #C4973F, 0 20px 60px rgba(196,151,63,.1)' : undefined }}
     >
-      <div className="font-display font-black text-5xl md:text-6xl tracking-[-0.04em] gold-text">{value}</div>
+      <div className="font-display font-black text-5xl md:text-6xl tracking-[-0.04em] gold-text">{display()}</div>
       <p className="text-sm text-[#2E2B26] leading-relaxed">{label}</p>
       <div
         className="overflow-hidden transition-all duration-500"
@@ -270,10 +309,24 @@ function StatCard({ value, label, insight, source }: typeof STATS[0]) {
 }
 
 function Stats() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [triggered, setTriggered] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); observer.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="bg-[#FFFDF8] py-20 px-4">
+    <section ref={sectionRef} className="bg-[#FFFDF8] py-20 px-4">
       <div className="mx-auto max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {STATS.map((s) => <StatCard key={s.value + s.source} {...s} />)}
+        {STATS.map((s, i) => <StatCard key={s.value + s.source} {...s} delay={i * 150} triggered={triggered} />)}
       </div>
     </section>
   );
