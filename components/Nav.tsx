@@ -6,7 +6,7 @@ export default function Nav() {
   return (
     <div className="relative z-10 w-full px-4 pt-5">
       <nav className="mx-auto max-w-6xl flex items-center justify-between rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl px-5 py-3">
-        <Logo small light />
+        <Logo large light />
         <div className="hidden md:flex items-center gap-8 text-sm text-white/60 font-medium">
           <a href="#services" className="hover:text-white transition-colors">Services</a>
           <a href="#process" className="hover:text-white transition-colors">How it works</a>

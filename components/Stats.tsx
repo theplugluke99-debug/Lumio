@@ -26,11 +26,11 @@ const STATS = [
     source: 'ProspyrMed, 2024',
   },
   {
-    countTarget: 23, countDecimals: 0, prefix: '', suffix: '%', commas: false,
-    value: '23%',
-    label: 'Growth in non-invasive UK procedures in 2025 — demand has never been higher',
-    insight: "Clinics that can't keep up with demand are losing to the ones that can. Lumio is the difference.",
-    source: 'The Exeter Daily, 2025',
+    countTarget: 185, countDecimals: 0, prefix: '£', suffix: '', commas: false,
+    value: '£185',
+    label: 'Average revenue per treatment in UK aesthetic clinics — per single booking',
+    insight: 'At £185 a treatment, Lumio pays for itself after just a handful of recovered leads.',
+    source: 'Aesthetic Medicine, 2024',
   },
 ];
 
