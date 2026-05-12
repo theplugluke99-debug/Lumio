@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair), serif;
+  --font-ui: var(--font-syne), sans-serif;
+  --color-ivory: #FFFDF8;
+  --color-blush: #F9EDE8;
+  --color-lavender: #F0EDF8;
+  --color-sage: #EDF4EE;
+  --color-rose: #F2DDD8;
+  --color-gold: #C4973F;
+  --color-gold-bright: #E8B44B;
+  --color-charcoal: #1A1814;
+  --color-charcoal-soft: #2E2B26;
+  --color-muted: #8A8278;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  cursor: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  cursor: none;
+  background: #FFFDF8;
+  color: #1A1814;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    cursor: auto;
+  }
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-ui {
+  font-family: 'Syne', sans-serif;
+}
+
+.gold-text {
+  background: linear-gradient(110deg, #C4973F 0%, #E8B44B 45%, #F4D38A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(196, 151, 63, 0.7), 0 0 0 0 rgba(196, 151, 63, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(196, 151, 63, 0), 0 0 0 12px rgba(196, 151, 63, 0);
+  }
+}
+
+.reveal {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.1s;
+}
+
+.reveal-2 {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.25s;
+}
+
+.reveal-3 {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.4s;
+}
+
+.reveal-4 {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.55s;
+}
+
+.marquee-track {
+  animation: marquee 22s linear infinite;
+}
+
+.pulse-dot {
+  animation: pulseDot 1.8s ease-in-out infinite;
 }
