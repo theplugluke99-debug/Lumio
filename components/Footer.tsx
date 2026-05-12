@@ -19,6 +19,16 @@ export default function Footer() {
             <a key={label} href={href} className="hover:text-[#C4973F] transition-colors">{label}</a>
           ))}
         </nav>
+        <nav className="flex flex-col gap-3 text-sm text-[#8A8278]">
+          <span className="text-xs font-bold uppercase tracking-widest text-white/20">Legal</span>
+          <a href="/terms" className="hover:text-[#C4973F] transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-[#C4973F] transition-colors">Privacy Policy</a>
+          <a href="/legal" className="hover:text-[#C4973F] transition-colors">Legal Notice</a>
+        </nav>
+      </div>
+      <div className="mx-auto max-w-6xl mt-10 pt-6 border-t border-white/[0.06] flex flex-wrap justify-between gap-3">
+        <p className="text-xs text-white/20">© {new Date().getFullYear()} Favours OS Ltd trading as Lumio. All rights reserved.</p>
+        <p className="text-xs text-white/20">Registered in England and Wales.</p>
       </div>
     </footer>
   );
