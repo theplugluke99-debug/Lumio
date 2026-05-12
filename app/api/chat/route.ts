@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest } from 'next/server';
-import { SYSTEM_PROMPT } from '@/lib/prompts/chat';
+import { SYSTEM_PROMPT } from '@/lib/prompts/lumio-prospect';
 
 export const dynamic = 'force-dynamic';
 

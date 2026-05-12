@@ -26,7 +26,7 @@ export const OPENING_MESSAGE =
 
 You can ask me anything, get your revenue numbers calculated, or I can build you a personalised automation blueprint right now.
 
-What's your biggest headache at the moment?`;
+**What's your biggest headache at the moment?**`;
 
 // ─── Markdown component map ───────────────────────────────────────────────────
 

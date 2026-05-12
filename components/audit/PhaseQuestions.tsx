@@ -1,12 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Logo from '@/components/ui/Logo';
 import GoldButton from '@/components/ui/GoldButton';
+import { LumioOrb } from '@/components/ui/LumioOrb';
 import { QUESTIONS } from '@/lib/data';
 import { Answers } from '@/lib/audit';
 
 interface Props { onComplete: (answers: Answers) => void; }
+
+const NUDGES = [
+  'Good — enquiry volume is the biggest factor in your result.',
+  'This is where most clinics lose the most money. Key data point.',
+  'Treatment value really sharpens your numbers. Good.',
+  'Honest answer here gives you the most accurate report.',
+  'This tells us exactly where to focus your automation.',
+  'This is usually the biggest gap. Your report will show the full impact.',
+  'Rebooking is pure profit — clients who already trust you.',
+  'Perfect — building your report now.',
+];
 
 export default function PhaseQuestions({ onComplete }: Props) {
   const [answers, setAnswers] = useState<Answers>({});
@@ -15,8 +27,23 @@ export default function PhaseQuestions({ onComplete }: Props) {
     opacity: 1, transform: 'translateX(0)', transition: 'opacity 0.26s ease, transform 0.26s ease',
   });
   const [busy, setBusy] = useState(false);
+  const [nudgeVisible, setNudgeVisible] = useState(false);
+  const [showHesitation, setShowHesitation] = useState(false);
+  const hesitationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selected = answers[qIndex] ?? null;
+
+  const resetHesitation = () => {
+    if (hesitationTimer.current) clearTimeout(hesitationTimer.current);
+    setShowHesitation(false);
+    hesitationTimer.current = setTimeout(() => setShowHesitation(true), 18000);
+  };
+
+  useEffect(() => {
+    resetHesitation();
+    return () => { if (hesitationTimer.current) clearTimeout(hesitationTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qIndex]);
 
   const navigate = (nextIdx: number, dir: 1 | -1) => {
     if (busy) return;
@@ -34,8 +61,13 @@ export default function PhaseQuestions({ onComplete }: Props) {
 
   const handleNext = () => {
     if (!selected || busy) return;
+    resetHesitation();
     if (qIndex === QUESTIONS.length - 1) { onComplete(answers); return; }
-    navigate(qIndex + 1, 1);
+    setNudgeVisible(true);
+    setTimeout(() => {
+      setNudgeVisible(false);
+      setTimeout(() => navigate(qIndex + 1, 1), 300);
+    }, 1500);
   };
 
   const progress = (qIndex / QUESTIONS.length) * 100;
@@ -68,7 +100,8 @@ export default function PhaseQuestions({ onComplete }: Props) {
             {QUESTIONS[qIndex].options.map((opt) => {
               const isSelected = selected === opt;
               return (
-                <button key={opt} type="button" onClick={() => !busy && setAnswers(prev => ({ ...prev, [qIndex]: opt }))}
+                <button key={opt} type="button"
+                  onClick={() => { if (!busy) { setAnswers(prev => ({ ...prev, [qIndex]: opt })); resetHesitation(); } }}
                   className="rounded-full px-7 py-3.5 text-sm font-semibold text-left transition-all duration-200"
                   style={{
                     border: isSelected ? '1.5px solid #C4973F' : '1.5px solid rgba(255,255,255,0.12)',
@@ -76,6 +109,7 @@ export default function PhaseQuestions({ onComplete }: Props) {
                     color: isSelected ? '#1A1814' : 'rgba(255,255,255,0.65)',
                     transform: isSelected ? 'translateY(-1px)' : undefined,
                     boxShadow: isSelected ? '0 12px 40px rgba(196,151,63,.25)' : undefined,
+                    minHeight: '44px', touchAction: 'manipulation',
                   }}
                   onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'rgba(196,151,63,0.5)'; e.currentTarget.style.color = '#E8B44B'; } }}
                   onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = 'rgba(255,255,255,0.65)'; } }}
@@ -85,11 +119,26 @@ export default function PhaseQuestions({ onComplete }: Props) {
               );
             })}
           </div>
-          <div style={{ opacity: selected ? 1 : 0, transform: selected ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity 0.22s ease, transform 0.22s ease', pointerEvents: selected ? 'auto' : 'none' }}>
-            <GoldButton onClick={handleNext}>{qIndex === QUESTIONS.length - 1 ? 'See my results' : 'Next'}</GoldButton>
+          <div className="w-full flex flex-col items-center gap-3">
+            <p className="text-sm italic text-[#E8B44B]/70 text-center h-5 transition-opacity duration-300"
+              style={{ opacity: nudgeVisible ? 1 : 0 }}>
+              {NUDGES[qIndex]}
+            </p>
+            <div style={{ opacity: selected ? 1 : 0, transform: selected ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity 0.22s ease, transform 0.22s ease', pointerEvents: selected ? 'auto' : 'none' }}>
+              <GoldButton onClick={handleNext}>{qIndex === QUESTIONS.length - 1 ? 'See my results' : 'Next'}</GoldButton>
+            </div>
           </div>
         </div>
       </div>
+
+      {showHesitation && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20" style={{ animation: 'rise 0.4s ease both' }}>
+          <a href="/ai" className="flex items-center gap-2 text-xs text-[#FFFDF8]/30 hover:text-[#E8B44B] transition-colors bg-[#1A1814]/80 backdrop-blur px-4 py-3 rounded-full border border-white/10">
+            <LumioOrb size="sm" />
+            <span>Prefer to just talk it through? Chat with our AI instead →</span>
+          </a>
+        </div>
+      )}
     </div>
   );
 }

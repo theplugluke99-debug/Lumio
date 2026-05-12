@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import { Message, MD, parseContent } from '@/lib/chat';
+import { LumioOrb } from '@/components/ui/LumioOrb';
 
 interface Props {
   messages: Message[];
@@ -33,8 +34,8 @@ export default function ChatMessages({ messages, isTyping, loading, onOptionSele
               </div>
             ) : (
               <div className="flex items-start gap-2.5 max-w-[92%]">
-                <div className="mt-0.5 w-[22px] h-[22px] rounded-full bg-[#C4973F]/15 border border-[#C4973F]/30 flex items-center justify-center shrink-0">
-                  <span className="font-display font-black text-[9px] text-[#C4973F] leading-none">L</span>
+                <div className="mt-0.5 shrink-0">
+                  <LumioOrb size="sm" />
                 </div>
                 <div className={`flex-1 min-w-0 rounded-[1.2rem] rounded-tl-sm border-l-2 px-5 py-4 ${msg.isError ? 'bg-white/[0.04] border-red-700/40' : 'bg-white/[0.06] border-[#C4973F]/35'}`}>
                   {msg.isError ? (

@@ -7,6 +7,7 @@ import Services from '@/components/Services';
 import TalkToLumio from '@/components/TalkToLumio';
 import Process from '@/components/Process';
 import Pricing from '@/components/Pricing';
+import Guarantee from '@/components/Guarantee';
 import Testimonial from '@/components/Testimonial';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
@@ -23,6 +24,7 @@ export default function Page() {
       <TalkToLumio />
       <Process />
       <Pricing />
+      <Guarantee />
       <Testimonial />
       <CTA />
       <Footer />

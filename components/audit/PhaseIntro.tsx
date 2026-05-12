@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import Logo from '@/components/ui/Logo';
 import GoldButton from '@/components/ui/GoldButton';
+import { LumioOrb } from '@/components/ui/LumioOrb';
 
-interface Props {
-  onStart: (clinicName: string) => void;
-}
+interface Props { onStart: (clinicName: string) => void; }
 
 const GOLD_GRAD: React.CSSProperties = {
   background: 'linear-gradient(110deg,#C4973F 0%,#E8B44B 45%,#F4D38A 100%)',
@@ -66,11 +65,26 @@ export default function PhaseIntro({ onStart }: Props) {
                 placeholder="e.g. Glow Aesthetics London"
                 value={clinicName}
                 onChange={(e) => setClinicName(e.target.value)}
-                className="rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm px-5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#C4973F]/50 transition-colors"
+                className="rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm px-5 py-3 text-white placeholder-white/25 outline-none focus:border-[#C4973F]/50 transition-colors"
+                style={{ fontSize: '16px' }}
               />
             </div>
             <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my free audit</GoldButton>
             <p className="text-xs text-white/25 text-center">No email required to start. No sales calls.</p>
+          </div>
+
+          <div style={{ animation: 'rise 0.7s cubic-bezier(0.22,1,0.36,1) 0.65s both' }}
+            className="w-full max-w-sm">
+            <div className="flex items-center gap-4 mb-5">
+              <div className="flex-1 h-px bg-white/10" />
+              <span className="text-xs text-[#FFFDF8]/30 uppercase tracking-widest">or</span>
+              <div className="flex-1 h-px bg-white/10" />
+            </div>
+            <a href="/ai"
+              className="flex items-center justify-center gap-3 text-sm text-[#FFFDF8]/45 hover:text-[#E8B44B] transition-colors duration-200 group">
+              <LumioOrb size="sm" />
+              Talk to our AI instead — ask anything, no forms required
+            </a>
           </div>
         </div>
       </div>

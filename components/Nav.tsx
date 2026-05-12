@@ -18,6 +18,11 @@ export default function Nav() {
             </a>
           ))}
         </div>
+        <a href="/ai"
+          className="hidden md:flex items-center gap-2 text-[11px] font-bold uppercase tracking-[.18em] text-[#E8B44B]/70 hover:text-[#E8B44B] transition-colors">
+          <div className="w-3 h-3 rounded-full bg-[#C4973F] animate-pulse" />
+          AI
+        </a>
         <a href="/audit" className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
           Get free audit →
         </a>
