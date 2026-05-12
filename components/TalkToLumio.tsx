@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Message {
   role: 'user' | 'assistant';
@@ -11,6 +14,93 @@ interface Message {
 }
 
 type ApiMessage = { role: 'user' | 'assistant'; content: string };
+
+interface ContentBlock {
+  type: 'markdown' | 'options';
+  text?: string;
+  items?: string[];
+}
+
+// ─── Markdown component map (module-level constant — no state deps) ───────────
+
+const MD: Record<string, React.ComponentType<{ children?: React.ReactNode }>> = {
+  p: ({ children }) => (
+    <p className="mb-3 last:mb-0 text-sm leading-7 text-[#FFFDF8]/85">{children}</p>
+  ),
+  strong: ({ children }) => (
+    <strong className="font-bold text-[#E8B44B]">{children}</strong>
+  ),
+  em: ({ children }) => (
+    <em className="italic text-[#FFFDF8]/70">{children}</em>
+  ),
+  ul: ({ children }) => (
+    <ul className="mt-2 mb-3 space-y-1.5 list-none">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="mt-2 mb-3 space-y-2 list-none">{children}</ol>
+  ),
+  li: ({ children }) => (
+    <li className="flex items-start gap-2 text-sm leading-6 text-[#FFFDF8]/75">
+      <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#C4973F] flex-shrink-0" />
+      <span>{children}</span>
+    </li>
+  ),
+  h3: ({ children }) => (
+    <h3 className="font-display font-bold text-lg text-[#FFFDF8] mb-2 mt-4 first:mt-0">{children}</h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="font-semibold text-[#C4973F] text-xs uppercase tracking-widest mb-2 mt-3 first:mt-0">{children}</h4>
+  ),
+  hr: () => <hr className="border-white/10 my-4" />,
+  code: ({ children }) => (
+    <code className="bg-white/10 rounded px-1.5 py-0.5 text-xs text-[#E8B44B]">{children}</code>
+  ),
+};
+
+// ─── Content parser: splits markdown into text blocks + option button groups ──
+
+function parseContent(content: string): ContentBlock[] {
+  const blocks: ContentBlock[] = [];
+  const lines = content.split('\n');
+  const mdBuf: string[] = [];
+  const listBuf: string[] = [];
+  let prevHadQuestion = false;
+
+  const flush = () => {
+    if (!listBuf.length) return;
+    const items = listBuf.map(s => s.replace(/\*\*/g, '').replace(/\*/g, '').trim()).filter(Boolean);
+    const allShort = items.every(s => s.split(/\s+/).length <= 8);
+    const isOptions = items.length >= 3 && items.length <= 6 && allShort && prevHadQuestion;
+
+    if (isOptions) {
+      const text = mdBuf.join('\n').trimEnd();
+      if (text) blocks.push({ type: 'markdown', text });
+      mdBuf.length = 0;
+      blocks.push({ type: 'options', items });
+    } else {
+      listBuf.forEach(item => mdBuf.push(`- ${item}`));
+    }
+    listBuf.length = 0;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (/^[-*]\s+/.test(trimmed)) {
+      listBuf.push(trimmed.replace(/^[-*]\s+/, ''));
+    } else {
+      flush();
+      mdBuf.push(line);
+      if (trimmed) prevHadQuestion = trimmed.includes('?');
+    }
+  }
+  flush();
+
+  const remaining = mdBuf.join('\n').trim();
+  if (remaining) blocks.push({ type: 'markdown', text: remaining });
+  return blocks;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const OPENING_MESSAGE =
   `Hi — I'm here to help you understand exactly what Lumio could do for your clinic.
@@ -31,6 +121,8 @@ const TRUST = [
   { icon: '💬', text: 'Real answers, not scripted responses' },
 ];
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function TalkToLumio() {
   const sectionRef = useRef<HTMLElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,43 +135,33 @@ export default function TalkToLumio() {
   const [loading, setLoading] = useState(false);
   const [triggered, setTriggered] = useState(false);
 
-  // Scroll messages list to bottom whenever content changes
+  // Auto-scroll on new content
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [messages, isTyping]);
 
-  // IntersectionObserver — trigger once when section enters view
+  // Trigger once when section scrolls into view
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTriggered(true);
-          observer.disconnect();
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting) { setTriggered(true); observer.disconnect(); } },
       { threshold: 0.2 },
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
-  // Show opening message 600ms after section becomes visible
+  // Show opening message 600ms after visibility trigger
   useEffect(() => {
     if (!triggered || messages.length > 0) return;
     const t = setTimeout(() => {
-      setMessages([{
-        role: 'assistant',
-        content: OPENING_MESSAGE,
-        timestamp: new Date(),
-        isOpening: true,
-      }]);
+      setMessages([{ role: 'assistant', content: OPENING_MESSAGE, timestamp: new Date(), isOpening: true }]);
     }, 600);
     return () => clearTimeout(t);
   }, [triggered, messages.length]);
 
-  // Core streaming API caller — does not add user message to state
+  // Core streaming API caller
   const callAPI = useCallback(async (history: ApiMessage[]) => {
     setIsTyping(true);
     setLoading(true);
@@ -101,47 +183,37 @@ export default function TalkToLumio() {
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-
         streamAccRef.current += decoder.decode(value, { stream: true });
         const snapshot = streamAccRef.current;
 
         if (firstChunk) {
           firstChunk = false;
           setIsTyping(false);
-          setMessages(prev => [
-            ...prev,
-            { role: 'assistant', content: snapshot, timestamp: new Date() },
-          ]);
+          setMessages(prev => [...prev, { role: 'assistant', content: snapshot, timestamp: new Date() }]);
         } else {
           setMessages(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1] = { ...updated[updated.length - 1], content: snapshot };
-            return updated;
+            const u = [...prev];
+            u[u.length - 1] = { ...u[u.length - 1], content: snapshot };
+            return u;
           });
         }
       }
 
-      // Final flush
       const tail = decoder.decode();
       if (tail) {
         streamAccRef.current += tail;
         const snapshot = streamAccRef.current;
         setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1] = { ...updated[updated.length - 1], content: snapshot };
-          return updated;
+          const u = [...prev];
+          u[u.length - 1] = { ...u[u.length - 1], content: snapshot };
+          return u;
         });
       }
     } catch {
       setIsTyping(false);
       setMessages(prev => [
         ...prev,
-        {
-          role: 'assistant',
-          content: "Something went quiet on my end — try again in a moment.",
-          timestamp: new Date(),
-          isError: true,
-        },
+        { role: 'assistant', content: "Something went quiet on my end — try again in a moment.", timestamp: new Date(), isError: true },
       ]);
     } finally {
       setLoading(false);
@@ -159,16 +231,14 @@ export default function TalkToLumio() {
     setInput('');
 
     const history: ApiMessage[] = [
-      ...messages
-        .filter(m => !m.isOpening && !m.isError)
-        .map(m => ({ role: m.role, content: m.content })),
+      ...messages.filter(m => !m.isOpening && !m.isError).map(m => ({ role: m.role, content: m.content })),
       { role: 'user' as const, content: trimmed },
     ].slice(-20);
 
     await callAPI(history);
   }, [messages, loading, callAPI]);
 
-  // Retry the last failed message without re-adding the user message
+  // Retry last failed request
   const retryLast = useCallback(() => {
     setMessages(prev => prev.filter(m => !m.isError));
     const history: ApiMessage[] = messages
@@ -178,11 +248,7 @@ export default function TalkToLumio() {
     if (history.length > 0) callAPI(history);
   }, [messages, callAPI]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(input);
-  };
-
+  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); sendMessage(input); };
   const fmt = (d: Date) => d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
   return (
@@ -191,7 +257,7 @@ export default function TalkToLumio() {
       ref={sectionRef}
       className="relative bg-[#1A1814] py-24 px-4 overflow-hidden"
     >
-      {/* Gold radial glow */}
+      {/* Ambient glow */}
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full blur-[180px] opacity-[0.07]"
         style={{ background: '#C4973F' }}
@@ -211,46 +277,108 @@ export default function TalkToLumio() {
 
       {/* Chat panel */}
       <div className="relative mx-auto max-w-[800px]">
-        <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl overflow-hidden flex flex-col h-[360px] md:h-[480px]">
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl overflow-hidden flex flex-col h-[360px] md:h-[520px]">
 
           {/* Messages */}
-          <div className="chat-messages flex-1 overflow-y-auto min-h-0 p-4 md:p-6 flex flex-col gap-3">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-              >
+          <div className="chat-messages flex-1 overflow-y-auto min-h-0 p-4 md:p-6 flex flex-col gap-4">
+            {messages.map((msg, i) => {
+              const isLast = i === messages.length - 1;
+              const isStreaming = loading && isLast && msg.role === 'assistant';
+              // Parse for option buttons only on the final settled AI message
+              const blocks = (!loading && isLast && msg.role === 'assistant' && !msg.isError)
+                ? parseContent(msg.content)
+                : null;
+
+              return (
                 <div
-                  className={
-                    msg.role === 'user'
-                      ? 'bg-[#C4973F] text-[#1A1814] text-sm font-semibold rounded-[1.2rem] rounded-tr-sm px-4 py-3 max-w-[80%]'
-                      : `text-[#FFFDF8]/85 text-sm leading-7 rounded-[1.2rem] rounded-tl-sm px-4 py-3 max-w-[88%] whitespace-pre-wrap ${
-                          msg.isError
-                            ? 'bg-white/[0.04] border border-red-800/30'
-                            : 'bg-white/[0.06]'
-                        }`
-                  }
+                  key={i}
+                  className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
-                  {msg.content}
-                  {msg.isError && (
-                    <button
-                      type="button"
-                      onClick={retryLast}
-                      className="block mt-2 text-xs text-[#C4973F] hover:text-[#E8B44B] underline underline-offset-2 transition-colors"
-                      style={{ touchAction: 'manipulation' }}
+                  {msg.role === 'user' ? (
+                    /* ── User bubble ── */
+                    <div
+                      className="bg-[#C4973F] text-[#1A1814] text-sm font-semibold rounded-[1.2rem] rounded-tr-sm px-4 py-3 max-w-[80%]"
+                      style={{ boxShadow: '0 4px 20px rgba(196,151,63,.2)' }}
                     >
-                      Retry →
-                    </button>
+                      {msg.content}
+                    </div>
+                  ) : (
+                    /* ── AI bubble ── */
+                    <div className="flex items-start gap-2.5 max-w-[92%]">
+                      {/* Avatar */}
+                      <div className="mt-0.5 w-[22px] h-[22px] rounded-full bg-[#C4973F]/15 border border-[#C4973F]/30 flex items-center justify-center shrink-0">
+                        <span className="font-display font-black text-[9px] text-[#C4973F] leading-none">L</span>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className={`rounded-[1.2rem] rounded-tl-sm border-l-2 px-5 py-4 ${
+                            msg.isError
+                              ? 'bg-white/[0.04] border-red-700/40'
+                              : 'bg-white/[0.06] border-[#C4973F]/35'
+                          }`}
+                        >
+                          {msg.isError ? (
+                            <>
+                              <p className="text-sm text-[#FFFDF8]/70 leading-7">{msg.content}</p>
+                              <button
+                                type="button"
+                                onClick={retryLast}
+                                className="mt-2 text-xs text-[#C4973F] hover:text-[#E8B44B] underline underline-offset-2 transition-colors"
+                                style={{ touchAction: 'manipulation' }}
+                              >
+                                Retry →
+                              </button>
+                            </>
+                          ) : blocks ? (
+                            /* Settled message — render blocks with option buttons */
+                            blocks.map((block, bi) =>
+                              block.type === 'markdown' ? (
+                                <ReactMarkdown key={bi} components={MD as never}>
+                                  {block.text!}
+                                </ReactMarkdown>
+                              ) : (
+                                <div key={bi} className="flex flex-wrap gap-2 mt-3 mb-1">
+                                  {block.items!.map(opt => (
+                                    <button
+                                      key={opt}
+                                      type="button"
+                                      onClick={() => sendMessage(opt)}
+                                      disabled={loading}
+                                      className="rounded-full border border-white/20 bg-white/[0.04] px-4 py-2 text-sm text-[#FFFDF8]/75 transition-all duration-200 hover:border-[#C4973F]/60 hover:bg-[#C4973F]/10 hover:text-[#E8B44B] active:scale-95 disabled:opacity-40"
+                                      style={{ minHeight: '40px', touchAction: 'manipulation' }}
+                                    >
+                                      {opt}
+                                    </button>
+                                  ))}
+                                </div>
+                              )
+                            )
+                          ) : (
+                            /* Streaming or older message — plain ReactMarkdown */
+                            <ReactMarkdown components={MD as never}>
+                              {msg.content}
+                            </ReactMarkdown>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
+
+                  <span className={`text-[10px] text-white/20 ${msg.role === 'user' ? 'pr-1' : 'pl-8'}`}>
+                    {fmt(msg.timestamp)}
+                  </span>
                 </div>
-                <span className="text-[10px] text-white/20 px-1">{fmt(msg.timestamp)}</span>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Typing indicator */}
             {isTyping && (
-              <div className="flex items-start">
-                <div className="bg-white/[0.06] rounded-[1.2rem] rounded-tl-sm px-4 py-3.5 flex items-center gap-1.5">
+              <div className="flex items-start gap-2.5">
+                <div className="mt-0.5 w-[22px] h-[22px] rounded-full bg-[#C4973F]/15 border border-[#C4973F]/30 flex items-center justify-center shrink-0">
+                  <span className="font-display font-black text-[9px] text-[#C4973F] leading-none">L</span>
+                </div>
+                <div className="bg-white/[0.06] border-l-2 border-[#C4973F]/35 rounded-[1.2rem] rounded-tl-sm px-5 py-3.5 flex items-center gap-1.5">
                   <span className="typing-dot w-2 h-2 rounded-full bg-[#C4973F] inline-block" />
                   <span className="typing-dot w-2 h-2 rounded-full bg-[#C4973F] inline-block" style={{ animationDelay: '0.2s' }} />
                   <span className="typing-dot w-2 h-2 rounded-full bg-[#C4973F] inline-block" style={{ animationDelay: '0.4s' }} />
@@ -277,7 +405,7 @@ export default function TalkToLumio() {
             ))}
           </div>
 
-          {/* Input area */}
+          {/* Input */}
           <form
             onSubmit={handleSubmit}
             className="flex items-center gap-3 border-t border-white/10 bg-white/[0.04] px-4 md:px-5 py-4"
