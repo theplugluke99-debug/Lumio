@@ -80,10 +80,12 @@ export default function PhaseIntro({ onStart }: Props) {
               <span className="text-xs text-[#FFFDF8]/30 uppercase tracking-widest">or</span>
               <div className="flex-1 h-px bg-white/10" />
             </div>
-            <a href="/ai"
-              className="flex items-center justify-center gap-3 text-sm text-[#FFFDF8]/45 hover:text-[#E8B44B] transition-colors duration-200 group">
+            <a href="/ai" className="group flex items-center gap-3 mx-auto w-fit px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:border-[#C4973F]/40 hover:bg-[#C4973F]/[0.06]">
               <LumioOrb size="sm" />
-              Talk to our AI instead — ask anything, no forms required
+              <span className="text-sm text-[#FFFDF8]/45 group-hover:text-[#E8B44B] transition-colors duration-200">
+                Prefer to talk it through? Chat with Lumio AI instead
+              </span>
+              <span className="text-[#C4973F]/50 group-hover:text-[#C4973F] group-hover:translate-x-1 transition-all duration-200">→</span>
             </a>
           </div>
         </div>

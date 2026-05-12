@@ -32,7 +32,10 @@ export default function AiPage() {
   const { messages, setMessages, input, setInput, isTyping, loading, sendMessage, retryLast } = useChat();
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const end = messagesEndRef.current;
+    if (!end) return;
+    const container = end.closest('.chat-messages') as HTMLElement | null;
+    if (container) container.scrollTop = container.scrollHeight;
   }, [messages, isTyping]);
 
   useEffect(() => {

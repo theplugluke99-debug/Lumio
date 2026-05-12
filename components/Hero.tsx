@@ -21,16 +21,16 @@ export default function Hero() {
 
       <Nav />
 
-      <div className="relative z-10 flex-1 flex items-center px-4 py-20 md:py-0">
-        <div className="mx-auto max-w-6xl w-full grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-          <div className="flex flex-col gap-7">
+      <div className="relative z-10 flex-1 flex items-start md:items-center px-4 pt-8 pb-12 md:py-0">
+        <div className="mx-auto max-w-6xl w-full grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="flex flex-col gap-5 md:gap-7">
             <div className="reveal inline-flex items-center gap-2.5 self-start rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-xs font-semibold tracking-widest text-[#E8B44B] uppercase">
               <span className="pulse-dot h-2 w-2 rounded-full bg-[#C4973F]" />
               AI Automation · Aesthetic Clinics · London &amp; UK
             </div>
 
-            <h1 className="reveal-2 font-display font-black text-[#FFFDF8] leading-[.84] tracking-[-0.04em]"
-              style={{ fontSize: 'clamp(3.5rem, 8vw, 9.4rem)' }}>
+            <h1 className="reveal-2 font-display font-black text-[#FFFDF8] leading-[.88] tracking-[-0.04em]"
+              style={{ fontSize: 'clamp(2.8rem, 7vw, 9.4rem)' }}>
               Your clinic.<br />
               <span className="italic gold-text">Running itself.</span>
             </h1>
@@ -55,7 +55,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="reveal-3 relative">
+          <div className="reveal-3 relative hidden md:block">
             <div className="absolute inset-0 rounded-[3rem] blur-[60px] opacity-30 -z-10"
               style={{ background: 'radial-gradient(ellipse, #C4973F 0%, transparent 70%)' }} />
             <div className="rounded-[3rem] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-3">

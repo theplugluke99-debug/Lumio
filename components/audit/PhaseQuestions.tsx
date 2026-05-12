@@ -119,7 +119,7 @@ export default function PhaseQuestions({ onComplete }: Props) {
               );
             })}
           </div>
-          <div className="w-full flex flex-col items-center gap-3">
+          <div className="w-full flex flex-col items-center gap-4">
             <p className="text-sm italic text-[#E8B44B]/70 text-center h-5 transition-opacity duration-300"
               style={{ opacity: nudgeVisible ? 1 : 0 }}>
               {NUDGES[qIndex]}
@@ -127,6 +127,13 @@ export default function PhaseQuestions({ onComplete }: Props) {
             <div style={{ opacity: selected ? 1 : 0, transform: selected ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity 0.22s ease, transform 0.22s ease', pointerEvents: selected ? 'auto' : 'none' }}>
               <GoldButton onClick={handleNext}>{qIndex === QUESTIONS.length - 1 ? 'See my results' : 'Next'}</GoldButton>
             </div>
+            <a href="/ai" className="group flex items-center gap-3 mx-auto w-fit mt-2 px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:border-[#C4973F]/40 hover:bg-[#C4973F]/[0.06]">
+              <LumioOrb size="sm" />
+              <span className="text-sm text-[#FFFDF8]/45 group-hover:text-[#E8B44B] transition-colors duration-200">
+                Prefer to talk it through? Chat with Lumio AI instead
+              </span>
+              <span className="text-[#C4973F]/50 group-hover:text-[#C4973F] group-hover:translate-x-1 transition-all duration-200">→</span>
+            </a>
           </div>
         </div>
       </div>

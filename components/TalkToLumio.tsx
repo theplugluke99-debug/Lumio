@@ -12,9 +12,12 @@ export default function TalkToLumio() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { messages, setMessages, input, setInput, isTyping, loading, sendMessage, retryLast } = useChat();
 
-  // Auto-scroll on new content
+  // Scroll chat container only — never scrolls the page
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const end = messagesEndRef.current;
+    if (!end) return;
+    const container = end.closest('.chat-messages') as HTMLElement | null;
+    if (container) container.scrollTop = container.scrollHeight;
   }, [messages, isTyping]);
 
   // Trigger opening message once when section scrolls into view
