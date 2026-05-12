@@ -2,7 +2,7 @@ import Logo from '@/components/ui/Logo';
 
 export const metadata = {
   title: 'Legal Notice — Lumio',
-  description: 'Legal notice and company information for Lumio, trading name of Favours OS Ltd.',
+  description: 'Legal notice and company information for Lumio, operated by Favours Technologies Ltd (Co. No. 16265679).',
 };
 
 const GOLD: React.CSSProperties = {
@@ -41,7 +41,8 @@ export default function LegalPage() {
         <section className="flex flex-col gap-6">
           <h2 className="font-display font-black italic text-2xl" style={GOLD}>Company Information</h2>
           <div className="flex flex-col gap-5">
-            <Row label="Legal name">Favours OS Ltd</Row>
+            <Row label="Legal name">Favours Technologies Ltd</Row>
+            <Row label="Company number">16265679</Row>
             <Row label="Trading name">Lumio</Row>
             <Row label="Registered in">England and Wales</Row>
             <Row label="Website">
@@ -67,7 +68,7 @@ export default function LegalPage() {
         <section className="flex flex-col gap-6">
           <h2 className="font-display font-black italic text-2xl" style={GOLD}>Intellectual Property</h2>
           <div className="flex flex-col gap-3 text-[#8A8278] text-sm leading-relaxed">
-            <p>All content on this website — including text, graphics, logos, and software — is the property of Favours OS Ltd or its licensors and is protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works without our prior written consent.</p>
+            <p>All content on this website — including text, graphics, logos, and software — is the property of Favours Technologies Ltd or its licensors and is protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works without our prior written consent.</p>
           </div>
         </section>
 

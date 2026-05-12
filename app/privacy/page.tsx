@@ -2,7 +2,7 @@ import Logo from '@/components/ui/Logo';
 
 export const metadata = {
   title: 'Privacy Policy — Lumio',
-  description: 'Privacy Policy for Lumio, trading name of Favours OS Ltd. GDPR compliant.',
+  description: 'Privacy Policy for Lumio, operated by Favours Technologies Ltd (Co. No. 16265679). GDPR compliant.',
 };
 
 const GOLD: React.CSSProperties = {
@@ -33,13 +33,13 @@ export default function PrivacyPage() {
         <div className="flex flex-col gap-3">
           <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Legal</span>
           <h1 className="font-display font-black italic text-5xl md:text-6xl text-[#FFFDF8] leading-[.9] tracking-[-0.03em]">Privacy Policy</h1>
-          <p className="text-[#8A8278] text-sm mt-2">Favours OS Ltd (trading as Lumio) · Last updated: May 2025</p>
+          <p className="text-[#8A8278] text-sm mt-2">Lumio is operated by Favours Technologies Ltd (Co. No. 16265679) · Last updated: May 2025</p>
         </div>
 
         <div className="w-full h-px bg-white/10" />
 
         <Section title="1. Who We Are">
-          <p><strong className="text-[#FFFDF8]/70">Favours OS Ltd</strong> (trading as <strong className="text-[#FFFDF8]/70">Lumio</strong>) is the data controller for personal data collected through this website and our services. We are registered in England and Wales.</p>
+          <p><strong className="text-[#FFFDF8]/70">Lumio</strong> is operated by <strong className="text-[#FFFDF8]/70">Favours Technologies Ltd</strong> (Company No. 16265679), registered in England and Wales. Favours Technologies Ltd is the data controller for personal data collected through this website and our services.</p>
           <p>We are committed to protecting your privacy and handling your data responsibly in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
           <p>Contact us with any privacy queries at <a href="mailto:hello@lumio.london" className="text-[#C4973F] hover:text-[#E8B44B] transition-colors">hello@lumio.london</a>.</p>
         </Section>

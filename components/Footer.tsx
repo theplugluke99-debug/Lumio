@@ -27,8 +27,7 @@ export default function Footer() {
         </nav>
       </div>
       <div className="mx-auto max-w-6xl mt-10 pt-6 border-t border-white/[0.06] flex flex-wrap justify-between gap-3">
-        <p className="text-xs text-white/20">© {new Date().getFullYear()} Favours OS Ltd trading as Lumio. All rights reserved.</p>
-        <p className="text-xs text-white/20">Registered in England and Wales.</p>
+        <p className="text-xs text-white/20">© {new Date().getFullYear()} Lumio. Operated by Favours Technologies Ltd (Co. No. 16265679), registered in England and Wales.</p>
       </div>
     </footer>
   );

@@ -2,7 +2,7 @@ import Logo from '@/components/ui/Logo';
 
 export const metadata = {
   title: 'Terms of Service — Lumio',
-  description: 'Terms of Service for Lumio, trading name of Favours OS Ltd.',
+  description: 'Terms of Service for Lumio, operated by Favours Technologies Ltd (Co. No. 16265679).',
 };
 
 const GOLD: React.CSSProperties = {
@@ -33,13 +33,13 @@ export default function TermsPage() {
         <div className="flex flex-col gap-3">
           <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Legal</span>
           <h1 className="font-display font-black italic text-5xl md:text-6xl text-[#FFFDF8] leading-[.9] tracking-[-0.03em]">Terms of Service</h1>
-          <p className="text-[#8A8278] text-sm mt-2">Favours OS Ltd (trading as Lumio) · Last updated: May 2025</p>
+          <p className="text-[#8A8278] text-sm mt-2">Lumio is operated by Favours Technologies Ltd (Co. No. 16265679) · Last updated: May 2025</p>
         </div>
 
         <div className="w-full h-px bg-white/10" />
 
         <Section title="1. Who We Are">
-          <p>These Terms of Service govern your use of services provided by <strong className="text-[#FFFDF8]/70">Favours OS Ltd</strong>, a company registered in England and Wales, trading as <strong className="text-[#FFFDF8]/70">Lumio</strong> ("we", "us", "our").</p>
+          <p>These Terms of Service govern your use of services provided by <strong className="text-[#FFFDF8]/70">Lumio</strong>, operated by <strong className="text-[#FFFDF8]/70">Favours Technologies Ltd</strong> (Company No. 16265679), registered in England and Wales ("we", "us", "our").</p>
           <p>By engaging our services you agree to be bound by these terms. Please read them carefully before proceeding.</p>
         </Section>
 
@@ -72,7 +72,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="5. Intellectual Property">
-          <p>All proprietary systems, automations, workflows, prompts, and software developed by Lumio remain the intellectual property of Favours OS Ltd. You are granted a non-exclusive licence to use these systems for the duration of your engagement.</p>
+          <p>All proprietary systems, automations, workflows, prompts, and software developed by Lumio remain the intellectual property of Favours Technologies Ltd. You are granted a non-exclusive licence to use these systems for the duration of your engagement.</p>
           <p>Any content, branding, or clinic-specific materials you provide remain your property. You grant us a limited licence to use them solely for the purpose of delivering the agreed services.</p>
         </Section>
 
@@ -81,7 +81,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="7. Limitation of Liability">
-          <p>To the maximum extent permitted by law, Favours OS Ltd's total liability to you in connection with these terms shall not exceed the total fees paid by you in the 3 months preceding the claim.</p>
+          <p>To the maximum extent permitted by law, Favours Technologies Ltd's total liability to you in connection with these terms shall not exceed the total fees paid by you in the 3 months preceding the claim.</p>
           <p>We shall not be liable for any indirect, consequential, incidental, or special damages, including loss of revenue, loss of profits, or loss of data, even if advised of the possibility of such damages.</p>
           <p>Nothing in these terms limits liability for death or personal injury caused by negligence, fraud, or any other liability that cannot be excluded by law.</p>
         </Section>
