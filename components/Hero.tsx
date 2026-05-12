@@ -7,7 +7,7 @@ import { HERO_ACTIVITY } from '@/lib/data';
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen bg-[#1A1814] overflow-hidden flex flex-col">
+    <section className="relative min-h-[100dvh] bg-[#1A1814] overflow-hidden flex flex-col">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-20"
           style={{ background: 'radial-gradient(ellipse at center, #C4973F 0%, transparent 65%)' }} />
