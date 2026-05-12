@@ -4,6 +4,7 @@ import Marquee from '@/components/Marquee';
 import Stats from '@/components/Stats';
 import Problem from '@/components/Problem';
 import Services from '@/components/Services';
+import TalkToLumio from '@/components/TalkToLumio';
 import Process from '@/components/Process';
 import Pricing from '@/components/Pricing';
 import Testimonial from '@/components/Testimonial';
@@ -19,6 +20,7 @@ export default function Page() {
       <Stats />
       <Problem />
       <Services />
+      <TalkToLumio />
       <Process />
       <Pricing />
       <Testimonial />

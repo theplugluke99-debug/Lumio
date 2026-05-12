@@ -77,6 +77,12 @@ export default function Hero() {
               <p className="text-xs text-white/30 pl-1">
                 Takes 3 minutes. Results are instant. No call required.
               </p>
+              <a
+                href="#talk-to-lumio"
+                className="text-xs text-[#C4973F]/60 hover:text-[#C4973F] transition-colors pl-1"
+              >
+                Or talk to our AI now — no forms, no calls →
+              </a>
             </div>
           </div>
 
