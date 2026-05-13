@@ -15,9 +15,14 @@ export default function Nav() {
             </a>
           ))}
         </div>
-        <a href="/audit" className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
-          Get free audit →
-        </a>
+        <div className="flex items-center gap-3">
+          <a href="/demo" className="hidden md:block text-sm text-white/45 hover:text-white/75 transition-colors font-medium">
+            See demo →
+          </a>
+          <a href="/audit" className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
+            Get free audit →
+          </a>
+        </div>
       </nav>
     </div>
   );
