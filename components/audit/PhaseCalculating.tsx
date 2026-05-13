@@ -10,7 +10,6 @@ export default function PhaseCalculating({ onComplete }: Props) {
   const [stepIndex, setStepIndex] = useState(0);
   const [barWidth, setBarWidth] = useState(0);
   const [stepVisible, setStepVisible] = useState(true);
-  const [fading, setFading] = useState(false);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
@@ -34,7 +33,7 @@ export default function PhaseCalculating({ onComplete }: Props) {
           setTimeout(() => {
             if (cancelled) return;
             step++;
-            if (step >= CALC_STEPS.length) { setFading(true); setTimeout(() => onCompleteRef.current(), 400); }
+            if (step >= CALC_STEPS.length) { onCompleteRef.current(); }
             else { setStepIndex(step); runStep(); }
           }, 300);
         }, 200);
@@ -47,8 +46,7 @@ export default function PhaseCalculating({ onComplete }: Props) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#1A1814] flex flex-col items-center justify-center gap-10 px-6 relative overflow-hidden"
-      style={{ opacity: fading ? 0 : 1, transition: fading ? 'opacity 0.4s ease' : undefined }}>
+    <div className="min-h-[100dvh] flex flex-col items-center justify-center gap-10 px-6 relative overflow-hidden" style={{ backgroundColor: '#1A1814' }}>
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[140px] opacity-10" style={{ background: '#C4973F' }} />
       <Logo light />
       <div className="flex flex-col items-center gap-6 w-full max-w-xs relative z-10">

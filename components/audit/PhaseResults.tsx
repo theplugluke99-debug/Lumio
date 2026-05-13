@@ -28,7 +28,7 @@ export default function PhaseResults({ answers, clinicName }: Props) {
   }, []);
 
   return (
-    <div className="bg-[#1A1814] min-h-screen overflow-x-hidden">
+    <div className="min-h-[100dvh] overflow-x-hidden" style={{ backgroundColor: '#1A1814' }}>
       <div className="sticky top-0 z-20 px-6 py-4 flex items-center justify-between bg-[#1A1814]/80 backdrop-blur-xl border-b border-white/[0.05]">
         <a href="/"><Logo light /></a>
         <span className="text-xs text-white/40 font-semibold truncate max-w-[200px]">{label} Report</span>

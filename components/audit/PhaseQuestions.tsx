@@ -70,10 +70,10 @@ export default function PhaseQuestions({ onComplete }: Props) {
     }, 1500);
   };
 
-  const progress = (qIndex / QUESTIONS.length) * 100;
+  const progress = ((qIndex + 1) / QUESTIONS.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[#1A1814] flex flex-col relative overflow-hidden">
+    <div className="min-h-[100dvh] flex flex-col relative overflow-hidden" style={{ backgroundColor: '#1A1814' }}>
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] opacity-8" style={{ background: '#C4973F' }} />
 
       <div className="relative z-10 px-6 pt-6 pb-4 flex flex-col gap-4">

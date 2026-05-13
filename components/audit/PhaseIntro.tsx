@@ -18,8 +18,8 @@ export default function PhaseIntro({ onStart }: Props) {
   useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
 
   return (
-    <div className="min-h-screen bg-[#1A1814] flex flex-col overflow-hidden relative"
-      style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+    <div className="min-h-[100dvh] flex flex-col overflow-hidden relative"
+      style={{ backgroundColor: '#1A1814', opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[140px] opacity-10"
           style={{ background: 'radial-gradient(ellipse, #C4973F 0%, transparent 65%)' }} />

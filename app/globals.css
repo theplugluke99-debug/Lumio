@@ -29,6 +29,12 @@ body {
   color: #1A1814;
 }
 
+/* Prevent white body flashing through opacity transitions on dark pages */
+html, body {
+  background-color: #1A1814 !important;
+  min-height: 100%;
+}
+
 @media (max-width: 768px) {
   html, body {
     cursor: auto;

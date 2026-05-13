@@ -22,7 +22,12 @@ export default function AuditPage() {
   };
 
   return (
-    <main style={{ opacity: fadeOut ? 0 : 1, transition: 'opacity 0.32s ease' }}>
+    <main className="min-h-[100dvh] bg-[#1A1814]">
+      {/* Overlay fades in/out during phase transitions — keeps charcoal visible, never exposes body bg */}
+      <div
+        className="fixed inset-0 z-[200] pointer-events-none bg-[#1A1814]"
+        style={{ opacity: fadeOut ? 1 : 0, transition: 'opacity 0.32s ease' }}
+      />
       <CursorGlow />
       {phase === 'intro' && (
         <PhaseIntro
