@@ -127,25 +127,25 @@ export default function PhaseQuestions({ onComplete }: Props) {
             <div style={{ opacity: selected ? 1 : 0, transform: selected ? 'translateY(0)' : 'translateY(10px)', transition: 'opacity 0.22s ease, transform 0.22s ease', pointerEvents: selected ? 'auto' : 'none' }}>
               <GoldButton onClick={handleNext}>{qIndex === QUESTIONS.length - 1 ? 'See my results' : 'Next'}</GoldButton>
             </div>
-            <a href="/ai" className="group flex items-center gap-3 mx-auto w-fit mt-2 px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:border-[#C4973F]/40 hover:bg-[#C4973F]/[0.06]">
+            <a
+              href="/ai"
+              className="group flex items-center gap-3 mx-auto w-fit mt-2 px-5 py-3 rounded-full backdrop-blur-sm"
+              style={{
+                border: showHesitation ? '1.5px solid rgba(196,151,63,0.55)' : '1.5px solid rgba(255,255,255,0.1)',
+                background: showHesitation ? 'rgba(196,151,63,0.07)' : 'rgba(255,255,255,0.03)',
+                animation: showHesitation ? 'glowPulse 2s ease-in-out infinite' : undefined,
+                transition: 'border-color 0.6s ease, background 0.6s ease',
+              }}
+            >
               <LumioOrb size="sm" />
-              <span className="text-sm text-[#FFFDF8]/45 group-hover:text-[#E8B44B] transition-colors duration-200">
+              <span className={`text-sm transition-colors duration-500 ${showHesitation ? 'text-[#E8B44B]/80' : 'text-[#FFFDF8]/45 group-hover:text-[#E8B44B]'}`}>
                 Prefer to talk it through? Chat with Lumio AI instead
               </span>
-              <span className="text-[#C4973F]/50 group-hover:text-[#C4973F] group-hover:translate-x-1 transition-all duration-200">→</span>
+              <span className={`transition-all duration-200 ${showHesitation ? 'text-[#C4973F]' : 'text-[#C4973F]/50 group-hover:text-[#C4973F] group-hover:translate-x-1'}`}>→</span>
             </a>
           </div>
         </div>
       </div>
-
-      {showHesitation && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20" style={{ animation: 'rise 0.4s ease both' }}>
-          <a href="/ai" className="flex items-center gap-2 text-xs text-[#FFFDF8]/30 hover:text-[#E8B44B] transition-colors bg-[#1A1814]/80 backdrop-blur px-4 py-3 rounded-full border border-white/10">
-            <LumioOrb size="sm" />
-            <span>Prefer to just talk it through? Chat with our AI instead →</span>
-          </a>
-        </div>
-      )}
     </div>
   );
 }
