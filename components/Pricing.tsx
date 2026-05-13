@@ -48,8 +48,13 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <div>
-                {p.featured ? <GoldButton href="/audit">Get started</GoldButton> : <GoldButton href="/audit" dark>Get started</GoldButton>}
+              <div className="flex flex-col gap-2">
+                {p.featured
+                  ? <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio audit and I'd like to get started with the ${p.name} plan. My clinic is:`}>Get started</GoldButton>
+                  : <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio audit and I'd like to get started with the ${p.name} plan. My clinic is:`} dark>Get started</GoldButton>}
+                <p className={`text-[11px] text-center ${p.featured ? 'text-white/35' : 'text-[#8A8278]'}`}>
+                  Or call us — we&apos;ll get you set up today
+                </p>
               </div>
             </div>
           ))}

@@ -52,8 +52,9 @@ export default function Hero() {
               <a href="#talk-to-lumio" className="text-xs text-[#C4973F]/60 hover:text-[#C4973F] transition-colors pl-1">
                 Or talk to our AI now — no forms, no calls →
               </a>
-              <a href="/demo" className="text-xs text-white/35 hover:text-white/55 transition-colors pl-1">
-                Or explore the live demo first →
+              <a href="/demo" className="group text-xs text-white/35 hover:text-[#C4973F] transition-colors pl-1 inline-flex items-center gap-1">
+                Or explore the live demo first
+                <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">→</span>
               </a>
             </div>
           </div>

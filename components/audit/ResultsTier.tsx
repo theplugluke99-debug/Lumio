@@ -1,6 +1,7 @@
 import { Results } from '@/lib/audit';
 import { TIER_FEATURES } from '@/lib/data';
 import { LUMIO_MONTHLY, LUMIO_SETUP } from '@/lib/audit';
+import GoldButton from '@/components/ui/GoldButton';
 
 interface Props { r: Results; label: string; }
 
@@ -46,6 +47,12 @@ export default function ResultsTier({ r, label }: Props) {
                 </li>
               ))}
             </ul>
+          </div>
+          <div className="border-t border-white/[0.06] pt-6 flex flex-col items-start gap-2">
+            <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio audit and I'd like to get started with the ${r.recommendedTier} plan. My clinic is:`}>
+              Get started with {r.recommendedTier}
+            </GoldButton>
+            <p className="text-xs text-white/30 pl-1">Or call us — we&apos;ll get you set up today</p>
           </div>
         </div>
       </div>

@@ -16,8 +16,9 @@ export default function Nav() {
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <a href="/demo" className="hidden md:block text-sm text-white/45 hover:text-white/75 transition-colors font-medium">
-            See demo →
+          <a href="/demo" className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[#C4973F] hover:text-[#E8B44B] transition-colors duration-200">
+            <span className="text-xs">✦</span>
+            See demo
           </a>
           <a href="/audit" className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
             Get free audit →

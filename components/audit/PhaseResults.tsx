@@ -12,9 +12,13 @@ import { calculate, Answers } from '@/lib/audit';
 
 interface Props { answers: Answers; clinicName: string; }
 
+function toTitleCase(s: string) {
+  return s.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substring(1).toLowerCase());
+}
+
 export default function PhaseResults({ answers, clinicName }: Props) {
   const r = calculate(answers);
-  const label = clinicName || 'Your Clinic';
+  const label = toTitleCase(clinicName || 'Your Clinic');
 
   const [scoreVisible, setScoreVisible] = useState(false);
   const [cardsVisible, setCardsVisible] = useState(false);
@@ -29,10 +33,18 @@ export default function PhaseResults({ answers, clinicName }: Props) {
 
   return (
     <div className="min-h-[100dvh] overflow-x-hidden" style={{ backgroundColor: '#1A1814' }}>
-      <div className="sticky top-0 z-20 px-6 py-4 flex items-center justify-between bg-[#1A1814]/80 backdrop-blur-xl border-b border-white/[0.05]">
-        <a href="/"><Logo light /></a>
-        <span className="text-xs text-white/40 font-semibold truncate max-w-[200px]">{label} Report</span>
-        <a href="/audit" className="text-xs text-white/40 hover:text-white/70 transition-colors">Retake ↺</a>
+      <div className="sticky top-0 z-20 px-6 py-3 flex items-center bg-[#1A1814]/80 backdrop-blur-xl border-b border-white/[0.05]">
+        <div className="flex-1 shrink-0">
+          <a href="/"><Logo light small /></a>
+        </div>
+        <div className="flex-1 flex justify-center px-3">
+          <span className="font-display italic text-[#FFFDF8]/90 text-sm md:text-base font-bold text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-[260px]">
+            {label} — Your Report
+          </span>
+        </div>
+        <div className="flex-1 flex justify-end shrink-0">
+          <a href="/audit" className="text-xs text-white/40 hover:text-white/70 transition-colors whitespace-nowrap">Retake ↺</a>
+        </div>
       </div>
       <ResultsScore r={r} label={label} scoreVisible={scoreVisible} />
       <ResultsLosses r={r} cardsVisible={cardsVisible} />
