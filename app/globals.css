@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-display: var(--font-playfair), serif;
-  --font-ui: var(--font-syne), sans-serif;
+  --font-display: var(--font-display), serif;
+  --font-ui: var(--font-sans), sans-serif;
   --color-ivory: #FFFDF8;
   --color-blush: #F9EDE8;
   --color-lavender: #F0EDF8;
@@ -36,7 +36,11 @@ body {
 }
 
 .font-display {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', serif !important;
+}
+
+main {
+  font-family: var(--font-sans), sans-serif;
 }
 
 .font-ui {

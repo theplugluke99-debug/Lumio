@@ -6,14 +6,14 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "700", "900"],
   style: ["normal", "italic"],
-  variable: "--font-playfair",
+  variable: "--font-display",
   display: "swap",
 });
 
 const syne = Syne({
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
-  variable: "--font-syne",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${syne.variable}`}>
       <body
-        style={{ fontFamily: "var(--font-syne), sans-serif" }}
+        style={{ fontFamily: "var(--font-sans), sans-serif" }}
         className="antialiased"
       >
         {children}
