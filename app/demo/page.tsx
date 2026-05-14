@@ -192,6 +192,7 @@ export default function DemoPage() {
   const [fromReveal, setFromReveal] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
+  const bh = bannerDismissed ? 0 : 52;
 
   useEffect(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('lumio_demo_clinic') : null;
@@ -214,6 +215,12 @@ export default function DemoPage() {
   useEffect(() => {
     if (lumiScrollRef.current) lumiScrollRef.current.scrollTop = lumiScrollRef.current.scrollHeight;
   }, [lumiMsgs]);
+
+  useEffect(() => {
+    if (lumiOpen && lumiMsgs.length === 0) {
+      setLumiMsgs([{ role: 'assistant', content: "Hi ✦\n\n3 enquiries answered overnight — all moving to booking.\nYour first client is at 11am.\n\n**This week:** 31 leads · £4,800 pipeline · 2 no-shows (down from 9)\n\nWhat do you need?" }]);
+    }
+  }, [lumiOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveClinicName = () => {
     const name = bannerInput.trim() || 'Glow Aesthetics London';
@@ -263,7 +270,7 @@ export default function DemoPage() {
     { id: 'activity' as Tab, icon: 'activity', label: 'Live activity' },
     { id: 'conversations' as Tab, icon: 'conversations', label: 'Conversations' },
     { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
-    { id: 'admin' as Tab, icon: 'lock', label: 'Admin hub', locked: true },
+    { id: 'admin' as Tab, icon: tier === 'fullops' ? 'spark' : 'lock', label: 'Admin hub', locked: tier !== 'fullops' },
   ];
 
   const currentConvo = CONVOS.find(c => c.id === selectedConvo);
@@ -271,11 +278,11 @@ export default function DemoPage() {
   const filteredFeed = actFilter === 'all' ? FULL_FEED : FULL_FEED.filter(i => i.category === actFilter);
 
   return (
-    <div className="antialiased text-[#1A1814] overflow-x-hidden" style={{ backgroundColor: '#FFFDF8', minHeight: '100dvh' }}>
+    <div className="demo-wrapper antialiased text-[#1A1814] overflow-x-hidden" style={{ backgroundColor: '#FFFDF8', minHeight: '100dvh' }}>
 
       {/* Demo banner */}
       {!bannerDismissed && (
-        <div className="relative z-50 border-b border-[#C4973F]/20" style={{ backgroundColor: '#1A1814' }}>
+        <div className="fixed top-0 inset-x-0 z-[100] border-b border-[#C4973F]/20" style={{ backgroundColor: '#1A1814' }}>
           <div className="mx-auto max-w-6xl px-4 py-2.5 flex flex-col sm:flex-row items-center gap-3 justify-between">
             <div className="flex items-center gap-2.5">
               <LiveDot />
@@ -308,7 +315,7 @@ export default function DemoPage() {
 
       <aside
         className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed top-0 left-0 z-50 h-screen w-[280px] shrink-0 border-r border-[rgba(26,24,20,0.08)] flex flex-col p-6 overflow-y-auto transition-transform duration-300 lg:transition-none`}
-        style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)' }}
+        style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)` }}
       >
         <div className="mb-8 pt-2 shrink-0">
           <a href="/"><Logo /></a>
@@ -342,11 +349,11 @@ export default function DemoPage() {
       </aside>
 
       {/* Main column — offset by sidebar width on desktop */}
-      <div className="flex flex-col lg:ml-[280px] min-h-screen">
+      <div className="flex flex-col lg:ml-[280px] min-h-screen" style={{ paddingTop: bh }}>
 
         {/* Topbar */}
-        <header className="sticky top-0 z-30 border-b border-[rgba(26,24,20,0.08)] px-5 py-4 backdrop-blur-2xl shrink-0"
-          style={{ backgroundColor: 'rgba(255,253,248,0.92)' }}>
+        <header className="sticky z-30 border-b border-[rgba(26,24,20,0.08)] px-5 py-4 backdrop-blur-2xl shrink-0"
+          style={{ top: bh, backgroundColor: 'rgba(255,253,248,0.92)' }}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <button type="button" onClick={() => setSidebarOpen(true)}
@@ -368,8 +375,8 @@ export default function DemoPage() {
                 className="flex items-center gap-2 rounded-full border border-[#C4973F]/25 px-4 py-2 text-xs font-bold text-[#E8B44B] hover:border-[#C4973F]/50 transition-colors"
                 style={{ backgroundColor: '#1A1814' }}>
                 <LiveDot />
-                <span className="hidden sm:inline">Ask Lumio</span>
-                <span className="sm:hidden">AI</span>
+                <span className="hidden sm:inline">Ask Lumi</span>
+                <span className="sm:hidden">Lumi</span>
               </button>
               <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
                 <Icon name="bell" className="h-4 w-4" />
@@ -389,7 +396,7 @@ export default function DemoPage() {
                 {([
                   { id: 'foundation' as Tier, label: 'Foundation' },
                   { id: 'fullsystem' as Tier, label: 'Full System' },
-                  { id: 'fullops' as Tier, label: 'Full Operations 🔒' },
+                  { id: 'fullops' as Tier, label: 'Full Operations' },
                 ] as { id: Tier; label: string }[]).map(t => (
                   <button key={t.id} type="button"
                     onClick={() => setTier(t.id)}
@@ -531,7 +538,7 @@ export default function DemoPage() {
                         <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                           <div>
                             <div className="inline-flex items-center gap-2 rounded-full border border-[#C4973F]/20 bg-white/[.05] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">
-                              <LiveDot /> Lumio Intelligence
+                              <LiveDot /> Lumi Intelligence
                             </div>
                             <h3 className="mt-4 font-display text-3xl font-black leading-[1.05] tracking-[-0.04em] text-[#FFFDF8] md:text-4xl">
                               Like having your<span className="italic text-[#E8B44B]"> best operator </span>inside the clinic.
@@ -543,7 +550,7 @@ export default function DemoPage() {
                             <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
                               <div className="mb-3 flex items-center gap-3">
                                 <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
-                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">2 seconds ago</div></div>
+                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumi</div><div className="text-xs text-[#FFFDF8]/45">2 seconds ago</div></div>
                               </div>
                               <p className="text-sm leading-7 text-[#FFFDF8]/72">Instagram DM automation paused Friday 6pm to Monday 9am. I&apos;ll resume automatically.</p>
                               <div className="mt-3 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3">
@@ -553,7 +560,7 @@ export default function DemoPage() {
                             <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
                               <div className="mb-3 flex items-center gap-3">
                                 <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F0EDF8] text-[#C4973F]"><Icon name="mail" className="h-5 w-5" /></div>
-                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
+                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumi</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
                               </div>
                               <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm leading-7 text-[#FFFDF8]/72">
                                 &ldquo;Hi! We&apos;re at a training event this weekend and will be back Monday morning. Drop us a message and we&apos;ll get back to you first thing 🌟&rdquo;
@@ -579,7 +586,7 @@ export default function DemoPage() {
                             </div>
                             <div className="mt-4 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3 flex items-start gap-2">
                               <div className="mt-0.5 text-[#E8B44B] shrink-0"><Icon name="pulse" className="h-4 w-4" /></div>
-                              <p className="text-xs leading-6 text-[#FFFDF8]/65">Lumio predicts 68% chance of recovering 2+ clients with a check-in sequence this evening.</p>
+                              <p className="text-xs leading-6 text-[#FFFDF8]/65">Lumi predicts 68% chance of recovering 2+ clients with a check-in sequence this evening.</p>
                             </div>
                           </div>
                         </div>
@@ -593,7 +600,7 @@ export default function DemoPage() {
                           <div>
                             <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#C4973F]">Full System — Included</p>
                             <h3 className="mt-1 font-display text-2xl font-black tracking-[-0.04em]">AI-handled conversations</h3>
-                            <p className="mt-1 text-sm text-[#8A8278]">Every Instagram DM, website enquiry and WhatsApp — answered by Lumio on your behalf.</p>
+                            <p className="mt-1 text-sm text-[#8A8278]">Every Instagram DM, website enquiry and WhatsApp — answered by Lumi on your behalf.</p>
                           </div>
                           <button type="button" onClick={() => setTab('conversations')}
                             className="rounded-full bg-[#C4973F] px-6 py-3 text-xs font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
@@ -651,7 +658,7 @@ export default function DemoPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
-                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumio</h2>
+                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumi</h2>
                 </div>
                 <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
                   <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
@@ -679,7 +686,7 @@ export default function DemoPage() {
                         </div>
                         <div className="flex-1">
                           <div className="font-bold text-[#1A1814]">{currentConvo.name}</div>
-                          <div className="text-xs text-[#8A8278]">via {currentConvo.channel} · Handled by Lumio</div>
+                          <div className="text-xs text-[#8A8278]">via {currentConvo.channel} · Handled by Lumi</div>
                         </div>
                         <StatusPill status="Completed" />
                       </div>
@@ -771,65 +778,114 @@ export default function DemoPage() {
               </div>
             )}
 
-            {/* ── Admin Hub (locked) ───────────────────────────── */}
+            {/* ── Admin Hub ───────────────────────────────────── */}
             {tab === 'admin' && (
               <div className="space-y-6">
-                <div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Operations Suite</p>
-                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">A back office that runs itself.</h2>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Operations Suite</p>
+                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">
+                      {tier === 'fullops' ? 'Your back office, automated.' : 'A back office that runs itself.'}
+                    </h2>
+                  </div>
+                  {tier === 'fullops' && (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[#EDF4EE] px-4 py-2 text-xs font-bold text-[#5B8A68] self-start sm:self-auto">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" /> Full Operations active
+                    </span>
+                  )}
                 </div>
-                <div className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(26,24,20,0.08)] shadow-[0_35px_120px_rgba(26,24,20,.08)]">
-                  <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(3px)' }}>
-                    <div className="grid gap-6 xl:grid-cols-2">
-                      <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                        <div className="mb-5 flex items-center justify-between">
-                          <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
-                          <StatusPill status="Sent" />
+
+                {tier === 'fullops' ? (
+                  <div className="grid gap-6 xl:grid-cols-2">
+                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                      <div className="mb-5 flex items-center justify-between">
+                        <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-2xl font-black">Tracker</h4></div>
+                        <StatusPill status="Sent" />
+                      </div>
+                      {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
+                        <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                          <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
+                          <StatusPill status={status} />
                         </div>
-                        {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
-                          <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
-                            <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
+                      ))}
+                    </div>
+                    <div className="space-y-4">
+                      <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                        <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-2xl font-black">Auto-chasing</h4></div>
+                        {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
+                          <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                            <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
                             <StatusPill status={status} />
                           </div>
                         ))}
                       </div>
-                      <div className="space-y-4">
+                      <div className="rounded-[2.2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
+                        <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                          <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                          <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                          <div><div className="font-display text-4xl font-black">-77%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">No-shows</div></div>
+                          <div><div className="font-display text-4xl font-black">94%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Client retention</div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(26,24,20,0.08)] shadow-[0_35px_120px_rgba(26,24,20,.08)]">
+                    <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(3px)' }}>
+                      <div className="grid gap-6 xl:grid-cols-2">
                         <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                          <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-3xl font-black">Auto-chasing</h4></div>
-                          {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
-                            <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
-                              <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
+                          <div className="mb-5 flex items-center justify-between">
+                            <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
+                            <StatusPill status="Sent" />
+                          </div>
+                          {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
+                            <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                              <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
                               <StatusPill status={status} />
                             </div>
                           ))}
                         </div>
-                        <div className="rounded-[2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
-                          <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
-                          <div className="mt-4 grid grid-cols-2 gap-4">
-                            <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
-                            <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                        <div className="space-y-4">
+                          <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
+                            <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-3xl font-black">Auto-chasing</h4></div>
+                            {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
+                              <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                                <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
+                                <StatusPill status={status} />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="rounded-[2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
+                            <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
+                            <div className="mt-4 grid grid-cols-2 gap-4">
+                              <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                              <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.5)', backdropFilter: 'blur(2px)' }}>
-                    <div className="max-w-sm w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
-                      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
-                        <Icon name="lock" className="h-7 w-7" />
+                    <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.5)', backdropFilter: 'blur(2px)' }}>
+                      <div className="max-w-sm w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
+                        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
+                          <Icon name="lock" className="h-7 w-7" />
+                        </div>
+                        <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations</div>
+                        <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
+                        <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
+                          From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
+                        </div>
+                        <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                          Upgrade to Full Operations →
+                        </a>
                       </div>
-                      <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations</div>
-                      <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
-                      <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
-                      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
-                        From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
-                      </div>
-                      <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                        Upgrade to Full Operations →
-                      </a>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -837,78 +893,83 @@ export default function DemoPage() {
         </main>
       </div>
 
-      {/* Lumio AI slide-over — overlays content, never pushes it */}
-      {lumiOpen && (
-        <div className="fixed inset-0 z-[60] bg-black/20" onClick={() => setLumiOpen(false)} />
-      )}
+      {/* Lumi modal backdrop */}
       <div
-        className={`fixed right-0 top-0 z-[61] h-full w-full sm:max-w-[420px] flex flex-col shadow-[-30px_0_80px_rgba(26,24,20,.25)] transition-transform duration-300 ${lumiOpen ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ backgroundColor: '#1A1814' }}
+        className={`fixed inset-0 z-50 bg-[#1A1814]/60 backdrop-blur-sm transition-opacity duration-300 ${lumiOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setLumiOpen(false)}
+      />
+
+      {/* Lumi modal — slides up on mobile, centered on desktop */}
+      <div
+        className={`fixed z-[51] bg-[#FFFDF8] flex flex-col overflow-hidden shadow-[0_40px_120px_rgba(26,24,20,.4)]
+          inset-x-0 bottom-0 h-[92vh] rounded-t-[2rem]
+          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(680px,90vw)] md:max-h-[70vh] md:h-auto md:rounded-[2rem]
+          transition-all duration-300
+          ${lumiOpen
+            ? 'translate-y-0 md:-translate-x-1/2 md:-translate-y-1/2 md:scale-100 md:opacity-100'
+            : 'translate-y-full md:-translate-x-1/2 md:-translate-y-1/2 md:scale-95 md:opacity-0 pointer-events-none'}`}
         onClick={e => e.stopPropagation()}
       >
-        <div className="pointer-events-none absolute -left-20 top-20 h-64 w-64 rounded-full bg-[#C4973F]/15 blur-3xl" />
-        <div className="relative z-10 flex flex-col h-full">
-          <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4 shrink-0">
-            <div className="relative grid h-10 w-10 place-items-center rounded-2xl border border-[#C4973F]/25 bg-[#C4973F]/12 shrink-0">
-              <div className="absolute h-6 w-6 rounded-full bg-[#E8B44B]/35 blur-lg" />
-              <div className="relative h-3 w-3 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 18px rgba(232,180,75,.95)' }} />
+        {/* Modal header */}
+        <div className="relative flex flex-col items-center pt-7 pb-5 px-6 border-b border-[rgba(26,24,20,0.08)] shrink-0">
+          <div className="relative grid h-12 w-12 place-items-center rounded-[1.4rem] border border-[#C4973F]/25 bg-[#C4973F]/10 mb-3">
+            <div className="absolute h-8 w-8 rounded-full bg-[#E8B44B]/35 blur-xl" />
+            <div className="relative h-4 w-4 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 20px rgba(232,180,75,.95)' }} />
+          </div>
+          <div className="text-2xl font-bold text-[#1A1814]">Lumi</div>
+          <div className="text-xs text-[#8A8278] mt-1">Your clinic automation assistant</div>
+          <button
+            onClick={() => setLumiOpen(false)}
+            className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-xl text-[#8A8278] hover:text-[#1A1814] hover:bg-[#F9EDE8] transition-all"
+          >
+            <Icon name="x" className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+          {lumiMsgs.length === 0 && (
+            <div className="space-y-3 pt-2">
+              <p className="text-sm text-[#8A8278] leading-6">Ask anything or try one of these:</p>
+              {["Show me this week's numbers", "Which clients need attention?", "Pause weekend automations"].map(q => (
+                <button key={q} type="button" onClick={() => sendToLumi(q)}
+                  className="w-full rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/60 px-4 py-3 text-left text-sm font-semibold text-[#1A1814] hover:border-[#C4973F]/35 hover:bg-[#FFF4DD]/60 transition-all">
+                  {q} →
+                </button>
+              ))}
             </div>
-            <div className="flex-1">
-              <div className="font-bold text-[#FFFDF8]">Lumio AI</div>
-              <div className="text-xs text-[#FFFDF8]/45">Ask anything about your clinic</div>
+          )}
+          {lumiMsgs.map((msg, i) => (
+            <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+              {msg.role === 'assistant' && (
+                <span className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#C4973F] px-1">Lumi ✦</span>
+              )}
+              <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'bg-[#F9EDE8] text-[#1A1814] rounded-tl-sm' : 'bg-[#1A1814] text-[#FFFDF8] rounded-tr-sm'}`}>
+                {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
+                  ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#C4973F] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
+                  : msg.role === 'assistant'
+                    ? <ReactMarkdown components={MD as never}>{msg.content}</ReactMarkdown>
+                    : msg.content
+                }
+              </div>
             </div>
-            <button
-              onClick={() => setLumiOpen(false)}
-              className="grid h-9 w-9 place-items-center rounded-xl text-[#FFFDF8]/40 hover:text-[#FFFDF8]/80 hover:bg-white/10 transition-all"
-              aria-label="Close Lumio AI panel"
-            >
-              <Icon name="x" className="h-5 w-5" />
+          ))}
+        </div>
+
+        {/* Input */}
+        <div className="border-t border-[rgba(26,24,20,0.08)] p-4 shrink-0">
+          <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex gap-2">
+            <input
+              value={lumiInput} onChange={e => setLumiInput(e.target.value)}
+              placeholder="Ask Lumi anything..."
+              style={{ fontSize: '16px' }}
+              className="flex-1 rounded-2xl border border-[rgba(26,24,20,0.12)] bg-[#F9EDE8]/50 px-4 py-3 text-sm text-[#1A1814] placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
+            />
+            <button type="submit" disabled={!lumiInput.trim() || lumiLoading}
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#C4973F] text-[#1A1814] hover:bg-[#E8B44B] transition-colors disabled:opacity-40">
+              <Icon name="send" className="h-4 w-4" />
             </button>
-          </div>
-          <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-            {lumiMsgs.length === 0 && (
-              <div className="space-y-3 pt-2">
-                <p className="text-sm text-[#FFFDF8]/50 leading-6">Ask anything or try one of these:</p>
-                {["Which clients need rebooking?", "How many leads did we capture today?", "Summarise this week's performance", "Draft a follow-up for no-shows"].map(q => (
-                  <button key={q} type="button" onClick={() => sendToLumi(q)}
-                    className="w-full rounded-2xl border border-white/10 bg-white/[.045] px-4 py-3 text-left text-xs text-[#FFFDF8]/70 hover:border-[#C4973F]/35 hover:bg-white/[.06] transition-all">
-                    {q} →
-                  </button>
-                ))}
-              </div>
-            )}
-            {lumiMsgs.map((msg, i) => (
-              <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                {msg.role === 'assistant' && (
-                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-2xl bg-[#FFF4DD] mt-0.5">
-                    <div className="h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 12px rgba(232,180,75,.9)' }} />
-                  </div>
-                )}
-                <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'bg-white/[.07] text-[#FFFDF8]/85 rounded-tl-sm' : 'bg-[#C4973F] text-[#1A1814] font-semibold rounded-tr-sm'}`}>
-                  {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
-                    ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#E8B44B] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
-                    : msg.role === 'assistant'
-                      ? <ReactMarkdown components={MD as never}>{msg.content}</ReactMarkdown>
-                      : msg.content
-                  }
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="border-t border-white/10 p-4 shrink-0">
-            <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex gap-2">
-              <input
-                value={lumiInput} onChange={e => setLumiInput(e.target.value)}
-                placeholder="Ask Lumio anything..."
-                style={{ fontSize: '16px' }}
-                className="flex-1 rounded-2xl border border-white/15 bg-white/[.07] px-4 py-3 text-sm text-[#FFFDF8] placeholder:text-[#FFFDF8]/35 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
-              />
-              <button type="submit" disabled={!lumiInput.trim() || lumiLoading}
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#C4973F] text-[#1A1814] hover:bg-[#E8B44B] transition-colors disabled:opacity-40">
-                <Icon name="send" className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
+          </form>
         </div>
       </div>
 
@@ -931,7 +992,7 @@ export default function DemoPage() {
           <button type="button" onClick={() => openLumi()}
             className="grid place-items-center gap-1 rounded-2xl px-2 py-2.5 text-[10px] font-bold text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
             <Icon name="spark" className="h-4 w-4" />
-            Lumio
+            Lumi
           </button>
         </div>
       </nav>

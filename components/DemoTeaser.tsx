@@ -1,3 +1,5 @@
+'use client';
+
 import GoldButton from '@/components/ui/GoldButton';
 
 const FEED = [
@@ -30,15 +32,39 @@ export default function DemoTeaser() {
           </p>
         </div>
 
-        {/* Preview card */}
-        <div className="relative mx-auto max-w-[800px] mb-12">
+        {/* Desktop: scaled iframe */}
+        <div className="hidden md:block relative mx-auto mb-12" style={{ maxWidth: 704 }}>
           {/* Gold glow */}
           <div className="pointer-events-none absolute -inset-4 rounded-[3.5rem] blur-[80px] opacity-20"
             style={{ background: 'radial-gradient(ellipse at 60% 40%, #C4973F 0%, transparent 65%)' }} />
 
-          <div className="relative rounded-[2.5rem] bg-[#FFFDF8] shadow-[0_50px_180px_rgba(26,24,20,.6)] overflow-hidden">
+          <div className="relative overflow-hidden rounded-[1.5rem] shadow-[0_50px_180px_rgba(26,24,20,.7)]"
+            style={{ width: 704, height: 440 }}>
+            <iframe
+              src="/demo"
+              scrolling="no"
+              tabIndex={-1}
+              style={{
+                width: 1280,
+                height: 800,
+                transform: 'scale(0.55)',
+                transformOrigin: 'top left',
+                pointerEvents: 'none',
+                border: 'none',
+              }}
+            />
+            {/* Gradient fade at bottom */}
+            <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
+              style={{ background: 'linear-gradient(to bottom, transparent 0%, #1A1814 100%)' }} />
+          </div>
+        </div>
 
-            {/* Topbar */}
+        {/* Mobile: static preview card */}
+        <div className="md:hidden relative mx-auto max-w-[800px] mb-12">
+          <div className="pointer-events-none absolute -inset-4 rounded-[3.5rem] blur-[80px] opacity-20"
+            style={{ background: 'radial-gradient(ellipse at 60% 40%, #C4973F 0%, transparent 65%)' }} />
+
+          <div className="relative rounded-[2.5rem] bg-[#FFFDF8] shadow-[0_50px_180px_rgba(26,24,20,.6)] overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(26,24,20,0.08)]"
               style={{ background: 'rgba(249,237,232,0.6)' }}>
               <div className="flex items-center gap-3">
@@ -61,7 +87,6 @@ export default function DemoTeaser() {
               </span>
             </div>
 
-            {/* Metric pills */}
             <div className="flex flex-wrap gap-2.5 px-6 py-4 border-b border-[rgba(26,24,20,0.06)]">
               {METRICS.map(({ label, bg }) => (
                 <div key={label} className="relative overflow-hidden rounded-2xl border border-[rgba(26,24,20,0.08)] px-4 py-2.5 shadow-sm"
@@ -71,7 +96,6 @@ export default function DemoTeaser() {
               ))}
             </div>
 
-            {/* Activity feed */}
             <div className="px-6 py-5">
               <div className="mb-4 text-[10px] font-extrabold uppercase tracking-[.2em] text-[#C4973F]">Today&apos;s automation activity</div>
               <div className="space-y-0">
