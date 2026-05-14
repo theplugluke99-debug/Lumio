@@ -69,8 +69,12 @@ export default function PhaseIntro({ onStart }: Props) {
                 style={{ fontSize: '16px' }}
               />
             </div>
-            <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my free reveal</GoldButton>
-            <p className="text-xs text-white/25 text-center">No email required to start. No sales calls.</p>
+            <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my Revenue Reveal →</GoldButton>
+            <div className="flex flex-col gap-1.5 pt-1">
+              {['✦ Personalised to your clinic', '✦ Your exact revenue loss calculated', '✦ Recommended plan included', '✦ Takes 3 minutes'].map(item => (
+                <p key={item} className="text-[11px] text-[#C4973F]/55 text-left">{item}</p>
+              ))}
+            </div>
           </div>
 
           <div style={{ animation: 'rise 0.7s cubic-bezier(0.22,1,0.36,1) 0.65s both' }}

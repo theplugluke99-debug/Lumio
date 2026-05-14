@@ -18,7 +18,7 @@ export default function CTA() {
       />
 
       <div className="relative mx-auto max-w-3xl flex flex-col items-center gap-8">
-        <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Free clinic reveal</span>
+        <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Revenue Reveal</span>
 
         <h2 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[.88] tracking-[-0.04em] text-[#FFFDF8]">
           Find out exactly<br />

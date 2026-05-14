@@ -218,7 +218,7 @@ export default function DemoPage() {
 
   useEffect(() => {
     if (lumiOpen && lumiMsgs.length === 0) {
-      setLumiMsgs([{ role: 'assistant', content: "Hi ✦\n\n3 enquiries answered overnight — all moving to booking.\nYour first client is at 11am.\n\n**This week:** 31 leads · £4,800 pipeline · 2 no-shows (down from 9)\n\nWhat do you need?" }]);
+      setLumiMsgs([{ role: 'assistant', content: "Hi ✦ I'm Lumi — I run the automations for this clinic.\n\n**This week I've handled:**\n- 31 new enquiries — all responded to within seconds\n- 19 bookings confirmed automatically\n- 9 no-shows prevented by reminders\n- £4,800 in pipeline protected\n\nAsk me anything, or try one of the options above." }]);
     }
   }, [lumiOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -339,11 +339,25 @@ export default function DemoPage() {
             </button>
           ))}
         </nav>
-        <div className="pt-6 shrink-0">
+        <div className="pt-4 flex flex-col gap-3 shrink-0">
+          {/* Ask Lumi sidebar button */}
+          <button
+            type="button"
+            onClick={() => openLumi()}
+            className="w-full flex items-center gap-3 rounded-2xl border border-[#C4973F]/30 px-4 py-3.5 text-sm font-semibold text-[#FFFDF8] hover:border-[#C4973F]/60 hover:bg-[#C4973F]/5 transition-all"
+            style={{ backgroundColor: '#1A1814' }}
+          >
+            <div className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+              <span className="absolute h-5 w-5 rounded-full bg-[#E8B44B]/30 blur-sm" style={{ animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 10px rgba(232,180,75,.9)' }} />
+            </div>
+            <span>Ask Lumi</span>
+          </button>
+
           <a href="/audit" className="block rounded-[1.8rem] border border-[rgba(26,24,20,0.08)] bg-[#FFFDF8]/80 p-5 shadow-[0_20px_70px_rgba(26,24,20,.05)] hover:border-[#C4973F]/35 transition-colors">
             <div className="mb-3 text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
             <p className="font-display text-xl italic leading-tight text-[#C4973F]">Ready for the real thing?</p>
-            <p className="mt-2 text-[11px] font-bold text-[#8A8278]">Get your free clinic reveal →</p>
+            <p className="mt-2 text-[11px] font-bold text-[#8A8278]">Get your free Revenue Reveal →</p>
           </a>
         </div>
       </aside>
@@ -371,13 +385,6 @@ export default function DemoPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <button onClick={() => openLumi()}
-                className="flex items-center gap-2 rounded-full border border-[#C4973F]/25 px-4 py-2 text-xs font-bold text-[#E8B44B] hover:border-[#C4973F]/50 transition-colors"
-                style={{ backgroundColor: '#1A1814' }}>
-                <LiveDot />
-                <span className="hidden sm:inline">Ask Lumi</span>
-                <span className="sm:hidden">Lumi</span>
-              </button>
               <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
                 <Icon name="bell" className="h-4 w-4" />
                 <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#C4973F]" style={{ boxShadow: '0 0 8px rgba(196,151,63,.8)' }} />
@@ -929,12 +936,15 @@ export default function DemoPage() {
         {/* Messages */}
         <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
           {lumiMsgs.length === 0 && (
-            <div className="space-y-3 pt-2">
-              <p className="text-sm text-[#8A8278] leading-6">Ask anything or try one of these:</p>
-              {["Show me this week's numbers", "Which clients need attention?", "Pause weekend automations"].map(q => (
-                <button key={q} type="button" onClick={() => sendToLumi(q)}
-                  className="w-full rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/60 px-4 py-3 text-left text-sm font-semibold text-[#1A1814] hover:border-[#C4973F]/35 hover:bg-[#FFF4DD]/60 transition-all">
-                  {q} →
+            <div className="flex flex-wrap gap-2 pt-2">
+              {[
+                { emoji: '📊', label: 'What am I losing this month?' },
+                { emoji: '👥', label: 'Which clients need attention?' },
+                { emoji: '⚡', label: 'Show me what Lumi can do' },
+              ].map(({ emoji, label }) => (
+                <button key={label} type="button" onClick={() => sendToLumi(label)}
+                  className="flex items-center gap-2 rounded-full border border-[rgba(196,151,63,0.3)] bg-[#FFFDF8] px-4 py-2.5 text-sm font-medium text-[#1A1814] hover:bg-[#C4973F]/10 hover:border-[#C4973F]/60 transition-all">
+                  <span>{emoji}</span> {label}
                 </button>
               ))}
             </div>
@@ -961,7 +971,7 @@ export default function DemoPage() {
           <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex gap-2">
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
-              placeholder="Ask Lumi anything..."
+              placeholder="Ask Lumi anything about your clinic..."
               style={{ fontSize: '16px' }}
               className="flex-1 rounded-2xl border border-[rgba(26,24,20,0.12)] bg-[#F9EDE8]/50 px-4 py-3 text-sm text-[#1A1814] placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
             />
@@ -1008,7 +1018,7 @@ export default function DemoPage() {
             href={fromReveal ? '/#pricing' : '/audit'}
             className="rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap"
           >
-            {fromReveal ? 'View pricing →' : 'Get your free reveal →'}
+            {fromReveal ? 'View pricing →' : 'Get your free Revenue Reveal →'}
           </a>
         </div>
       </div>

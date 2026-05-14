@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Syne } from "next/font/google";
+import { Playfair_Display, Syne, Inter } from "next/font/google";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -14,6 +14,13 @@ const syne = Syne({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -57,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${syne.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${syne.variable} ${inter.variable}`}>
       <body
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
         className="antialiased"

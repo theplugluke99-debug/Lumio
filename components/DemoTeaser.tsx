@@ -2,20 +2,6 @@
 
 import GoldButton from '@/components/ui/GoldButton';
 
-const FEED = [
-  { time: '09:32', title: 'Instagram DM answered', detail: 'Lip filler enquiry → booking confirmed', status: 'Done' },
-  { time: '09:28', title: 'Booking confirmed by AI', detail: 'Consultation · 27 May at 11:00am', status: 'Done' },
-  { time: '09:15', title: 'Appointment reminder sent', detail: "WhatsApp · Tomorrow's treatment confirmed", status: 'Done' },
-  { time: '09:02', title: 'Review requested', detail: 'Botox · 3 days post-treatment', status: 'Done' },
-];
-
-const METRICS = [
-  { label: '↑ 31 leads', bg: '#F9EDE8' },
-  { label: '✓ 19 booked', bg: '#F0EDF8' },
-  { label: '↓ -77% no-shows', bg: '#EDF4EE' },
-  { label: '£4.8k pipeline', bg: '#F2DDD8' },
-];
-
 export default function DemoTeaser() {
   return (
     <section className="py-24 px-4 overflow-hidden" style={{ backgroundColor: '#1A1814' }}>
@@ -32,88 +18,46 @@ export default function DemoTeaser() {
           </p>
         </div>
 
-        {/* Desktop: scaled iframe */}
-        <div className="hidden md:block relative mx-auto mb-12" style={{ maxWidth: 704 }}>
+        {/* Dashboard iframe preview */}
+        <div className="mx-auto mb-12" style={{ maxWidth: 896 }}>
           {/* Gold glow */}
-          <div className="pointer-events-none absolute -inset-4 rounded-[3.5rem] blur-[80px] opacity-20"
-            style={{ background: 'radial-gradient(ellipse at 60% 40%, #C4973F 0%, transparent 65%)' }} />
+          <div className="pointer-events-none absolute translate-x-[-50%] left-1/2 w-[600px] h-[300px] rounded-full blur-[100px] opacity-15"
+            style={{ background: 'radial-gradient(ellipse at 50% 50%, #C4973F 0%, transparent 70%)' }} />
 
-          <div className="relative overflow-hidden rounded-[1.5rem] shadow-[0_50px_180px_rgba(26,24,20,.7)]"
-            style={{ width: 704, height: 440 }}>
+          <div
+            className="relative overflow-hidden"
+            style={{
+              width: '100%',
+              maxWidth: 896,
+              height: 602,
+              borderRadius: '1.5rem',
+              border: '1px solid rgba(196,151,63,0.2)',
+              boxShadow: '0 40px 120px rgba(26,24,20,0.4)',
+            }}
+          >
             <iframe
               src="/demo"
               scrolling="no"
               tabIndex={-1}
               style={{
-                width: 1280,
-                height: 800,
-                transform: 'scale(0.55)',
+                width: '1280px',
+                height: '860px',
+                transform: 'scale(0.7)',
                 transformOrigin: 'top left',
                 pointerEvents: 'none',
                 border: 'none',
+                borderRadius: '1.5rem',
               }}
             />
-            {/* Gradient fade at bottom */}
-            <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
-              style={{ background: 'linear-gradient(to bottom, transparent 0%, #1A1814 100%)' }} />
-          </div>
-        </div>
-
-        {/* Mobile: static preview card */}
-        <div className="md:hidden relative mx-auto max-w-[800px] mb-12">
-          <div className="pointer-events-none absolute -inset-4 rounded-[3.5rem] blur-[80px] opacity-20"
-            style={{ background: 'radial-gradient(ellipse at 60% 40%, #C4973F 0%, transparent 65%)' }} />
-
-          <div className="relative rounded-[2.5rem] bg-[#FFFDF8] shadow-[0_50px_180px_rgba(26,24,20,.6)] overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[rgba(26,24,20,0.08)]"
-              style={{ background: 'rgba(249,237,232,0.6)' }}>
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
-                  GA
-                </div>
-                <div>
-                  <div className="font-display text-base font-black text-[#1A1814]">Glow Aesthetics London</div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#5B8A68]">
-                    <span className="relative flex h-1.5 w-1.5 shrink-0">
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-[#5B8A68] opacity-60" style={{ animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
-                      <span className="relative h-1.5 w-1.5 rounded-full bg-[#5B8A68]" />
-                    </span>
-                    Live automation active
-                  </div>
-                </div>
-              </div>
-              <span className="rounded-full bg-[#FFF4DD] border border-[#C4973F]/20 px-3.5 py-1.5 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#C4973F]">
-                ✦ LIVE
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-2.5 px-6 py-4 border-b border-[rgba(26,24,20,0.06)]">
-              {METRICS.map(({ label, bg }) => (
-                <div key={label} className="relative overflow-hidden rounded-2xl border border-[rgba(26,24,20,0.08)] px-4 py-2.5 shadow-sm"
-                  style={{ backgroundColor: bg }}>
-                  <span className="font-display text-sm font-black text-[#1A1814]">{label}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="px-6 py-5">
-              <div className="mb-4 text-[10px] font-extrabold uppercase tracking-[.2em] text-[#C4973F]">Today&apos;s automation activity</div>
-              <div className="space-y-0">
-                {FEED.map((item, i) => (
-                  <div key={item.time} className={`flex items-center gap-4 py-3 ${i < FEED.length - 1 ? 'border-b border-[rgba(26,24,20,0.06)]' : ''}`}>
-                    <span className="w-10 shrink-0 text-[10px] font-semibold text-[#8A8278]">{item.time}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
-                      <div className="text-[11px] text-[#8A8278] truncate">{item.detail}</div>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#5B8A68] shrink-0">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" />
-                      Done
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Gradient overlay */}
+            <div
+              className="pointer-events-none"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(to bottom, transparent 0%, transparent 55%, #1A1814 100%)',
+              }}
+            />
           </div>
         </div>
 

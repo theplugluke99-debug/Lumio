@@ -50,8 +50,8 @@ export default function Pricing() {
               </ul>
               <div className="flex flex-col gap-2">
                 {p.featured
-                  ? <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio reveal and I'd like to get started with the ${p.name} plan. My clinic is:`}>Get started</GoldButton>
-                  : <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio reveal and I'd like to get started with the ${p.name} plan. My clinic is:`} dark>Get started</GoldButton>}
+                  ? <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio Revenue Reveal and I'd like to get started with the ${p.name} plan. My clinic is:`}>Get started</GoldButton>
+                  : <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio Revenue Reveal and I'd like to get started with the ${p.name} plan. My clinic is:`} dark>Get started</GoldButton>}
                 <p className={`text-[11px] text-center ${p.featured ? 'text-white/35' : 'text-[#8A8278]'}`}>
                   Or call us — we&apos;ll get you set up today
                 </p>
@@ -62,7 +62,7 @@ export default function Pricing() {
 
         <p className="text-center text-sm text-[#8A8278] mt-10">
           Not sure which is right for you?{' '}
-          <a href="/audit" className="text-[#C4973F] hover:text-[#E8B44B] underline underline-offset-4 transition-colors">Take the free reveal</a>
+          <a href="/audit" className="text-[#C4973F] hover:text-[#E8B44B] underline underline-offset-4 transition-colors">Take the free Revenue Reveal</a>
           {' '}and we&apos;ll tell you honestly. No upsell, no pressure.
         </p>
       </div>

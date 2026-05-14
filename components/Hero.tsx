@@ -43,12 +43,23 @@ export default function Hero() {
 
             <div className="reveal-4 flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-4">
-                <GoldButton href="/audit">Get my free clinic reveal</GoldButton>
+                <div className="relative group">
+                  <GoldButton href="/audit">Get my free Revenue Reveal →</GoldButton>
+                  <div className="pointer-events-none absolute bottom-full left-0 mb-3 w-52 opacity-0 group-hover:opacity-100 transition-opacity duration-150 hidden md:block z-50">
+                    <div className="rounded-xl border border-[#C4973F]/30 bg-[#1A1814] px-4 py-3 text-xs text-white/70 leading-5">
+                      Answer 8 questions about your clinic.<br />
+                      Get your exact monthly revenue loss.<br />
+                      Personalised to your numbers.<br />
+                      Takes 3 minutes.
+                    </div>
+                    <div className="ml-8 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-[#1A1814]" />
+                  </div>
+                </div>
                 <a href="#services" className="text-sm text-white/50 hover:text-white/80 transition-colors">
                   See what&apos;s possible ↓
                 </a>
               </div>
-              <p className="text-xs text-white/30 pl-1">Takes 3 minutes. Results are instant. No call required.</p>
+              <p className="text-xs text-white/30 pl-1">Takes 3 minutes. See your exact monthly revenue loss. No call required.</p>
               <a href="#talk-to-lumio" className="text-xs text-[#C4973F]/60 hover:text-[#C4973F] transition-colors pl-1">
                 Or talk to our AI now — no forms, no calls →
               </a>
@@ -63,7 +74,7 @@ export default function Hero() {
             <div className="absolute inset-0 rounded-[3rem] blur-[60px] opacity-30 -z-10"
               style={{ background: 'radial-gradient(ellipse, #C4973F 0%, transparent 70%)' }} />
             <div className="rounded-[3rem] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-3">
-              <div className="rounded-[2.4rem] bg-[#FFFDF8] p-5 md:p-6">
+              <div className="rounded-[2.4rem] bg-[#FFFDF8] p-5 md:p-6" style={{ fontFamily: 'var(--font-inter, system-ui, sans-serif)' }}>
                 <div className="flex items-center justify-between mb-5">
                   <Logo small />
                   <span className="rounded-full bg-[#F9EDE8] px-3 py-1 text-xs font-bold tracking-wide text-[#C4973F] border border-[#C4973F]/20">● Live flow</span>

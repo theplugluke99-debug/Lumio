@@ -10,7 +10,7 @@ export default function ResultsScore({ r, label, scoreVisible }: Props) {
         style={{ background: `radial-gradient(ellipse, ${r.scoreColor} 0%, transparent 65%)` }} />
       <div className="flex flex-col items-center gap-5 relative z-10"
         style={{ opacity: scoreVisible ? 1 : 0, transform: scoreVisible ? 'translateY(0)' : 'translateY(28px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
-        <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">{label} — Your results are ready</span>
+        <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">{label} — Your Revenue Reveal</span>
         <div className="flex items-center justify-center"
           style={{ width: 180, height: 180, borderRadius: '50%', border: `3px solid ${r.scoreColor}`, boxShadow: `0 0 60px ${r.scoreColor}40` }}>
           <div className="flex flex-col items-center">
@@ -22,7 +22,7 @@ export default function ResultsScore({ r, label, scoreVisible }: Props) {
         </div>
         <p className="text-sm font-bold uppercase tracking-widest" style={{ color: r.scoreColor }}>{r.scoreLabel}</p>
         <p className="text-[#8A8278] max-w-md text-base leading-relaxed">
-          A score of {r.score} means there is significant untapped revenue available in {label}. Here&apos;s your breakdown.
+          Here&apos;s exactly what your clinic is leaving on the table every month.
         </p>
       </div>
     </div>

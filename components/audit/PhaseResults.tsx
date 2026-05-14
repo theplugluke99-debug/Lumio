@@ -38,8 +38,8 @@ export default function PhaseResults({ answers, clinicName }: Props) {
           <a href="/"><Logo light small /></a>
         </div>
         <div className="flex-1 flex justify-center px-3">
-          <span className="font-display italic text-[#FFFDF8]/90 text-sm md:text-base font-bold text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-[260px]">
-            {label} — Your Report
+          <span className="font-display italic text-[#FFFDF8]/90 text-sm md:text-base font-bold text-center whitespace-nowrap overflow-hidden text-ellipsis max-w-[280px]">
+            {label} — Your Revenue Reveal
           </span>
         </div>
         <div className="flex-1 flex justify-end shrink-0">

@@ -28,7 +28,7 @@ export default function ResultsTier({ r, label }: Props) {
             </div>
           </div>
           <div>
-            <p className="text-sm text-white/50 mb-3">Based on your reveal, here&apos;s why this tier fits:</p>
+            <p className="text-sm text-white/50 mb-3">Based on your Revenue Reveal, here&apos;s why this tier fits:</p>
             <ul className="flex flex-col gap-2">
               {r.tierReasons.map((reason, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
@@ -49,7 +49,7 @@ export default function ResultsTier({ r, label }: Props) {
             </ul>
           </div>
           <div className="border-t border-white/[0.06] pt-6 flex flex-col items-start gap-2">
-            <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio reveal and I'd like to get started with the ${r.recommendedTier} plan. My clinic is:`}>
+            <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio Revenue Reveal and I'd like to get started with the ${r.recommendedTier} plan. My clinic is:`}>
               Get started with {r.recommendedTier}
             </GoldButton>
             <p className="text-xs text-white/30 pl-1">Or call us — we&apos;ll get you set up today</p>
