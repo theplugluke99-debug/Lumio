@@ -17,7 +17,7 @@ export default function ChatInput({ input, onChange, onSubmit, onPill, loading }
   return (
     <>
       {/* Capability pills */}
-      <div className="px-4 md:px-5 pt-2 pb-2 flex flex-wrap gap-2 border-t border-white/[0.06]">
+      <div className="px-4 md:px-5 pt-2 pb-2 flex gap-2 overflow-x-auto border-t border-white/[0.06] scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
         {CHAT_PILLS.map(pill => (
           <button
             key={pill.label}
