@@ -21,7 +21,7 @@ export default function Nav() {
             See demo
           </a>
           <a href="/audit" className="rounded-full bg-[#FFFDF8] text-[#1A1814] text-sm font-semibold px-5 py-2.5 hover:bg-[#C4973F] transition-colors duration-200">
-            Get free audit →
+            Get free reveal →
           </a>
         </div>
       </nav>

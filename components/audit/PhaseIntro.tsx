@@ -69,7 +69,7 @@ export default function PhaseIntro({ onStart }: Props) {
                 style={{ fontSize: '16px' }}
               />
             </div>
-            <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my free audit</GoldButton>
+            <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my free reveal</GoldButton>
             <p className="text-xs text-white/25 text-center">No email required to start. No sales calls.</p>
           </div>
 

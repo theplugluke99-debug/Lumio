@@ -28,7 +28,7 @@ export default function ResultsCTA({ r }: Props) {
           {/* Primary — Demo CTA */}
           <div className="w-full flex flex-col items-center gap-2">
             <a
-              href="/demo"
+              href="/demo?from=reveal"
               className="group inline-flex items-center gap-2.5 rounded-full bg-[#C4973F] text-[#1A1814] text-sm font-bold px-8 py-4 hover:bg-[#E8B44B] transition-all duration-200 hover:-translate-y-1 shadow-[0_20px_60px_rgba(196,151,63,.3)]"
             >
               See your clinic on Lumio

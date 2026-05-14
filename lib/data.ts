@@ -13,7 +13,7 @@ export const NAV_LINKS = [
   { label: 'Services', href: '#services', highlight: false },
   { label: 'How it works', href: '#process', highlight: false },
   { label: 'Pricing', href: '#pricing', highlight: false },
-  { label: 'Free audit', href: '/audit', highlight: true },
+  { label: 'Free reveal', href: '/audit', highlight: true },
 ];
 
 // ─── Marquee ──────────────────────────────────────────────────────────────────

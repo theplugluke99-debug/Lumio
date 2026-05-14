@@ -43,7 +43,7 @@ export default function Hero() {
 
             <div className="reveal-4 flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-4">
-                <GoldButton href="/audit">Get my free clinic audit</GoldButton>
+                <GoldButton href="/audit">Get my free clinic reveal</GoldButton>
                 <a href="#services" className="text-sm text-white/50 hover:text-white/80 transition-colors">
                   See what&apos;s possible ↓
                 </a>

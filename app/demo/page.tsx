@@ -1,37 +1,38 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import Logo from '@/components/ui/Logo';
+import { MD } from '@/lib/chat';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'admin';
+type Tier = 'foundation' | 'fullsystem' | 'fullops';
 type FeedItem = { id: number; time: string; title: string; detail: string; icon: string; category: string };
 type Convo = { id: string; name: string; channel: string; preview: string; time: string; messages: { role: 'lumio' | 'client'; text: string }[] };
 type Client = { id: string; initials: string; name: string; lastVisit: string; bookings: number; spend: string; treatments: string[]; status: string; nextAppt: string; phone: string; channel: string };
 type ChatMsg = { role: 'user' | 'assistant'; content: string };
 
-const s = { fill: 'none' as const, stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+const SVG = { fill: 'none' as const, stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
 
 function Icon({ name, className = 'h-5 w-5' }: { name: string; className?: string }) {
   const m: Record<string, React.ReactNode> = {
-    overview: <><rect x="3" y="3" width="7" height="7" rx="1.5" {...s}/><rect x="14" y="3" width="7" height="7" rx="1.5" {...s}/><rect x="3" y="14" width="7" height="7" rx="1.5" {...s}/><rect x="14" y="14" width="7" height="7" rx="1.5" {...s}/></>,
-    activity: <path d="M3 12h4l2-6 4 12 3-8 2 2h3" {...s}/>,
-    conversations: <><path d="M5 6.5h14v8.5H9l-4 3v-11.5Z" {...s}/><path d="M8 10h8M8 13h5" {...s}/></>,
-    clients: <><path d="M8.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" {...s}/><path d="M2.8 20c.7-3.3 2.9-5 5.7-5s5 1.7 5.7 5" {...s}/><path d="M17 11a2.8 2.8 0 1 0 0-5.6" {...s}/><path d="M16 15c2.5.2 4.2 1.9 4.8 5" {...s}/></>,
-    lock: <><rect x="5" y="10" width="14" height="10" rx="2" {...s}/><path d="M8 10V7a4 4 0 0 1 8 0v3" {...s}/></>,
-    settings: <><circle cx="12" cy="12" r="3.5" {...s}/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .71V20.5a2 2 0 0 1-4 0v-.18a1.65 1.65 0 0 0-1-.71 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.71-1H3.5a2 2 0 0 1 0-4h.18a1.65 1.65 0 0 0 .71-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.71V3.5a2 2 0 0 1 4 0v.18a1.65 1.65 0 0 0 1 .71 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 .71 1H20.5a2 2 0 0 1 0 4h-.18a1.65 1.65 0 0 0-.71 1Z" {...s}/></>,
-    bell: <><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" {...s}/><path d="M10 21h4" {...s}/></>,
-    lead: <><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" {...s}/><path d="M2.5 21c.7-4 2.7-6 5.5-6 1.6 0 2.9.6 3.9 1.8" {...s}/><path d="M14 13h7M17.5 9.5v7" {...s}/></>,
-    booking: <><rect x="4" y="5" width="16" height="15" rx="2" {...s}/><path d="M8 3v4M16 3v4M4 10h16" {...s}/><path d="m9 15 2 2 4-5" {...s}/></>,
-    noshow: <><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" {...s}/><path d="m15 9-6 6M9 9l6 6" {...s}/></>,
-    money: <><path d="M7 7h7a3 3 0 0 1 0 6H7V3" {...s}/><path d="M7 13h8a3 3 0 0 1 0 6H7v-6Z" {...s}/></>,
-    star: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9L12 3Z" {...s}/>,
-    mail: <><rect x="3" y="5" width="18" height="14" rx="2" {...s}/><path d="m4 7 8 6 8-6" {...s}/></>,
-    pulse: <path d="M3 12h4l2.2-6 4.6 12 2.2-6h5" {...s}/>,
-    spark: <><path d="M12 2v5M12 17v5M4.9 4.9l3.5 3.5M15.6 15.6l3.5 3.5M2 12h5M17 12h5M4.9 19.1l3.5-3.5M15.6 8.4l3.5-3.5" {...s}/></>,
-    x: <path d="M18 6L6 18M6 6l12 12" {...s}/>,
-    send: <><path d="M22 2L11 13" {...s}/><path d="M22 2l-7 20-4-9-9-4 20-7z" {...s}/></>,
-    menu: <><path d="M3 12h18M3 6h18M3 18h18" {...s}/></>,
-    phone: <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1 19.79 19.79 0 0 1 1.64 4.5 2 2 0 0 1 3.6 2.31h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z" {...s}/>,
+    overview: <><rect x="3" y="3" width="7" height="7" rx="1.5" {...SVG}/><rect x="14" y="3" width="7" height="7" rx="1.5" {...SVG}/><rect x="3" y="14" width="7" height="7" rx="1.5" {...SVG}/><rect x="14" y="14" width="7" height="7" rx="1.5" {...SVG}/></>,
+    activity: <path d="M3 12h4l2-6 4 12 3-8 2 2h3" {...SVG}/>,
+    conversations: <><path d="M5 6.5h14v8.5H9l-4 3v-11.5Z" {...SVG}/><path d="M8 10h8M8 13h5" {...SVG}/></>,
+    clients: <><path d="M8.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" {...SVG}/><path d="M2.8 20c.7-3.3 2.9-5 5.7-5s5 1.7 5.7 5" {...SVG}/><path d="M17 11a2.8 2.8 0 1 0 0-5.6" {...SVG}/><path d="M16 15c2.5.2 4.2 1.9 4.8 5" {...SVG}/></>,
+    lock: <><rect x="5" y="10" width="14" height="10" rx="2" {...SVG}/><path d="M8 10V7a4 4 0 0 1 8 0v3" {...SVG}/></>,
+    bell: <><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" {...SVG}/><path d="M10 21h4" {...SVG}/></>,
+    lead: <><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" {...SVG}/><path d="M2.5 21c.7-4 2.7-6 5.5-6 1.6 0 2.9.6 3.9 1.8" {...SVG}/><path d="M14 13h7M17.5 9.5v7" {...SVG}/></>,
+    booking: <><rect x="4" y="5" width="16" height="15" rx="2" {...SVG}/><path d="M8 3v4M16 3v4M4 10h16" {...SVG}/><path d="m9 15 2 2 4-5" {...SVG}/></>,
+    noshow: <><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" {...SVG}/><path d="m15 9-6 6M9 9l6 6" {...SVG}/></>,
+    money: <><path d="M7 7h7a3 3 0 0 1 0 6H7V3" {...SVG}/><path d="M7 13h8a3 3 0 0 1 0 6H7v-6Z" {...SVG}/></>,
+    star: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9L12 3Z" {...SVG}/>,
+    mail: <><rect x="3" y="5" width="18" height="14" rx="2" {...SVG}/><path d="m4 7 8 6 8-6" {...SVG}/></>,
+    pulse: <path d="M3 12h4l2.2-6 4.6 12 2.2-6h5" {...SVG}/>,
+    spark: <><path d="M12 2v5M12 17v5M4.9 4.9l3.5 3.5M15.6 15.6l3.5 3.5M2 12h5M17 12h5M4.9 19.1l3.5-3.5M15.6 8.4l3.5-3.5" {...SVG}/></>,
+    x: <path d="M18 6L6 18M6 6l12 12" {...SVG}/>,
+    send: <><path d="M22 2L11 13" {...SVG}/><path d="M22 2l-7 20-4-9-9-4 20-7z" {...SVG}/></>,
+    menu: <><path d="M3 12h18M3 6h18M3 18h18" {...SVG}/></>,
   };
   return <svg viewBox="0 0 24 24" className={className}>{m[name] ?? null}</svg>;
 }
@@ -49,7 +50,7 @@ function ProgressBar({ label, value, amber = false }: { label: string; value: nu
   );
 }
 
-function Pill({ status }: { status: string }) {
+function StatusPill({ status }: { status: string }) {
   const t: Record<string, string> = {
     Active: 'bg-[#EDF4EE] text-[#5B8A68]', VIP: 'bg-[#FFF4DD] text-[#C4973F]',
     New: 'bg-[#F0EDF8] text-[#7C6B9A]', 'Due rebooking': 'bg-[#F9E1DF] text-[#B35A4C]',
@@ -164,10 +165,18 @@ const CLIENTS: Client[] = [
   { id: '8', initials: 'LT', name: 'Lily Thompson', lastVisit: '19 May 2026', bookings: 1, spend: '£150', treatments: ['Consultation'], status: 'New', nextAppt: '28 May 2026', phone: '+44 7700 900234', channel: 'Google' },
 ];
 
+const METRIC_CARDS = [
+  { bg: '#F9EDE8', icon: 'lead', value: '31', label: 'Leads captured', note: 'Across website, phone and Instagram.', trend: '+18% this week', trendColor: '#5B8A68', arrow: '↑', arrowColor: '#C4973F' },
+  { bg: '#F0EDF8', icon: 'booking', value: '19', label: 'Bookings by AI', note: 'Confirmed without manual chasing.', trend: 'AI handled', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
+  { bg: '#EDF4EE', icon: 'noshow', value: '2', label: 'No-shows this week', note: 'Down from 9 after reminders launched.', trend: '-77% vs before', trendColor: '#5B8A68', arrow: '↓', arrowColor: '#5B8A68' },
+  { bg: '#F2DDD8', icon: 'money', value: '£4,800', label: 'Pipeline value', note: 'Revenue attributed to Lumio leads.', trend: 'Live tracking', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
+];
+
 // ─── Main ──────────────────────────────────────────────────────────────────────
 
 export default function DemoPage() {
   const [tab, setTab] = useState<Tab>('overview');
+  const [tier, setTier] = useState<Tier>('foundation');
   const [clinicName, setClinicName] = useState('Glow Aesthetics London');
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [bannerInput, setBannerInput] = useState('');
@@ -180,12 +189,15 @@ export default function DemoPage() {
   const [lumiMsgs, setLumiMsgs] = useState<ChatMsg[]>([]);
   const [lumiInput, setLumiInput] = useState('');
   const [lumiLoading, setLumiLoading] = useState(false);
+  const [fromReveal, setFromReveal] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('lumio_demo_clinic') : null;
     if (saved) { setClinicName(saved); setBannerInput(saved === 'Glow Aesthetics London' ? '' : saved); }
+    const params = new URLSearchParams(window.location.search);
+    setFromReveal(params.get('from') === 'reveal');
   }, []);
 
   useEffect(() => {
@@ -211,6 +223,11 @@ export default function DemoPage() {
   };
 
   const clinicInitials = clinicName.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+  const openLumi = useCallback((prefill?: string) => {
+    setLumiOpen(true);
+    if (prefill) setLumiInput(prefill);
+  }, []);
 
   const sendToLumi = useCallback(async (msg: string) => {
     if (!msg.trim() || lumiLoading) return;
@@ -254,7 +271,7 @@ export default function DemoPage() {
   const filteredFeed = actFilter === 'all' ? FULL_FEED : FULL_FEED.filter(i => i.category === actFilter);
 
   return (
-    <div style={{ backgroundColor: '#FFFDF8', cursor: 'auto', minHeight: '100dvh' }} className="antialiased text-[#1A1814]">
+    <div className="antialiased text-[#1A1814] overflow-x-hidden" style={{ backgroundColor: '#FFFDF8', minHeight: '100dvh' }}>
 
       {/* Demo banner */}
       {!bannerDismissed && (
@@ -284,152 +301,214 @@ export default function DemoPage() {
         </div>
       )}
 
-      {/* Layout */}
-      <div className="flex" style={{ minHeight: bannerDismissed ? '100dvh' : 'calc(100dvh - 44px)' }}>
+      {/* Sidebar — fixed at all times */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
 
-        {/* Mobile sidebar backdrop */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
-        )}
-
-        {/* Sidebar */}
-        <aside
-          className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed lg:sticky lg:top-0 z-50 lg:z-auto h-[100dvh] lg:h-auto w-[280px] shrink-0 border-r border-[rgba(26,24,20,0.08)] transition-transform duration-300 lg:transition-none flex flex-col p-6`}
-          style={{ backgroundColor: 'rgba(249,237,232,0.6)', backdropFilter: 'blur(20px)' }}
-        >
-          <div className="mb-8 pt-2 shrink-0">
-            <a href="/"><Logo /></a>
-          </div>
-          <nav className="space-y-1.5 flex-1">
-            {navItems.map(({ id, icon, label, locked }) => (
-              <button key={id} type="button"
-                onClick={() => { setTab(id); setSidebarOpen(false); }}
-                className={`group w-full flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${tab === id ? 'border border-[#C4973F]/35 bg-[#FFFDF8] text-[#C4973F] shadow-[0_14px_40px_rgba(196,151,63,.09)]' : 'text-[#1A1814]/65 hover:bg-white/55 hover:text-[#1A1814]'}`}>
-                <div className="flex items-center gap-3">
-                  <span className={`grid h-8 w-8 place-items-center rounded-xl ${tab === id ? 'bg-[#C4973F]/12' : 'bg-white/45'}`}>
-                    <Icon name={icon} className="h-4 w-4" />
-                  </span>
-                  <span className="font-semibold">{label}</span>
-                </div>
-                {locked && (
-                  <span className="grid h-6 w-6 place-items-center rounded-full bg-[#C4973F]/12 text-[#C4973F]">
-                    <Icon name="lock" className="h-3 w-3" />
-                  </span>
-                )}
-              </button>
-            ))}
-          </nav>
-          <div className="pt-6 shrink-0">
-            <a href="/audit" className="block rounded-[1.8rem] border border-[rgba(26,24,20,0.08)] bg-[#FFFDF8]/80 p-5 shadow-[0_20px_70px_rgba(26,24,20,.05)] hover:border-[#C4973F]/35 transition-colors">
-              <div className="mb-3 text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
-              <p className="font-display text-xl italic leading-tight text-[#C4973F]">Ready for the real thing?</p>
-              <p className="mt-2 text-[11px] font-bold text-[#8A8278]">Get your free clinic audit →</p>
-            </a>
-          </div>
-        </aside>
-
-        {/* Main column */}
-        <div className="flex flex-1 min-w-0 flex-col">
-
-          {/* Topbar */}
-          <header className="sticky top-0 z-30 border-b border-[rgba(26,24,20,0.08)] px-5 py-4 backdrop-blur-2xl shrink-0"
-            style={{ backgroundColor: 'rgba(255,253,248,0.88)' }}>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <button type="button" onClick={() => setSidebarOpen(true)}
-                  className="grid h-9 w-9 place-items-center rounded-xl bg-[#F9EDE8] text-[#1A1814] lg:hidden shrink-0">
-                  <Icon name="menu" className="h-4 w-4" />
-                </button>
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] font-display text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
-                  {clinicInitials}
-                </div>
-                <div className="min-w-0">
-                  <h1 className="font-display text-lg font-black tracking-[-0.03em] text-[#1A1814] truncate">{clinicName}</h1>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#5B8A68]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68] shrink-0" /> Live automation active
-                  </div>
-                </div>
+      <aside
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed top-0 left-0 z-50 h-screen w-[280px] shrink-0 border-r border-[rgba(26,24,20,0.08)] flex flex-col p-6 overflow-y-auto transition-transform duration-300 lg:transition-none`}
+        style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)' }}
+      >
+        <div className="mb-8 pt-2 shrink-0">
+          <a href="/"><Logo /></a>
+        </div>
+        <nav className="space-y-1.5 flex-1">
+          {navItems.map(({ id, icon, label, locked }) => (
+            <button key={id} type="button"
+              onClick={() => { setTab(id); setSidebarOpen(false); }}
+              className={`group w-full flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${tab === id ? 'border border-[#C4973F]/35 bg-[#FFFDF8] text-[#C4973F] shadow-[0_14px_40px_rgba(196,151,63,.09)]' : 'text-[#1A1814]/65 hover:bg-white/55 hover:text-[#1A1814]'}`}>
+              <div className="flex items-center gap-3">
+                <span className={`grid h-8 w-8 place-items-center rounded-xl ${tab === id ? 'bg-[#C4973F]/12' : 'bg-white/45'}`}>
+                  <Icon name={icon} className="h-4 w-4" />
+                </span>
+                <span className="font-semibold">{label}</span>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button onClick={() => setLumiOpen(true)}
-                  className="hidden md:flex items-center gap-2 rounded-full border border-[#C4973F]/25 px-4 py-2 text-xs font-bold text-[#E8B44B] hover:border-[#C4973F]/50 transition-colors"
-                  style={{ backgroundColor: '#1A1814' }}>
-                  <LiveDot />
-                  Ask Lumio
-                </button>
-                <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
-                  <Icon name="bell" className="h-4 w-4" />
-                  <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#C4973F]" style={{ boxShadow: '0 0 8px rgba(196,151,63,.8)' }} />
-                </button>
+              {locked && (
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-[#C4973F]/12 text-[#C4973F]">
+                  <Icon name="lock" className="h-3 w-3" />
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+        <div className="pt-6 shrink-0">
+          <a href="/audit" className="block rounded-[1.8rem] border border-[rgba(26,24,20,0.08)] bg-[#FFFDF8]/80 p-5 shadow-[0_20px_70px_rgba(26,24,20,.05)] hover:border-[#C4973F]/35 transition-colors">
+            <div className="mb-3 text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
+            <p className="font-display text-xl italic leading-tight text-[#C4973F]">Ready for the real thing?</p>
+            <p className="mt-2 text-[11px] font-bold text-[#8A8278]">Get your free clinic reveal →</p>
+          </a>
+        </div>
+      </aside>
+
+      {/* Main column — offset by sidebar width on desktop */}
+      <div className="flex flex-col lg:ml-[280px] min-h-screen">
+
+        {/* Topbar */}
+        <header className="sticky top-0 z-30 border-b border-[rgba(26,24,20,0.08)] px-5 py-4 backdrop-blur-2xl shrink-0"
+          style={{ backgroundColor: 'rgba(255,253,248,0.92)' }}>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <button type="button" onClick={() => setSidebarOpen(true)}
+                className="grid h-9 w-9 place-items-center rounded-xl bg-[#F9EDE8] text-[#1A1814] lg:hidden shrink-0">
+                <Icon name="menu" className="h-4 w-4" />
+              </button>
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] font-display text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
+                {clinicInitials}
+              </div>
+              <div className="min-w-0">
+                <h1 className="font-display text-lg font-black tracking-[-0.03em] text-[#1A1814] truncate">{clinicName}</h1>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#5B8A68]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68] shrink-0" /> Live automation active
+                </div>
               </div>
             </div>
-          </header>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={() => openLumi()}
+                className="flex items-center gap-2 rounded-full border border-[#C4973F]/25 px-4 py-2 text-xs font-bold text-[#E8B44B] hover:border-[#C4973F]/50 transition-colors"
+                style={{ backgroundColor: '#1A1814' }}>
+                <LiveDot />
+                <span className="hidden sm:inline">Ask Lumio</span>
+                <span className="sm:hidden">AI</span>
+              </button>
+              <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
+                <Icon name="bell" className="h-4 w-4" />
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#C4973F]" style={{ boxShadow: '0 0 8px rgba(196,151,63,.8)' }} />
+              </button>
+            </div>
+          </div>
+        </header>
 
-          {/* Scrollable content */}
-          <main className="flex-1 overflow-y-auto px-5 py-7 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: '#FFFDF8' }}>
-            <div className="mx-auto max-w-[1280px]">
+        {/* Scrollable content */}
+        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: '#FFFDF8' }}>
+          <div className="mx-auto max-w-[1280px]">
 
-              {/* ── Overview ─────────────────────────────────────── */}
-              {tab === 'overview' && (
-                <div className="space-y-6">
-                  <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                    <div>
-                      <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Overview</p>
-                      <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Clinic command centre</h2>
-                    </div>
-                    <p className="max-w-md text-sm leading-7 text-[#8A8278]">A live view of what Lumio has captured, handled, and protected this week.</p>
-                  </div>
+            {/* Tier selector — overview only */}
+            {tab === 'overview' && (
+              <div className="mb-6 flex items-center gap-2 flex-wrap">
+                {([
+                  { id: 'foundation' as Tier, label: 'Foundation' },
+                  { id: 'fullsystem' as Tier, label: 'Full System' },
+                  { id: 'fullops' as Tier, label: 'Full Operations 🔒' },
+                ] as { id: Tier; label: string }[]).map(t => (
+                  <button key={t.id} type="button"
+                    onClick={() => setTier(t.id)}
+                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 ${tier === t.id ? 'bg-[#1A1814] text-[#E8B44B] shadow-[0_8px_24px_rgba(26,24,20,.15)]' : 'bg-[#F9EDE8] text-[#8A8278] hover:bg-[#F0EDF8] hover:text-[#1A1814]'}`}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
-                  {/* Metric cards */}
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                      { tint: '#F9EDE8', icon: 'lead', value: '31', label: 'Leads captured', note: 'Across website, phone and Instagram.', trend: '+18%', foot: 'Captured by Lumio' },
-                      { tint: '#F0EDF8', icon: 'booking', value: '19', label: 'Bookings made by AI', note: 'Confirmed without manual chasing.', trend: 'AI', foot: 'No receptionist needed' },
-                      { tint: '#EDF4EE', icon: 'noshow', value: '2', label: 'No-shows this week', note: 'Down from 9 after reminders launched.', trend: '-77%', foot: 'Revenue protected' },
-                      { tint: '#FFF1D5', icon: 'money', value: '£4,800', label: 'Pipeline value', note: 'Revenue attributed to Lumio-handled leads.', trend: 'Live', foot: 'Tracked this week' },
-                    ].map(card => (
-                      <div key={card.label} className="group relative min-h-[210px] overflow-hidden rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/82 p-6 shadow-[0_24px_80px_rgba(26,24,20,.05)] transition-all duration-300 hover:-translate-y-1 hover:border-[#C4973F]/45">
-                        <div className="absolute inset-0 opacity-90" style={{ background: `radial-gradient(circle at 18% 12%, ${card.tint}, transparent 52%)` }} />
-                        <div className="relative z-10 flex h-full flex-col">
-                          <div className="flex items-start justify-between">
-                            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/75 text-[#C4973F] shadow-inner"><Icon name={card.icon} className="h-5 w-5" /></div>
-                            <span className="rounded-full bg-white/70 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.14em] text-[#C4973F]">{card.trend}</span>
+            {/* ── Overview ─────────────────────────────────────── */}
+            {tab === 'overview' && (
+              <div className="space-y-6">
+
+                {/* Full Operations locked */}
+                {tier === 'fullops' && (
+                  <div className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(26,24,20,0.08)] shadow-[0_35px_120px_rgba(26,24,20,.08)]">
+                    {/* Blurred admin preview behind */}
+                    <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(4px)' }}>
+                      <div className="grid gap-6 xl:grid-cols-2">
+                        <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
+                          <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
+                          {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending']].map(([name, time, status]) => (
+                            <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                              <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
+                              <StatusPill status={status} />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="rounded-[2rem] p-8 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
+                          <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
+                          <div className="mt-6 grid grid-cols-2 gap-6">
+                            <div><div className="font-display text-5xl font-black">+38%</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                            <div><div className="font-display text-5xl font-black">£18.4k</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
                           </div>
-                          <div className="mt-5 font-display text-5xl font-black leading-none tracking-[-0.06em] text-[#1A1814]">{card.value}</div>
-                          <p className="mt-2 text-sm font-extrabold text-[#1A1814]">{card.label}</p>
-                          <p className="mt-1 text-xs leading-5 text-[#8A8278]">{card.note}</p>
-                          <div className="mt-auto pt-4 text-[10px] font-bold uppercase tracking-[.16em] text-[#8A8278]/70">{card.foot}</div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
-                    {/* Live feed */}
-                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
-                      <div className="mb-4 flex items-center justify-between">
-                        <h3 className="font-display text-2xl font-black tracking-[-0.04em]">Today&apos;s automation activity</h3>
-                        <span className="flex items-center gap-1.5 rounded-full bg-[#FFF4DD] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.15em] text-[#C4973F]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#C4973F]" /> Live
-                        </span>
+                    </div>
+                    {/* Upgrade overlay */}
+                    <div className="absolute inset-0 z-10 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.6)', backdropFilter: 'blur(4px)' }}>
+                      <div className="max-w-md w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
+                        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
+                          <Icon name="lock" className="h-7 w-7" />
+                        </div>
+                        <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations Tier</div>
+                        <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Your complete back office running itself.</h4>
+                        <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
+                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
+                          From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
+                        </div>
+                        <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                          Upgrade to Full Operations →
+                        </a>
                       </div>
-                      {feedItems.slice(0, 6).map(item => (
-                        <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-3.5 last:border-b-0">
-                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-4 w-4" /></div>
-                          <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
-                          <div className="min-w-0 flex-1">
-                            <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
-                            <div className="mt-0.5 truncate text-xs text-[#8A8278]">{item.detail}</div>
+                    </div>
+                  </div>
+                )}
+
+                {tier !== 'fullops' && (
+                  <>
+                    <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                      <div>
+                        <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">
+                          {tier === 'fullsystem' ? 'Full System · Overview' : 'Overview'}
+                        </p>
+                        <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Clinic command centre</h2>
+                      </div>
+                      <p className="max-w-md text-sm leading-7 text-[#8A8278]">A live view of what Lumio has captured, handled, and protected this week.</p>
+                    </div>
+
+                    {/* Metric cards — 2×2 on mobile, 4 cols on xl */}
+                    <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+                      {METRIC_CARDS.map(card => (
+                        <div key={card.label}
+                          className="relative min-h-[200px] overflow-hidden rounded-[2rem] border-l-[3px] border-[#C4973F] p-5 shadow-[0_8px_40px_rgba(26,24,20,.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(26,24,20,.10)]"
+                          style={{ backgroundColor: card.bg }}>
+                          <span className="absolute top-4 right-4 text-4xl font-black leading-none select-none" style={{ color: card.arrowColor }}>
+                            {card.arrow}
+                          </span>
+                          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/60 text-[#C4973F] shadow-inner">
+                            <Icon name={card.icon} className="h-5 w-5" />
                           </div>
-                          <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#5B8A68]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" /> Done
-                          </div>
+                          <div className="mt-4 font-display text-4xl md:text-5xl font-black leading-none tracking-[-0.04em] text-[#1A1814]">{card.value}</div>
+                          <p className="mt-2 text-xs md:text-sm font-bold text-[#1A1814]">{card.label}</p>
+                          <p className="mt-1 text-[11px] leading-5 text-[#8A8278] hidden sm:block">{card.note}</p>
+                          <div className="mt-3 text-[10px] font-bold uppercase tracking-[.14em]" style={{ color: card.trendColor }}>{card.trend}</div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="flex flex-col gap-6">
-                      {/* Health bars */}
+                    <div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
+                      {/* Live feed */}
+                      <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
+                        <div className="mb-4 flex items-center justify-between">
+                          <h3 className="font-display text-2xl font-black tracking-[-0.04em]">Today&apos;s automation activity</h3>
+                          <span className="flex items-center gap-1.5 rounded-full bg-[#FFF4DD] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.15em] text-[#C4973F]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#C4973F]" /> Live
+                          </span>
+                        </div>
+                        {feedItems.slice(0, 6).map(item => (
+                          <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-3.5 last:border-b-0">
+                            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-4 w-4" /></div>
+                            <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
+                              <div className="mt-0.5 truncate text-xs text-[#8A8278]">{item.detail}</div>
+                            </div>
+                            <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#5B8A68]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" /> Done
+                            </div>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => setTab('activity')}
+                          className="mt-4 w-full text-center text-xs font-bold text-[#C4973F] hover:text-[#E8B44B] transition-colors py-2">
+                          View full activity log →
+                        </button>
+                      </div>
+
+                      {/* Automation health */}
                       <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
                         <div className="mb-5 flex items-center justify-between">
                           <h3 className="font-display text-2xl font-black tracking-[-0.04em]">Automation health</h3>
@@ -442,337 +521,331 @@ export default function DemoPage() {
                           <ProgressBar label="Review generation" value={81} />
                         </div>
                       </div>
-                      {/* Lumi CTA */}
-                      <button type="button" onClick={() => setLumiOpen(true)}
-                        className="group rounded-[2.2rem] border border-[#C4973F]/25 p-6 text-left transition hover:border-[#C4973F]/50 shadow-[0_26px_90px_rgba(26,24,20,.12)]"
-                        style={{ backgroundColor: '#1A1814' }}>
-                        <div className="flex items-start gap-4">
-                          <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[1.4rem] border border-[#C4973F]/25 bg-[#C4973F]/12">
-                            <div className="absolute h-7 w-7 rounded-full bg-[#E8B44B]/30 blur-lg" />
-                            <div className="relative h-3.5 w-3.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 25px rgba(232,180,75,.95)' }} />
-                          </div>
+                    </div>
+
+                    {/* Intelligence panel */}
+                    <div className="relative overflow-hidden rounded-[2.4rem] border border-[#C4973F]/25 p-7 text-[#FFFDF8] shadow-[0_35px_120px_rgba(26,24,20,.24)]" style={{ backgroundColor: '#1A1814' }}>
+                      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C4973F]/25 blur-3xl" />
+                      <div className="pointer-events-none absolute -bottom-32 left-6 h-72 w-72 rounded-full bg-[#E8B44B]/10 blur-3xl" />
+                      <div className="relative z-10">
+                        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                           <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <LiveDot />
-                              <span className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#E8B44B]">Lumio AI</span>
+                            <div className="inline-flex items-center gap-2 rounded-full border border-[#C4973F]/20 bg-white/[.05] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">
+                              <LiveDot /> Lumio Intelligence
                             </div>
-                            <p className="font-display text-lg font-black text-[#FFFDF8] leading-tight">Ask Lumio about your clinic</p>
-                            <p className="mt-1.5 text-xs text-[#FFFDF8]/45 group-hover:text-[#FFFDF8]/65 transition-colors">Which clients need rebooking? →</p>
+                            <h3 className="mt-4 font-display text-3xl font-black leading-[1.05] tracking-[-0.04em] text-[#FFFDF8] md:text-4xl">
+                              Like having your<span className="italic text-[#E8B44B]"> best operator </span>inside the clinic.
+                            </h3>
                           </div>
+                        </div>
+                        <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
+                          <div className="space-y-4">
+                            <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
+                              <div className="mb-3 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
+                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">2 seconds ago</div></div>
+                              </div>
+                              <p className="text-sm leading-7 text-[#FFFDF8]/72">Instagram DM automation paused Friday 6pm to Monday 9am. I&apos;ll resume automatically.</p>
+                              <div className="mt-3 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3">
+                                <p className="text-xs leading-6 text-[#FFFDF8]/62">Want me to add an out-of-office message in the meantime?</p>
+                              </div>
+                            </div>
+                            <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
+                              <div className="mb-3 flex items-center gap-3">
+                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F0EDF8] text-[#C4973F]"><Icon name="mail" className="h-5 w-5" /></div>
+                                <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
+                              </div>
+                              <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm leading-7 text-[#FFFDF8]/72">
+                                &ldquo;Hi! We&apos;re at a training event this weekend and will be back Monday morning. Drop us a message and we&apos;ll get back to you first thing 🌟&rdquo;
+                              </div>
+                            </div>
+                          </div>
+                          <div className="rounded-[1.8rem] border border-white/10 bg-white/[.05] p-5 backdrop-blur-xl">
+                            <div className="mb-4 flex items-center justify-between gap-3">
+                              <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">Client retention</div><h4 className="mt-1.5 font-display text-2xl font-black tracking-[-0.04em] text-[#FFFDF8]">Needs rebooking</h4></div>
+                              <span className="rounded-full border border-white/10 bg-white/[.04] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#FFFDF8]/55">4 clients</span>
+                            </div>
+                            <div className="space-y-2.5">
+                              {[['Emma Wilson', '7 weeks'], ['Sophie Carter', '6 weeks'], ['Olivia Bennett', '8 weeks'], ['Charlotte Hayes', '6 weeks']].map(([name, ago]) => (
+                                <div key={name} className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/10 px-4 py-3 hover:border-[#C4973F]/35 hover:bg-white/[.04] transition-all">
+                                  <div><div className="text-sm font-bold text-[#FFFDF8]">{name}</div><div className="text-xs text-[#FFFDF8]/45">Last visit · {ago} ago</div></div>
+                                  <button
+                                    onClick={() => openLumi(`Send a rebooking message to ${name} who hasn't visited in ${ago}`)}
+                                    className="rounded-xl bg-[#C4973F] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                                    Send
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mt-4 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3 flex items-start gap-2">
+                              <div className="mt-0.5 text-[#E8B44B] shrink-0"><Icon name="pulse" className="h-4 w-4" /></div>
+                              <p className="text-xs leading-6 text-[#FFFDF8]/65">Lumio predicts 68% chance of recovering 2+ clients with a check-in sequence this evening.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Full System extra conversations prompt */}
+                    {tier === 'fullsystem' && (
+                      <div className="rounded-[2.2rem] border border-[#C4973F]/25 bg-[#FFF4DD]/40 p-6">
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                          <div>
+                            <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#C4973F]">Full System — Included</p>
+                            <h3 className="mt-1 font-display text-2xl font-black tracking-[-0.04em]">AI-handled conversations</h3>
+                            <p className="mt-1 text-sm text-[#8A8278]">Every Instagram DM, website enquiry and WhatsApp — answered by Lumio on your behalf.</p>
+                          </div>
+                          <button type="button" onClick={() => setTab('conversations')}
+                            className="rounded-full bg-[#C4973F] px-6 py-3 text-xs font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
+                            View conversations →
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── Activity ─────────────────────────────────────── */}
+            {tab === 'activity' && (
+              <div className="space-y-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Live Activity</p>
+                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Everything that happened</h2>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { key: 'all', label: 'All' }, { key: 'lead', label: 'Leads' }, { key: 'booking', label: 'Bookings' },
+                      { key: 'noshow', label: 'No-shows' }, { key: 'review', label: 'Reviews' }, { key: 'admin', label: 'Admin' },
+                    ].map(f => (
+                      <button key={f.key} type="button" onClick={() => setActFilter(f.key)}
+                        className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[.12em] transition-all ${actFilter === f.key ? 'bg-[#C4973F] text-[#1A1814]' : 'bg-[#F9EDE8] text-[#8A8278] hover:bg-[#F0EDF8]'}`}>
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
+                  {filteredFeed.map(item => (
+                    <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-4 last:border-b-0">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-5 w-5" /></div>
+                      <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
+                        <div className="mt-0.5 text-xs text-[#8A8278] truncate sm:whitespace-normal">{item.detail}</div>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#5B8A68] shrink-0">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" /> Completed
+                      </div>
+                    </div>
+                  ))}
+                  {filteredFeed.length === 0 && <div className="py-12 text-center text-sm text-[#8A8278]">No activity in this category today.</div>}
+                </div>
+              </div>
+            )}
+
+            {/* ── Conversations ────────────────────────────────── */}
+            {tab === 'conversations' && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
+                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumio</h2>
+                </div>
+                <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+                  <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                    {CONVOS.map(c => (
+                      <button key={c.id} type="button" onClick={() => setSelectedConvo(c.id)}
+                        className={`w-full flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] p-5 text-left transition-all last:border-b-0 ${selectedConvo === c.id ? 'bg-[#FFF4DD]' : 'hover:bg-[#F9EDE8]/50'}`}>
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
+                          {c.name.split(' ').map(w => w[0]).join('')}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-bold text-[#1A1814]">{c.name}</span>
+                            <span className="text-xs text-[#8A8278] shrink-0">{c.time}</span>
+                          </div>
+                          <div className="mt-0.5 text-xs text-[#8A8278] truncate">{c.preview}</div>
                         </div>
                       </button>
-                    </div>
-                  </div>
-
-                  {/* Intelligence panel */}
-                  <div className="relative overflow-hidden rounded-[2.4rem] border border-[#C4973F]/25 p-7 text-[#FFFDF8] shadow-[0_35px_120px_rgba(26,24,20,.24)]" style={{ backgroundColor: '#1A1814' }}>
-                    <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C4973F]/25 blur-3xl" />
-                    <div className="pointer-events-none absolute -bottom-32 left-6 h-72 w-72 rounded-full bg-[#E8B44B]/10 blur-3xl" />
-                    <div className="relative z-10">
-                      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <div className="inline-flex items-center gap-2 rounded-full border border-[#C4973F]/20 bg-white/[.05] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">
-                            <LiveDot /> Lumio Intelligence
-                          </div>
-                          <h3 className="mt-4 font-display text-3xl font-black leading-[1.05] tracking-[-0.04em] text-[#FFFDF8] md:text-4xl">
-                            Like having your<span className="italic text-[#E8B44B]"> best operator </span>inside the clinic.
-                          </h3>
-                        </div>
-                      </div>
-                      <div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]">
-                        <div className="space-y-4">
-                          <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
-                            <div className="mb-3 flex items-center gap-3">
-                              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
-                              <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">2 seconds ago</div></div>
-                            </div>
-                            <p className="text-sm leading-7 text-[#FFFDF8]/72">Instagram DM automation paused Friday 6pm to Monday 9am. I&apos;ll resume automatically.</p>
-                            <div className="mt-3 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3">
-                              <p className="text-xs leading-6 text-[#FFFDF8]/62">Want me to add an out-of-office message in the meantime?</p>
-                            </div>
-                          </div>
-                          <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
-                            <div className="mb-3 flex items-center gap-3">
-                              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F0EDF8] text-[#C4973F]"><Icon name="mail" className="h-5 w-5" /></div>
-                              <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumio</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
-                            </div>
-                            <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm leading-7 text-[#FFFDF8]/72">
-                              &ldquo;Hi! We&apos;re at a training event this weekend and will be back Monday morning. Drop us a message and we&apos;ll get back to you first thing 🌟&rdquo;
-                            </div>
-                          </div>
-                        </div>
-                        <div className="rounded-[1.8rem] border border-white/10 bg-white/[.05] p-5 backdrop-blur-xl">
-                          <div className="mb-4 flex items-center justify-between gap-3">
-                            <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">Client retention</div><h4 className="mt-1.5 font-display text-2xl font-black tracking-[-0.04em] text-[#FFFDF8]">Needs rebooking</h4></div>
-                            <span className="rounded-full border border-white/10 bg-white/[.04] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#FFFDF8]/55">4 clients</span>
-                          </div>
-                          <div className="space-y-2.5">
-                            {[['Emma Wilson', '7 weeks'], ['Sophie Carter', '6 weeks'], ['Olivia Bennett', '8 weeks'], ['Charlotte Hayes', '6 weeks']].map(([name, ago]) => (
-                              <div key={name} className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/10 px-4 py-3 hover:border-[#C4973F]/35 hover:bg-white/[.04] transition-all">
-                                <div><div className="text-sm font-bold text-[#FFFDF8]">{name}</div><div className="text-xs text-[#FFFDF8]/45">Last visit · {ago} ago</div></div>
-                                <button className="rounded-xl bg-[#C4973F] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">Send</button>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mt-4 rounded-2xl border border-[#C4973F]/15 bg-[#C4973F]/10 p-3 flex items-start gap-2">
-                            <div className="mt-0.5 text-[#E8B44B] shrink-0"><Icon name="pulse" className="h-4 w-4" /></div>
-                            <p className="text-xs leading-6 text-[#FFFDF8]/65">Lumio predicts 68% chance of recovering 2+ clients with a check-in sequence this evening.</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-5 rounded-[1.8rem] border border-white/10 bg-white/[.04] p-3 backdrop-blur-xl">
-                        <div className="flex items-center gap-3 rounded-[1.4rem] border border-white/10 bg-black/10 px-4 py-3">
-                          <div className="relative grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-[#FFF4DD]">
-                            <div className="absolute h-4 w-4 rounded-full bg-[#E8B44B]/40 blur-sm" />
-                            <div className="relative h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 20px rgba(232,180,75,.95)' }} />
-                          </div>
-                          <button onClick={() => setLumiOpen(true)} className="flex-1 text-left text-sm text-[#FFFDF8]/40 hover:text-[#FFFDF8]/65 transition-colors">
-                            Ask Lumio anything or give it a task...
-                          </button>
-                          <button onClick={() => setLumiOpen(true)} className="rounded-2xl bg-[#C4973F] px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                            Open
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── Activity ─────────────────────────────────────── */}
-              {tab === 'activity' && (
-                <div className="space-y-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Live Activity</p>
-                      <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Everything that happened</h2>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { key: 'all', label: 'All' }, { key: 'lead', label: 'Leads' }, { key: 'booking', label: 'Bookings' },
-                        { key: 'noshow', label: 'No-shows' }, { key: 'review', label: 'Reviews' }, { key: 'admin', label: 'Admin' },
-                      ].map(f => (
-                        <button key={f.key} type="button" onClick={() => setActFilter(f.key)}
-                          className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[.12em] transition-all ${actFilter === f.key ? 'bg-[#C4973F] text-[#1A1814]' : 'bg-[#F9EDE8] text-[#8A8278] hover:bg-[#F0EDF8]'}`}>
-                          {f.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
-                    {filteredFeed.map(item => (
-                      <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-4 last:border-b-0">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-5 w-5" /></div>
-                        <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
-                          <div className="mt-0.5 truncate text-xs text-[#8A8278] sm:whitespace-normal">{item.detail}</div>
-                        </div>
-                        <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#5B8A68]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" /> Completed
-                        </div>
-                      </div>
                     ))}
-                    {filteredFeed.length === 0 && <div className="py-12 text-center text-sm text-[#8A8278]">No activity in this category today.</div>}
                   </div>
-                </div>
-              )}
-
-              {/* ── Conversations ────────────────────────────────── */}
-              {tab === 'conversations' && (
-                <div className="space-y-6">
-                  <div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
-                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumio</h2>
-                  </div>
-                  <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
-                      {CONVOS.map(c => (
-                        <button key={c.id} type="button" onClick={() => setSelectedConvo(c.id)}
-                          className={`w-full flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] p-5 text-left transition-all last:border-b-0 ${selectedConvo === c.id ? 'bg-[#FFF4DD]' : 'hover:bg-[#F9EDE8]/50'}`}>
-                          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
-                            {c.name.split(' ').map(w => w[0]).join('')}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-sm font-bold text-[#1A1814]">{c.name}</span>
-                              <span className="text-xs text-[#8A8278] shrink-0">{c.time}</span>
-                            </div>
-                            <div className="mt-0.5 text-xs text-[#8A8278] truncate">{c.preview}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                    {currentConvo && (
-                      <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 flex flex-col overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
-                        <div className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.08)] px-6 py-4">
-                          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
-                            {currentConvo.name.split(' ').map(w => w[0]).join('')}
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-bold text-[#1A1814]">{currentConvo.name}</div>
-                            <div className="text-xs text-[#8A8278]">via {currentConvo.channel} · Handled by Lumio</div>
-                          </div>
-                          <Pill status="Completed" />
+                  {currentConvo && (
+                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 flex flex-col overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                      <div className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.08)] px-6 py-4">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
+                          {currentConvo.name.split(' ').map(w => w[0]).join('')}
                         </div>
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[480px]">
-                          {currentConvo.messages.map((msg, i) => (
-                            <div key={i} className={`flex gap-3 ${msg.role === 'client' ? 'flex-row-reverse' : ''}`}>
-                              {msg.role === 'lumio' && (
-                                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-2xl mt-1" style={{ backgroundColor: '#1A1814' }}>
-                                  <div className="h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 12px rgba(232,180,75,.9)' }} />
-                                </div>
-                              )}
-                              <div className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'lumio' ? 'text-[#FFFDF8]/80 rounded-tl-sm' : 'bg-[#F9EDE8] text-[#1A1814] rounded-tr-sm'}`}
-                                style={msg.role === 'lumio' ? { backgroundColor: '#1A1814' } : undefined}>
-                                {msg.text}
+                        <div className="flex-1">
+                          <div className="font-bold text-[#1A1814]">{currentConvo.name}</div>
+                          <div className="text-xs text-[#8A8278]">via {currentConvo.channel} · Handled by Lumio</div>
+                        </div>
+                        <StatusPill status="Completed" />
+                      </div>
+                      <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[480px]">
+                        {currentConvo.messages.map((msg, i) => (
+                          <div key={i} className={`flex gap-3 ${msg.role === 'client' ? 'flex-row-reverse' : ''}`}>
+                            {msg.role === 'lumio' && (
+                              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-2xl mt-1" style={{ backgroundColor: '#1A1814' }}>
+                                <div className="h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 12px rgba(232,180,75,.9)' }} />
                               </div>
+                            )}
+                            <div className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'lumio' ? 'text-[#FFFDF8]/80 rounded-tl-sm' : 'bg-[#F9EDE8] text-[#1A1814] rounded-tr-sm'}`}
+                              style={msg.role === 'lumio' ? { backgroundColor: '#1A1814' } : undefined}>
+                              {msg.text}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* ── Clients ──────────────────────────────────────── */}
-              {tab === 'clients' && (
-                <div className="space-y-6">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
-                      <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Your client base</h2>
-                    </div>
-                    <p className="text-sm text-[#8A8278]">{CLIENTS.length} clients · click a row to view</p>
-                  </div>
-                  <div className={`grid gap-6 ${selectedClient ? 'xl:grid-cols-[1fr_380px]' : ''}`}>
-                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
-                      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 bg-[#F9EDE8]/55 px-6 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">
-                        <div>Client</div><div className="hidden sm:block">Last visit</div><div>Bookings</div><div className="hidden sm:block">Status</div>
-                      </div>
-                      {CLIENTS.map(client => (
-                        <button key={client.id} type="button"
-                          onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
-                          className={`w-full grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center border-t border-[rgba(26,24,20,0.06)] px-6 py-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
-                          <div className="flex items-center gap-3">
-                            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
-                            <div><div className="font-bold text-[#1A1814]">{client.name}</div><div className="text-xs text-[#8A8278]">{client.spend} · via {client.channel}</div></div>
                           </div>
-                          <div className="hidden text-sm text-[#8A8278] sm:block">{client.lastVisit}</div>
-                          <div className="text-sm font-bold text-[#1A1814]">{client.bookings}</div>
-                          <div className="hidden sm:block"><Pill status={client.status} /></div>
-                        </button>
-                      ))}
-                    </div>
-                    {currentClient && (
-                      <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] h-fit">
-                        <div className="flex items-start justify-between mb-6">
-                          <div className="flex items-center gap-3">
-                            <div className="grid h-14 w-14 place-items-center rounded-2xl font-display text-xl font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{currentClient.initials}</div>
-                            <div><div className="font-display text-xl font-black text-[#1A1814]">{currentClient.name}</div><div className="mt-1"><Pill status={currentClient.status} /></div></div>
-                          </div>
-                          <button onClick={() => setSelectedClient(null)} className="text-[#8A8278] hover:text-[#1A1814] transition-colors p-1">
-                            <Icon name="x" className="h-5 w-5" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 mb-5">
-                          {[['Bookings', String(currentClient.bookings)], ['Total spend', currentClient.spend], ['Last visit', currentClient.lastVisit], ['Next appt', currentClient.nextAppt]].map(([label, val]) => (
-                            <div key={label} className="rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/40 p-4">
-                              <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278]">{label}</div>
-                              <div className="mt-1 font-display text-lg font-black text-[#1A1814]">{val}</div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mb-4">
-                          <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-2">Treatments</div>
-                          <div className="flex flex-wrap gap-2">{currentClient.treatments.map(t => <span key={t} className="rounded-full bg-[#FFF4DD] px-3 py-1.5 text-xs font-bold text-[#C4973F]">{t}</span>)}</div>
-                        </div>
-                        <div className="mb-5">
-                          <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-1">Contact</div>
-                          <div className="text-sm text-[#1A1814]">{currentClient.phone}</div>
-                        </div>
-                        <button className="w-full rounded-2xl bg-[#C4973F] px-4 py-3 text-xs font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                          Send rebooking message →
-                        </button>
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* ── Admin Hub (locked) ───────────────────────────── */}
-              {tab === 'admin' && (
-                <div className="space-y-6">
+            {/* ── Clients ──────────────────────────────────────── */}
+            {tab === 'clients' && (
+              <div className="space-y-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Operations Suite</p>
-                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">A back office that runs itself.</h2>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
+                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Your client base</h2>
                   </div>
-                  <div className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(26,24,20,0.08)] shadow-[0_35px_120px_rgba(26,24,20,.08)]">
-                    <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(3px)' }}>
-                      <div className="grid gap-6 xl:grid-cols-2">
+                  <p className="text-sm text-[#8A8278]">{CLIENTS.length} clients · click a row to view</p>
+                </div>
+                <div className={`grid gap-6 ${selectedClient ? 'xl:grid-cols-[1fr_380px]' : ''}`}>
+                  <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                    <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 bg-[#F9EDE8]/55 px-6 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">
+                      <div>Client</div><div className="hidden sm:block">Last visit</div><div>Bookings</div><div className="hidden sm:block">Status</div>
+                    </div>
+                    {CLIENTS.map(client => (
+                      <button key={client.id} type="button"
+                        onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
+                        className={`w-full grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center border-t border-[rgba(26,24,20,0.06)] px-6 py-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
+                          <div><div className="font-bold text-[#1A1814]">{client.name}</div><div className="text-xs text-[#8A8278]">{client.spend} · via {client.channel}</div></div>
+                        </div>
+                        <div className="hidden text-sm text-[#8A8278] sm:block">{client.lastVisit}</div>
+                        <div className="text-sm font-bold text-[#1A1814]">{client.bookings}</div>
+                        <div className="hidden sm:block"><StatusPill status={client.status} /></div>
+                      </button>
+                    ))}
+                  </div>
+                  {currentClient && (
+                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] h-fit">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className="grid h-14 w-14 place-items-center rounded-2xl font-display text-xl font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{currentClient.initials}</div>
+                          <div><div className="font-display text-xl font-black text-[#1A1814]">{currentClient.name}</div><div className="mt-1"><StatusPill status={currentClient.status} /></div></div>
+                        </div>
+                        <button onClick={() => setSelectedClient(null)} className="text-[#8A8278] hover:text-[#1A1814] transition-colors p-1">
+                          <Icon name="x" className="h-5 w-5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 mb-5">
+                        {[['Bookings', String(currentClient.bookings)], ['Total spend', currentClient.spend], ['Last visit', currentClient.lastVisit], ['Next appt', currentClient.nextAppt]].map(([label, val]) => (
+                          <div key={label} className="rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/40 p-4">
+                            <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278]">{label}</div>
+                            <div className="mt-1 font-display text-lg font-black text-[#1A1814]">{val}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mb-4">
+                        <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-2">Treatments</div>
+                        <div className="flex flex-wrap gap-2">{currentClient.treatments.map(t => <span key={t} className="rounded-full bg-[#FFF4DD] px-3 py-1.5 text-xs font-bold text-[#C4973F]">{t}</span>)}</div>
+                      </div>
+                      <div className="mb-5">
+                        <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-1">Channel</div>
+                        <div className="text-sm text-[#1A1814]">via {currentClient.channel}</div>
+                      </div>
+                      <button
+                        onClick={() => openLumi(`Draft a rebooking message for ${currentClient.name} who last visited ${currentClient.lastVisit} and spends ${currentClient.spend} with us. Their treatments include ${currentClient.treatments.join(', ')}.`)}
+                        className="w-full rounded-2xl bg-[#C4973F] px-4 py-3 text-xs font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                        Send rebooking message →
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── Admin Hub (locked) ───────────────────────────── */}
+            {tab === 'admin' && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Operations Suite</p>
+                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">A back office that runs itself.</h2>
+                </div>
+                <div className="relative overflow-hidden rounded-[2.5rem] border border-[rgba(26,24,20,0.08)] shadow-[0_35px_120px_rgba(26,24,20,.08)]">
+                  <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(3px)' }}>
+                    <div className="grid gap-6 xl:grid-cols-2">
+                      <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
+                        <div className="mb-5 flex items-center justify-between">
+                          <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
+                          <StatusPill status="Sent" />
+                        </div>
+                        {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
+                          <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                            <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
+                            <StatusPill status={status} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="space-y-4">
                         <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                          <div className="mb-5 flex items-center justify-between">
-                            <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
-                            <Pill status="Sent" />
-                          </div>
-                          {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
-                            <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
-                              <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
-                              <Pill status={status} />
+                          <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-3xl font-black">Auto-chasing</h4></div>
+                          {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
+                            <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
+                              <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
+                              <StatusPill status={status} />
                             </div>
                           ))}
                         </div>
-                        <div className="space-y-4">
-                          <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                            <div className="mb-4 flex items-center justify-between"><div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-3xl font-black">Auto-chasing</h4></div></div>
-                            {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
-                              <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
-                                <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
-                                <Pill status={status} />
-                              </div>
-                            ))}
-                          </div>
-                          <div className="rounded-[2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
-                            <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
-                            <div className="mt-4 grid grid-cols-2 gap-4">
-                              <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
-                              <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
-                            </div>
+                        <div className="rounded-[2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
+                          <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
+                          <div className="mt-4 grid grid-cols-2 gap-4">
+                            <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                            <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    {/* Lock overlay */}
-                    <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.5)', backdropFilter: 'blur(2px)' }}>
-                      <div className="max-w-sm w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
-                        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
-                          <Icon name="lock" className="h-7 w-7" />
-                        </div>
-                        <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations</div>
-                        <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
-                        <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
-                        <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
-                          From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
-                        </div>
-                        <a href="/audit" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                          Get your free clinic audit →
-                        </a>
                       </div>
                     </div>
                   </div>
+                  <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.5)', backdropFilter: 'blur(2px)' }}>
+                    <div className="max-w-sm w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
+                      <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
+                        <Icon name="lock" className="h-7 w-7" />
+                      </div>
+                      <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations</div>
+                      <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
+                      <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
+                      <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
+                        From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
+                      </div>
+                      <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                        Upgrade to Full Operations →
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
+            )}
 
-            </div>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
 
-      {/* Lumi slide-over */}
-      {lumiOpen && <div className="fixed inset-0 z-50 bg-black/20 lg:bg-transparent" onClick={() => setLumiOpen(false)} />}
-      <div className={`fixed right-0 top-0 z-50 h-full w-full max-w-[400px] flex flex-col shadow-[-30px_0_80px_rgba(26,24,20,.2)] transition-transform duration-300 ${lumiOpen ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ backgroundColor: '#1A1814' }}>
+      {/* Lumio AI slide-over — overlays content, never pushes it */}
+      {lumiOpen && (
+        <div className="fixed inset-0 z-[60] bg-black/20" onClick={() => setLumiOpen(false)} />
+      )}
+      <div
+        className={`fixed right-0 top-0 z-[61] h-full w-full sm:max-w-[420px] flex flex-col shadow-[-30px_0_80px_rgba(26,24,20,.25)] transition-transform duration-300 ${lumiOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        style={{ backgroundColor: '#1A1814' }}
+        onClick={e => e.stopPropagation()}
+      >
         <div className="pointer-events-none absolute -left-20 top-20 h-64 w-64 rounded-full bg-[#C4973F]/15 blur-3xl" />
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4 shrink-0">
@@ -784,7 +857,11 @@ export default function DemoPage() {
               <div className="font-bold text-[#FFFDF8]">Lumio AI</div>
               <div className="text-xs text-[#FFFDF8]/45">Ask anything about your clinic</div>
             </div>
-            <button onClick={() => setLumiOpen(false)} className="text-[#FFFDF8]/40 hover:text-[#FFFDF8]/80 transition-colors p-1">
+            <button
+              onClick={() => setLumiOpen(false)}
+              className="grid h-9 w-9 place-items-center rounded-xl text-[#FFFDF8]/40 hover:text-[#FFFDF8]/80 hover:bg-white/10 transition-all"
+              aria-label="Close Lumio AI panel"
+            >
               <Icon name="x" className="h-5 w-5" />
             </button>
           </div>
@@ -807,10 +884,13 @@ export default function DemoPage() {
                     <div className="h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 12px rgba(232,180,75,.9)' }} />
                   </div>
                 )}
-                <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'bg-white/[.07] text-[#FFFDF8]/80 rounded-tl-sm' : 'bg-[#C4973F] text-[#1A1814] font-semibold rounded-tr-sm'}`}>
+                <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'bg-white/[.07] text-[#FFFDF8]/85 rounded-tl-sm' : 'bg-[#C4973F] text-[#1A1814] font-semibold rounded-tr-sm'}`}>
                   {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
                     ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#E8B44B] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
-                    : msg.content}
+                    : msg.role === 'assistant'
+                      ? <ReactMarkdown components={MD as never}>{msg.content}</ReactMarkdown>
+                      : msg.content
+                  }
                 </div>
               </div>
             ))}
@@ -820,6 +900,7 @@ export default function DemoPage() {
               <input
                 value={lumiInput} onChange={e => setLumiInput(e.target.value)}
                 placeholder="Ask Lumio anything..."
+                style={{ fontSize: '16px' }}
                 className="flex-1 rounded-2xl border border-white/15 bg-white/[.07] px-4 py-3 text-sm text-[#FFFDF8] placeholder:text-[#FFFDF8]/35 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
               />
               <button type="submit" disabled={!lumiInput.trim() || lumiLoading}
@@ -833,7 +914,7 @@ export default function DemoPage() {
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(26,24,20,0.08)] lg:hidden"
-        style={{ backgroundColor: 'rgba(255,253,248,0.95)', backdropFilter: 'blur(20px)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        style={{ backgroundColor: 'rgba(255,253,248,0.96)', backdropFilter: 'blur(20px)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="grid grid-cols-5 gap-1 p-2">
           {[
             { id: 'overview' as Tab, icon: 'overview', label: 'Home' },
@@ -847,7 +928,7 @@ export default function DemoPage() {
               {label}
             </button>
           ))}
-          <button type="button" onClick={() => setLumiOpen(true)}
+          <button type="button" onClick={() => openLumi()}
             className="grid place-items-center gap-1 rounded-2xl px-2 py-2.5 text-[10px] font-bold text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
             <Icon name="spark" className="h-4 w-4" />
             Lumio
@@ -855,16 +936,20 @@ export default function DemoPage() {
         </div>
       </nav>
 
-      {/* Desktop CTA pill */}
+      {/* Desktop sticky CTA — smart: changes when coming from reveal */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden lg:block">
-        <a href="/audit"
-          className="flex items-center gap-4 rounded-full border border-[rgba(26,24,20,0.1)] px-6 py-3 shadow-[0_20px_60px_rgba(26,24,20,.1)] backdrop-blur-xl hover:shadow-[0_20px_60px_rgba(196,151,63,.15)] transition-all"
+        <div className="flex items-center gap-4 rounded-full border border-[rgba(26,24,20,0.1)] px-6 py-3 shadow-[0_20px_60px_rgba(26,24,20,.1)] backdrop-blur-xl hover:shadow-[0_20px_60px_rgba(196,151,63,.15)] transition-all"
           style={{ backgroundColor: 'rgba(255,253,248,0.92)' }}>
-          <span className="text-sm font-semibold text-[#1A1814]">Ready to see this in your clinic?</span>
-          <span className="rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-            Get your free audit →
+          <span className="text-sm font-semibold text-[#1A1814]">
+            {fromReveal ? 'Ready to get started? No call needed.' : 'Ready to see this in your clinic?'}
           </span>
-        </a>
+          <a
+            href={fromReveal ? '/#pricing' : '/audit'}
+            className="rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap"
+          >
+            {fromReveal ? 'View pricing →' : 'Get your free reveal →'}
+          </a>
+        </div>
       </div>
 
     </div>

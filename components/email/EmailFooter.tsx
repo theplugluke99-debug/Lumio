@@ -69,7 +69,7 @@ export default function EmailFooter() {
           <tr>
             <td style={s.ctaCell}>
               <a href="https://lumio.london/audit" style={s.ctaButton}>
-                Get your free clinic audit →
+                Get your free clinic reveal →
               </a>
             </td>
           </tr>
