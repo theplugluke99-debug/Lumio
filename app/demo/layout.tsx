@@ -1,26 +1,19 @@
-import { Inter, DM_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 
-const inter = Inter({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-});
-
-const dmMono = DM_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['400', '500'],
+  variable: '--font-jakarta',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${inter.variable} ${dmMono.variable}`}>
+    <div className={jakarta.variable}>
       <style>{`
-        .demo-wrapper {
-          --font-display: var(--font-inter);
-          font-family: var(--font-inter), system-ui, sans-serif;
+        .demo-wrapper,
+        .demo-wrapper * {
+          font-family: var(--font-jakarta), sans-serif !important;
         }
         .demo-wrapper, .demo-wrapper * {
           cursor: default !important;
