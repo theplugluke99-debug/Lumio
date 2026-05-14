@@ -192,7 +192,8 @@ export default function DemoPage() {
   const [lumiLoading, setLumiLoading] = useState(false);
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
-  const [lumiDark, setLumiDark] = useState(true);
+  const [lumiDark, setLumiDark] = useState(false);
+  const [showPills, setShowPills] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [hasSpeech, setHasSpeech] = useState(false);
   const feedIdx = useRef(0);
@@ -229,7 +230,7 @@ export default function DemoPage() {
 
   useEffect(() => {
     if (lumiOpen && lumiMsgs.length === 0) {
-      setLumiMsgs([{ role: 'assistant', content: "Hi ✦ I'm Lumi — I run the automations for this clinic.\n\n**This week I've handled:**\n- 31 new enquiries — all responded to within seconds\n- 19 bookings confirmed automatically\n- 9 no-shows prevented by reminders\n- £4,800 in pipeline protected\n\nAsk me anything, or try one of the options above." }]);
+      setLumiMsgs([{ role: 'assistant', content: "Hi — I run the automations for this clinic.\n\n**This week I've handled:**\n- 31 new enquiries — all responded to within seconds\n- 19 bookings confirmed automatically\n- 9 no-shows prevented by reminders\n- £4,800 in pipeline protected\n\nAsk me anything." }]);
     }
   }, [lumiOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -931,158 +932,222 @@ export default function DemoPage() {
         </main>
       </div>
 
-      {/* Lumi modal backdrop */}
+      {/* Lumi backdrop */}
       <div
-        className={`fixed inset-0 z-50 bg-[#1A1814]/60 backdrop-blur-sm transition-opacity duration-300 ${lumiOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-50 bg-[#1A1814]/50 backdrop-blur-sm transition-opacity duration-200 ${lumiOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setLumiOpen(false)}
       />
 
-      {/* Lumi modal — slides up on mobile, centered on desktop */}
+      {/* Lumi modal */}
       <div
-        className={`fixed z-[51] flex flex-col overflow-hidden
-          inset-x-0 bottom-0 h-[92vh] rounded-t-[2rem]
-          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(560px,92vw)] md:max-h-[78vh] md:h-auto md:rounded-[1.5rem]
-          transition-all duration-200
+        className={`fixed z-[51] flex flex-col overflow-hidden transition-all duration-200
+          inset-0 rounded-none
+          sm:inset-auto sm:top-1/2 sm:left-1/2 sm:w-[min(520px,92vw)] sm:max-h-[80vh] sm:rounded-[2rem]
           ${lumiOpen
-            ? 'translate-y-0 md:-translate-x-1/2 md:-translate-y-1/2 md:scale-100 md:opacity-100'
-            : 'translate-y-full md:-translate-x-1/2 md:-translate-y-1/2 md:scale-95 md:opacity-0 pointer-events-none'}`}
+            ? 'opacity-100 scale-100 sm:-translate-x-1/2 sm:-translate-y-1/2'
+            : 'opacity-0 scale-95 pointer-events-none sm:-translate-x-1/2 sm:-translate-y-1/2'}`}
         style={{
-          boxShadow: '0 40px 120px rgba(26,24,20,0.3)',
-          border: lumiDark ? '1px solid rgba(196,151,63,0.3)' : '1px solid rgba(196,151,63,0.2)',
+          background: lumiDark
+            ? 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.15) 0%, #1A1814 55%)'
+            : 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.1) 0%, #FFFDF8 55%)',
+          border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.3)' : 'rgba(196,151,63,0.15)'}`,
+          boxShadow: '0 40px 120px rgba(26,24,20,0.4)',
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Section A — Identity header */}
-        <div
-          className="relative flex flex-col items-center pt-9 pb-7 px-6 shrink-0"
-          style={{ background: lumiDark ? '#1A1814' : 'linear-gradient(160deg, #FFFDF8 0%, #F9EDE8 100%)' }}
-        >
-          {/* Mode toggle — top left */}
+        {/* Blob decorations */}
+        <div className="pointer-events-none absolute top-0 left-0 w-48 h-48 rounded-full blur-[80px] opacity-20 -translate-x-1/3 -translate-y-1/3" style={{ background: '#C4973F' }} />
+        <div className="pointer-events-none absolute bottom-0 right-0 w-40 h-40 rounded-full blur-[60px] opacity-10 translate-x-1/3 translate-y-1/3" style={{ background: '#C4973F' }} />
+
+        {/* Top bar */}
+        <div className="relative z-10 flex items-center justify-between px-5 pt-5 shrink-0">
           <button
             type="button"
             onClick={() => setLumiDark(d => !d)}
-            className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium transition-all"
+            className="flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium transition-all"
             style={{
               borderColor: 'rgba(196,151,63,0.3)',
-              backgroundColor: lumiDark ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.06)',
-              color: lumiDark ? 'rgba(255,253,248,0.7)' : '#8A8278',
+              backgroundColor: lumiDark ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.05)',
+              color: '#C4973F',
             }}
           >
-            {lumiDark ? '☀ Light' : '☾ Dark'}
+            {lumiDark ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            )}
+            {lumiDark ? 'Light' : 'Dark'}
           </button>
-          {/* Close — top right */}
           <button
             type="button"
             onClick={() => setLumiOpen(false)}
-            className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-xl transition-colors"
+            className="grid h-9 w-9 place-items-center rounded-xl transition-colors"
             style={{ color: lumiDark ? 'rgba(255,253,248,0.45)' : '#8A8278' }}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
+        </div>
 
-          {/* Orb with spinning arc */}
-          <div className="relative flex items-center justify-center mb-5" style={{ width: 160, height: 160 }}>
-            <svg
-              width="160" height="160"
-              style={{ position: 'absolute', top: 0, left: 0, animation: 'lumiSpin 8s linear infinite', transformOrigin: '80px 80px' }}
-            >
-              <path d="M 15 95 A 68 68 0 0 1 145 95" fill="none" stroke="#C4973F" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
-            </svg>
+        {/* Identity */}
+        <div className="relative z-10 flex flex-col items-center pt-5 pb-4 px-6 shrink-0">
+          <div className="relative flex items-center justify-center mb-4" style={{ width: 130, height: 130 }}>
+            <div className="absolute inset-6 rounded-full blur-[28px] opacity-40" style={{ background: '#C4973F' }} />
+            <div className="absolute rounded-full" style={{ width: 120, height: 120, border: '1px solid rgba(196,151,63,0.25)' }} />
+            <div className="absolute rounded-full" style={{ width: 88, height: 88, border: '1px solid rgba(196,151,63,0.2)' }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 120, height: 1, background: 'linear-gradient(90deg, transparent, rgba(196,151,63,0.5), transparent)' }} />
             <div
               className="lumi-breathe relative"
               style={{
-                width: 72, height: 72,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 50%, #8B6420)',
-                zIndex: 1,
+                width: 60, height: 60, borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 55%, #8B6420)',
+                zIndex: 2,
               }}
-            />
+            >
+              <div className="absolute" style={{ top: '16%', left: '18%', width: '32%', height: '28%', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', filter: 'blur(3px)' }} />
+            </div>
           </div>
-
-          <div className="text-[20px] font-bold tracking-[-0.01em]" style={{ color: lumiDark ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
-          <div className="text-[13px] mt-1" style={{ color: lumiDark ? 'rgba(250,247,242,0.5)' : '#8A8278' }}>
+          <div className="lumi-identity-name text-2xl font-black tracking-[-0.02em]" style={{ color: lumiDark ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
+          <div className="text-[10px] font-bold uppercase tracking-[.18em] mt-1" style={{ color: lumiDark ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>
             Your clinic automation assistant
           </div>
         </div>
 
-        {/* Section B — Pills (disappear after first user message) */}
-        {!lumiMsgs.some(m => m.role === 'user') && (
-          <div
-            className="px-4 py-3 flex flex-col gap-2 shrink-0"
-            style={{
-              backgroundColor: lumiDark ? '#111009' : '#FFFDF8',
-              borderBottom: lumiDark ? '1px solid rgba(255,253,248,0.07)' : '1px solid rgba(26,24,20,0.08)',
-            }}
-          >
-            {[
-              { emoji: '📊', label: 'What am I losing this month?' },
-              { emoji: '👥', label: 'Which clients need attention?' },
-              { emoji: '✦', label: 'What can Lumi actually do?' },
-            ].map(({ emoji, label }) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => sendToLumi(label)}
-                className="w-full flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-left transition-all border"
-                style={{
-                  backgroundColor: lumiDark ? 'rgba(255,253,248,0.05)' : 'white',
-                  borderColor: lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.1)',
-                  color: lumiDark ? '#FFFDF8' : '#1A1814',
-                }}
-              >
-                <span style={{ color: '#C4973F', fontSize: 16, lineHeight: 1, minWidth: 20, textAlign: 'center' }}>{emoji}</span>
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Section C — Messages */}
-        <div
-          ref={lumiScrollRef}
-          className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
-          style={{ backgroundColor: lumiDark ? '#111009' : '#FFFDF8', minHeight: 180 }}
-        >
-          {lumiMsgs.map((msg, i) => (
-            <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-              {msg.role === 'assistant' && (
-                <span
-                  className="text-[10px] font-extrabold uppercase tracking-[.16em] px-1"
-                  style={{ color: lumiDark ? '#E8B44B' : '#C4973F' }}
+        {/* Scrollable body */}
+        <div className="relative z-10 flex-1 overflow-y-auto min-h-0">
+          {showPills ? (
+            <>
+              {/* Action buttons 2×2 grid */}
+              <div className="grid grid-cols-2 gap-2.5 px-4 pb-3">
+                <button
+                  type="button"
+                  onClick={() => { setShowPills(false); sendToLumi('What am I losing this month?'); }}
+                  className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  style={{
+                    minHeight: 74, borderRadius: '1.45rem',
+                    backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
+                    border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
+                    boxShadow: lumiDark ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                  }}
                 >
-                  Lumi ✦
-                </span>
-              )}
-              <div
-                className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
-                style={msg.role === 'assistant'
-                  ? { backgroundColor: lumiDark ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: lumiDark ? '#FFFDF8' : '#1A1814' }
-                  : { backgroundColor: lumiDark ? '#C4973F' : '#1A1814', color: lumiDark ? '#1A1814' : '#FFFDF8' }
-                }
-              >
-                {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
-                  ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#C4973F] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
-                  : msg.role === 'assistant'
-                    ? <ReactMarkdown components={MD as never}>{msg.content}</ReactMarkdown>
-                    : msg.content
-                }
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                  <span className="text-sm font-bold leading-tight">What am I losing this month?</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowPills(false); sendToLumi('Which clients need attention?'); }}
+                  className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  style={{
+                    minHeight: 74, borderRadius: '1.45rem',
+                    backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
+                    border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
+                    boxShadow: lumiDark ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <span className="text-sm font-bold leading-tight">Which clients need attention?</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowPills(false); sendToLumi('What can Lumi actually do?'); }}
+                  className="col-span-2 flex items-center gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  style={{
+                    minHeight: 74, borderRadius: '1.45rem',
+                    backgroundColor: lumiDark ? 'rgba(196,151,63,0.1)' : 'rgba(196,151,63,0.06)',
+                    border: '1px solid rgba(196,151,63,0.25)',
+                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                    <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+                  </svg>
+                  <span className="text-sm font-bold leading-tight">What can Lumi actually do?</span>
+                </button>
               </div>
+
+              {/* Stats card */}
+              <div className="relative mx-4 mb-4 rounded-[1.45rem] p-4 overflow-hidden" style={{
+                background: lumiDark ? 'rgba(196,151,63,0.07)' : 'rgba(196,151,63,0.05)',
+                border: '1px solid rgba(196,151,63,0.12)',
+              }}>
+                <svg className="absolute bottom-0 left-0 right-0 w-full opacity-20" height="40" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none">
+                  <path d="M0 20 Q50 5 100 20 T200 20 T300 20 T400 20 V40 H0 Z" fill="#C4973F"/>
+                </svg>
+                <p className="text-[10px] font-bold uppercase tracking-[.16em] mb-3" style={{ color: '#C4973F' }}>This week</p>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.47 2 2 0 0 1 3.56 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>31 enquiries responded to instantly</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>19 bookings confirmed automatically</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>9 no-shows prevented</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div
+              ref={lumiScrollRef}
+              className="px-4 py-3 space-y-4"
+            >
+              {lumiMsgs.map((msg, i) => (
+                <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  {msg.role === 'assistant' && (
+                    <span className="text-[10px] font-extrabold uppercase tracking-[.16em] px-1" style={{ color: lumiDark ? '#E8B44B' : '#C4973F' }}>
+                      Lumi
+                    </span>
+                  )}
+                  <div
+                    className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
+                    style={msg.role === 'assistant'
+                      ? { backgroundColor: lumiDark ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: lumiDark ? '#FFFDF8' : '#1A1814' }
+                      : { backgroundColor: lumiDark ? '#C4973F' : '#1A1814', color: lumiDark ? '#1A1814' : '#FFFDF8' }
+                    }
+                  >
+                    {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
+                      ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#C4973F] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
+                      : msg.role === 'assistant'
+                        ? <ReactMarkdown components={MD as never}>{msg.content}</ReactMarkdown>
+                        : msg.content
+                    }
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
 
-        {/* Section D — Input + mic + send */}
+        {/* Input row */}
         <div
-          className="shrink-0 p-4"
+          className="relative z-10 shrink-0 p-4"
           style={{
-            backgroundColor: lumiDark ? '#1A1814' : '#FFFDF8',
-            borderTop: lumiDark ? '1px solid rgba(255,253,248,0.08)' : '1px solid rgba(26,24,20,0.08)',
+            borderTop: `1px solid ${lumiDark ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}`,
           }}
         >
           {isRecording && (
             <div className="mb-2 text-center text-xs font-medium text-[#C4973F] animate-pulse">Listening...</div>
           )}
-          <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex items-center gap-2">
+          <form onSubmit={e => { e.preventDefault(); setShowPills(false); sendToLumi(lumiInput); }} className="flex items-center gap-2">
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
               placeholder="Ask Lumi anything about your clinic..."
@@ -1098,11 +1163,12 @@ export default function DemoPage() {
               <button
                 type="button"
                 onClick={startRecording}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-all"
+                className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-full border transition-all"
                 style={{
                   backgroundColor: isRecording ? '#C4973F' : 'transparent',
                   borderColor: isRecording ? '#C4973F' : 'rgba(196,151,63,0.3)',
                   color: isRecording ? '#1A1814' : '#C4973F',
+                  boxShadow: isRecording ? '0 0 0 4px rgba(196,151,63,0.2), 0 0 20px rgba(196,151,63,0.3)' : 'none',
                 }}
               >
                 <Icon name="mic" className="h-4 w-4" />
@@ -1111,7 +1177,7 @@ export default function DemoPage() {
             <button
               type="submit"
               disabled={!lumiInput.trim() || lumiLoading}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40"
+              className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40"
               style={{ backgroundColor: '#C4973F', color: '#1A1814' }}
             >
               <Icon name="send" className="h-4 w-4" />

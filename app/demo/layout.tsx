@@ -41,6 +41,9 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
         }
         .lumi-ring { animation: lumiRing 3s ease-in-out infinite; }
         .lumi-breathe { animation: lumiBreathe 2.5s ease-in-out infinite alternate; }
+        .demo-wrapper .lumi-identity-name {
+          font-family: var(--font-display, 'Playfair Display', serif) !important;
+        }
       `}</style>
       {children}
     </div>

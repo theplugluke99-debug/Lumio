@@ -76,7 +76,7 @@ export default function Hero() {
             <div className="rounded-[3rem] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-3">
               <div className="rounded-[2.4rem] bg-[#FFFDF8] p-5 md:p-6" style={{ fontFamily: 'var(--font-inter, system-ui, sans-serif)' }}>
                 <div className="flex items-center justify-between mb-5">
-                  <Logo width={80} />
+                  <Logo width={100} />
                   <span className="rounded-full bg-[#F9EDE8] px-3 py-1 text-xs font-bold tracking-wide text-[#C4973F] border border-[#C4973F]/20">● Live flow</span>
                 </div>
                 <div className="flex flex-col gap-2.5">
