@@ -1,19 +1,19 @@
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-jakarta',
-  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={jakarta.variable}>
+    <div className={inter.variable}>
       <style>{`
         .demo-wrapper,
         .demo-wrapper * {
-          font-family: var(--font-jakarta), sans-serif !important;
+          font-family: var(--font-inter), sans-serif !important;
         }
         .demo-wrapper, .demo-wrapper * {
           cursor: default !important;
