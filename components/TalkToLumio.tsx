@@ -89,9 +89,8 @@ export default function TalkToLumio() {
             </button>
             <div className="grid grid-cols-3 gap-2 w-full mt-1">
               {CHAT_TRUST.map(s => (
-                <span key={s.text} className="flex flex-col items-center gap-1 text-[9px] text-white/30 text-center">
-                  <span className="text-sm">{s.icon}</span>
-                  <span>{s.text}</span>
+                <span key={s.text} className="flex items-center justify-center gap-1 text-[9px] text-white/30 text-center">
+                  <span className="leading-snug">{s.text}</span>
                 </span>
               ))}
             </div>
@@ -118,11 +117,9 @@ export default function TalkToLumio() {
         </div>
 
         {/* Trust strip — desktop always visible, mobile only when expanded */}
-        <div className={`mt-5 ${expanded ? 'grid' : 'hidden'} md:flex grid-cols-3 md:flex-wrap justify-center gap-3 md:gap-8`}>
+        <div className={`mt-5 ${expanded ? 'flex' : 'hidden'} md:flex flex-wrap justify-center gap-4 md:gap-8`}>
           {CHAT_TRUST.map(s => (
-            <span key={s.text} className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-[9px] md:text-xs text-white/30 text-center">
-              <span>{s.icon}</span><span>{s.text}</span>
-            </span>
+            <span key={s.text} className="text-[10px] md:text-xs text-white/30 text-center">{s.text}</span>
           ))}
         </div>
 

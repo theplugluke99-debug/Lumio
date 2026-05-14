@@ -87,9 +87,7 @@ export default function AiPage() {
         </div>
         <div className="mt-3 flex flex-wrap justify-center gap-4 md:gap-8 shrink-0">
           {CHAT_TRUST.map(s => (
-            <span key={s.text} className="flex items-center gap-2 text-xs text-white/30">
-              <span>{s.icon}</span>{s.text}
-            </span>
+            <span key={s.text} className="text-xs text-white/30">{s.text}</span>
           ))}
         </div>
       </div>

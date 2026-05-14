@@ -43,7 +43,7 @@ export default function Pricing() {
               <ul className="flex flex-col gap-2.5 flex-1">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
-                    <span className="mt-0.5 text-[#C4973F] shrink-0">✓</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 text-[#C4973F] shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
                     <span className={p.featured ? 'text-white/70' : 'text-[#2E2B26]'}>{f}</span>
                   </li>
                 ))}

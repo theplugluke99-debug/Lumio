@@ -17,7 +17,6 @@ export default function Nav() {
         </div>
         <div className="flex items-center gap-3">
           <a href="/demo" className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[#C4973F] hover:text-[#E8B44B] transition-colors duration-200">
-            <span className="text-xs">✦</span>
             See demo
           </a>
           <div className="relative group">

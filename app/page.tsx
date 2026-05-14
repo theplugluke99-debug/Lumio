@@ -15,7 +15,7 @@ import Footer from '@/components/Footer';
 
 export default function Page() {
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <CursorGlow />
       <Hero />
       <Marquee />

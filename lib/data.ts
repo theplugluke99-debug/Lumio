@@ -206,15 +206,15 @@ export const TESTIMONIAL = {
 // ─── Chat ─────────────────────────────────────────────────────────────────────
 
 export const CHAT_PILLS = [
-  { label: '📊 Get my revenue numbers', message: 'Get my revenue numbers' },
-  { label: '📋 Build my automation blueprint', message: 'Build my automation blueprint' },
-  { label: '💰 See my ROI projection', message: 'See my ROI projection' },
+  { label: 'Get my revenue numbers', message: 'Get my revenue numbers' },
+  { label: 'Build my automation blueprint', message: 'Build my automation blueprint' },
+  { label: 'See my ROI projection', message: 'See my ROI projection' },
 ];
 
 export const CHAT_TRUST = [
-  { icon: '🔒', text: 'No data stored — conversations are private' },
-  { icon: '⚡', text: 'Powered by Claude AI' },
-  { icon: '💬', text: 'Real answers, not scripted responses' },
+  { text: 'No data stored — conversations are private' },
+  { text: 'Powered by Claude AI' },
+  { text: 'Real answers, not scripted responses' },
 ];
 
 // ─── Audit ────────────────────────────────────────────────────────────────────

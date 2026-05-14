@@ -32,7 +32,7 @@ export default function ResultsTier({ r, label }: Props) {
             <ul className="flex flex-col gap-2">
               {r.tierReasons.map((reason, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm">
-                  <span className="text-[#C4973F] mt-0.5 shrink-0">✦</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg>
                   <span className="text-white/70">{reason}</span>
                 </li>
               ))}
@@ -43,7 +43,7 @@ export default function ResultsTier({ r, label }: Props) {
             <ul className="grid sm:grid-cols-2 gap-2">
               {TIER_FEATURES[r.recommendedTier].map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-white/55">
-                  <span className="text-[#C4973F] shrink-0">✓</span>{f}
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M20 6L9 17l-5-5"/></svg>{f}
                 </li>
               ))}
             </ul>

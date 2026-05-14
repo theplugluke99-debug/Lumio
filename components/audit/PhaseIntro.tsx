@@ -30,7 +30,7 @@ export default function PhaseIntro({ onStart }: Props) {
       </div>
 
       <div className="relative z-10 px-6 pt-7 flex justify-between items-center">
-        <a href="/"><Logo light width={100} /></a>
+        <a href="/"><span className="block md:hidden"><Logo light width={80} /></span><span className="hidden md:block"><Logo light width={100} /></span></a>
         <a href="/" className="text-sm text-white/40 hover:text-white/70 transition-colors">← Back to site</a>
       </div>
 
@@ -71,8 +71,8 @@ export default function PhaseIntro({ onStart }: Props) {
             </div>
             <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my Revenue Reveal</GoldButton>
             <div className="flex flex-col gap-1.5 pt-1">
-              {['✦ Personalised to your clinic', '✦ Your exact revenue loss calculated', '✦ Recommended plan included', '✦ Takes 3 minutes'].map(item => (
-                <p key={item} className="text-[11px] text-[#C4973F]/55 text-left">{item}</p>
+              {['Personalised to your clinic', 'Your exact revenue loss calculated', 'Recommended plan included', 'Takes 3 minutes'].map(item => (
+                <p key={item} className="text-[11px] text-[#C4973F]/55 text-left flex items-center gap-1.5 before:content-['·'] before:text-[#C4973F]">{item}</p>
               ))}
             </div>
           </div>

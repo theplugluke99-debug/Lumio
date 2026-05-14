@@ -38,10 +38,10 @@ function Icon({ name, className = 'h-5 w-5' }: { name: string; className?: strin
   return <svg viewBox="0 0 24 24" className={className}>{m[name] ?? null}</svg>;
 }
 
-function ProgressBar({ label, value, amber = false }: { label: string; value: number; amber?: boolean }) {
+function ProgressBar({ label, value, amber = false, textColor = '#1A1814' }: { label: string; value: number; amber?: boolean; textColor?: string }) {
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between text-sm font-bold text-[#1A1814]">
+      <div className="mb-2 flex items-center justify-between text-sm font-bold" style={{ color: textColor }}>
         <span>{label}</span><span>{value}%</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-[#E8DED2]">
@@ -115,42 +115,42 @@ const CONVOS: Convo[] = [
   {
     id: '1', name: 'Emma Wilson', channel: 'Instagram', preview: "Saturday works!", time: '09:32',
     messages: [
-      { role: 'lumio', text: "Hi Emma! Thanks for reaching out 😊 I'm Lumio, the assistant for Glow Aesthetics. You were asking about lip filler — are you looking for a subtle 0.5ml or a fuller 1ml result?" },
+      { role: 'lumio', text: "Hi Emma! Thanks for reaching out. I'm Lumi, the assistant for Glow Aesthetics. You were asking about lip filler — are you looking for a subtle 0.5ml or a fuller 1ml result?" },
       { role: 'client', text: "I'm not sure tbh — first time. What's the difference?" },
       { role: 'lumio', text: "No worries at all! 0.5ml gives a natural 'your lips but better' look — really popular for first-timers. 1ml is fuller and more defined. We always start with a free consultation so you can decide. We have Thursday 22 May at 2pm or Saturday 24 May at 11am — would either work?" },
       { role: 'client', text: "Saturday works!" },
-      { role: 'lumio', text: "Perfect! I've pencilled in Saturday 24 May at 11:00am for your lip consultation with Glow Aesthetics ✅ Can I confirm your full name and a number for your booking reminder?" },
+      { role: 'lumio', text: "Perfect! I've pencilled in Saturday 24 May at 11:00am for your lip consultation with Glow Aesthetics. Can I confirm your full name and a number for your booking reminder?" },
     ],
   },
   {
     id: '2', name: 'Sophie Carter', channel: 'WhatsApp', preview: "Wednesday please", time: '08:14',
     messages: [
-      { role: 'lumio', text: "Hi Sophie! It's been around 6 weeks since your last visit — just checking in 💛 How's your treatment looking? We have some lovely availability this week if you'd like to book in?" },
+      { role: 'lumio', text: "Hi Sophie! It's been around 6 weeks since your last visit — just checking in. How's your treatment looking? We have some lovely availability this week if you'd like to book in?" },
       { role: 'client', text: "Oh wow yes actually, it's started to fade a bit!" },
       { role: 'lumio', text: "Great timing! We have Wednesday 29 May at 3:30pm or Friday 31 May at 11:00am, both with your usual clinician. Which works better?" },
       { role: 'client', text: "Wednesday please" },
-      { role: 'lumio', text: "Booked! ✅ Wednesday 29 May at 3:30pm. I'll send a reminder 48 hours before. See you then Sophie 💛" },
+      { role: 'lumio', text: "Booked! Wednesday 29 May at 3:30pm. I'll send a reminder 48 hours before. See you then Sophie." },
     ],
   },
   {
     id: '3', name: 'Charlotte Reed', channel: 'Website', preview: "Evening if possible", time: '07:22',
     messages: [
       { role: 'client', text: "Hi, I'm interested in Botox — never had it before. How much does it cost?" },
-      { role: 'lumio', text: "Hi Charlotte! Great to hear from you 😊 Our Botox starts from £180 for one area and £280 for three areas. First consultations are free. Which area were you thinking about?" },
+      { role: 'lumio', text: "Hi Charlotte! Great to hear from you. Our Botox starts from £180 for one area and £280 for three areas. First consultations are free. Which area were you thinking about?" },
       { role: 'client', text: "Mainly frown lines" },
       { role: 'lumio', text: "Lovely choice — one of our most popular treatments, very natural results. We have slots available this week. Would you prefer daytime or evening?" },
       { role: 'client', text: "Evening if possible" },
-      { role: 'lumio', text: "We have Tuesday 28 May at 6:00pm available — shall I reserve that for you? 🗓️" },
+      { role: 'lumio', text: "We have Tuesday 28 May at 6:00pm available — shall I reserve that for you?" },
     ],
   },
   {
     id: '4', name: 'Olivia Bennett', channel: 'WhatsApp', preview: "OK that's really reassuring", time: '06:50',
     messages: [
-      { role: 'lumio', text: "Hi Olivia! It's been 3 days since your lip filler treatment 💛 Just checking in — how are you feeling? Any questions?" },
+      { role: 'lumio', text: "Hi Olivia! It's been 3 days since your lip filler treatment. Just checking in — how are you feeling? Any questions?" },
       { role: 'client', text: "It's a bit more swollen on one side than the other?" },
       { role: 'lumio', text: "Completely normal at day 3 — asymmetrical swelling is very common and settles by day 5–7. Avoid pressure on the area and stay hydrated. If you're still concerned after day 10, just give us a call." },
       { role: 'client', text: "OK that's really reassuring" },
-      { role: 'lumio', text: "Brilliant! 😊 Your full aftercare guide is in your email. When you're happy with the results, a Google review would mean the world to us — here's the link: lumio.london/review" },
+      { role: 'lumio', text: "Brilliant! Your full aftercare guide is in your email. When you're happy with the results, a Google review would mean the world to us — here's the link: lumio.london/review" },
     ],
   },
 ];
@@ -196,9 +196,19 @@ export default function DemoPage() {
   const [showPills, setShowPills] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [hasSpeech, setHasSpeech] = useState(false);
+  const [dashMode, setDashMode] = useState<'light' | 'dark'>('light');
+  const [mobileConvoFull, setMobileConvoFull] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const bh = bannerDismissed ? 0 : 52;
+  const dm = dashMode === 'dark';
+  const dBg = dm ? '#141210' : '#FFFDF8';
+  const dSidebarBg = dm ? 'rgba(20,18,16,0.98)' : 'rgba(249,237,232,0.96)';
+  const dTopbarBg = dm ? 'rgba(20,18,16,0.92)' : 'rgba(255,253,248,0.92)';
+  const dCardBg = dm ? 'rgba(255,253,248,0.05)' : undefined;
+  const dCardBorder = dm ? 'rgba(196,151,63,0.15)' : 'rgba(26,24,20,0.08)';
+  const dText = dm ? '#FFFDF8' : '#1A1814';
+  const dTextMuted = dm ? 'rgba(255,253,248,0.5)' : '#8A8278';
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -308,7 +318,7 @@ export default function DemoPage() {
   const filteredFeed = actFilter === 'all' ? FULL_FEED : FULL_FEED.filter(i => i.category === actFilter);
 
   return (
-    <div className="demo-wrapper antialiased text-[#1A1814] overflow-x-hidden" style={{ backgroundColor: '#FFFDF8', minHeight: '100dvh' }}>
+    <div className="demo-wrapper antialiased overflow-x-hidden" style={{ backgroundColor: dBg, color: dText, minHeight: '100dvh' }}>
 
       {/* Demo banner */}
       {!bannerDismissed && (
@@ -344,8 +354,8 @@ export default function DemoPage() {
       )}
 
       <aside
-        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed top-0 left-0 z-50 h-screen w-[280px] shrink-0 border-r border-[rgba(26,24,20,0.08)] flex flex-col p-6 overflow-y-auto transition-transform duration-300 lg:transition-none`}
-        style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)` }}
+        className="hidden lg:flex fixed top-0 left-0 z-50 w-[280px] shrink-0 border-r flex-col p-6 overflow-y-auto"
+        style={{ backgroundColor: dSidebarBg, backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)`, borderColor: dCardBorder }}
       >
         <div className="mb-8 pt-2 shrink-0">
           <a href="/"><Logo width={80} /></a>
@@ -398,25 +408,46 @@ export default function DemoPage() {
       <div className="flex flex-col lg:ml-[280px] min-h-screen" style={{ paddingTop: bh }}>
 
         {/* Topbar */}
-        <header className="sticky z-30 border-b border-[rgba(26,24,20,0.08)] px-5 py-4 backdrop-blur-2xl shrink-0"
-          style={{ top: bh, backgroundColor: 'rgba(255,253,248,0.92)' }}>
+        <header className="sticky z-30 border-b px-5 py-4 backdrop-blur-2xl shrink-0"
+          style={{ top: bh, backgroundColor: dTopbarBg, borderColor: dCardBorder }}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <button type="button" onClick={() => setSidebarOpen(true)}
-                className="grid h-9 w-9 place-items-center rounded-xl bg-[#F9EDE8] text-[#1A1814] lg:hidden shrink-0">
-                <Icon name="menu" className="h-4 w-4" />
-              </button>
               <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
                 {clinicInitials}
               </div>
               <div className="min-w-0">
-                <h1 className="text-lg font-black tracking-[-0.03em] text-[#1A1814] truncate">{clinicName}</h1>
+                <h1 className="text-lg font-black tracking-[-0.03em] truncate" style={{ color: dText }}>{clinicName}</h1>
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-[#5B8A68]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68] shrink-0" /> Live automation active
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {/* Dark/light mode toggle */}
+              <button
+                type="button"
+                onClick={() => setDashMode(m => m === 'light' ? 'dark' : 'light')}
+                className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-all"
+                style={{ borderColor: 'rgba(196,151,63,0.3)', backgroundColor: dm ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.05)', color: '#C4973F' }}
+              >
+                {dm ? (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                  </svg>
+                ) : (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                )}
+                <span className="hidden sm:inline">{dm ? 'Light' : 'Dark'}</span>
+              </button>
+              {/* Ask Lumi — mobile only (sidebar hidden on mobile) */}
+              <button type="button" onClick={() => openLumi()}
+                className="lg:hidden flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold text-[#FFFDF8] transition-colors"
+                style={{ backgroundColor: '#1A1814' }}>
+                <span className="h-2 w-2 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 8px rgba(232,180,75,.9)' }} />
+                Lumi
+              </button>
               <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
                 <Icon name="bell" className="h-4 w-4" />
                 <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#C4973F]" style={{ boxShadow: '0 0 8px rgba(196,151,63,.8)' }} />
@@ -426,7 +457,7 @@ export default function DemoPage() {
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: '#FFFDF8' }}>
+        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: dBg }}>
           <div className="mx-auto max-w-[1280px]">
 
             {/* Tier selector — overview only */}
@@ -561,10 +592,10 @@ export default function DemoPage() {
                           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="pulse" className="h-5 w-5" /></span>
                         </div>
                         <div className="space-y-5">
-                          <ProgressBar label="Lead response" value={98} />
-                          <ProgressBar label="Reminder delivery" value={100} />
-                          <ProgressBar label="Rebooking rate" value={74} amber />
-                          <ProgressBar label="Review generation" value={81} />
+                          <ProgressBar label="Lead response" value={98} textColor={dText} />
+                          <ProgressBar label="Reminder delivery" value={100} textColor={dText} />
+                          <ProgressBar label="Rebooking rate" value={74} amber textColor={dText} />
+                          <ProgressBar label="Review generation" value={81} textColor={dText} />
                         </div>
                       </div>
                     </div>
@@ -602,7 +633,7 @@ export default function DemoPage() {
                                 <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumi</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
                               </div>
                               <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm leading-7 text-[#FFFDF8]/72">
-                                &ldquo;Hi! We&apos;re at a training event this weekend and will be back Monday morning. Drop us a message and we&apos;ll get back to you first thing 🌟&rdquo;
+                                &ldquo;Hi! We&apos;re at a training event this weekend and will be back Monday morning. Drop us a message and we&apos;ll get back to you first thing.&rdquo;
                               </div>
                             </div>
                           </div>
@@ -695,14 +726,23 @@ export default function DemoPage() {
             {/* ── Conversations ────────────────────────────────── */}
             {tab === 'conversations' && (
               <div className="space-y-6">
-                <div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
-                  <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumi</h2>
-                </div>
+                {!mobileConvoFull && (
+                  <div>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
+                    <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]" style={{ color: dText }}>Handled by Lumi</h2>
+                  </div>
+                )}
+                {mobileConvoFull && (
+                  <button type="button" onClick={() => setMobileConvoFull(false)}
+                    className="flex items-center gap-2 text-sm font-bold text-[#C4973F] lg:hidden">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    Back
+                  </button>
+                )}
                 <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-                  <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                  <div className={`rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)] ${mobileConvoFull ? 'hidden lg:block' : 'block'}`}>
                     {CONVOS.map(c => (
-                      <button key={c.id} type="button" onClick={() => setSelectedConvo(c.id)}
+                      <button key={c.id} type="button" onClick={() => { setSelectedConvo(c.id); setMobileConvoFull(true); }}
                         className={`w-full flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] p-5 text-left transition-all last:border-b-0 ${selectedConvo === c.id ? 'bg-[#FFF4DD]' : 'hover:bg-[#F9EDE8]/50'}`}>
                         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
                           {c.name.split(' ').map(w => w[0]).join('')}
@@ -718,7 +758,7 @@ export default function DemoPage() {
                     ))}
                   </div>
                   {currentConvo && (
-                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 flex flex-col overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                    <div className={`rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 flex flex-col overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)] ${mobileConvoFull ? 'flex' : 'hidden lg:flex'}`}>
                       <div className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.08)] px-6 py-4">
                         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
                           {currentConvo.name.split(' ').map(w => w[0]).join('')}
@@ -761,9 +801,27 @@ export default function DemoPage() {
                   <p className="text-sm text-[#8A8278]">{CLIENTS.length} clients · click a row to view</p>
                 </div>
                 <div className={`grid gap-6 ${selectedClient ? 'xl:grid-cols-[1fr_380px]' : ''}`}>
-                  <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
+                  {/* Mobile card list */}
+                  <div className="block lg:hidden rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)] divide-y divide-[rgba(26,24,20,0.06)]">
+                    {CLIENTS.map(client => (
+                      <button key={client.id} type="button"
+                        onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
+                        className={`w-full flex items-center gap-4 p-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
+                        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-bold text-[#1A1814] truncate">{client.name}</span>
+                            <StatusPill status={client.status} />
+                          </div>
+                          <div className="mt-0.5 text-xs text-[#8A8278]">{client.spend} · {client.lastVisit}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  {/* Desktop table */}
+                  <div className="hidden lg:block rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
                     <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 bg-[#F9EDE8]/55 px-6 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">
-                      <div>Client</div><div className="hidden sm:block">Last visit</div><div>Bookings</div><div className="hidden sm:block">Status</div>
+                      <div>Client</div><div>Last visit</div><div>Bookings</div><div>Status</div>
                     </div>
                     {CLIENTS.map(client => (
                       <button key={client.id} type="button"
@@ -773,9 +831,9 @@ export default function DemoPage() {
                           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
                           <div><div className="font-bold text-[#1A1814]">{client.name}</div><div className="text-xs text-[#8A8278]">{client.spend} · via {client.channel}</div></div>
                         </div>
-                        <div className="hidden text-sm text-[#8A8278] sm:block">{client.lastVisit}</div>
+                        <div className="text-sm text-[#8A8278]">{client.lastVisit}</div>
                         <div className="text-sm font-bold text-[#1A1814]">{client.bookings}</div>
-                        <div className="hidden sm:block"><StatusPill status={client.status} /></div>
+                        <div><StatusPill status={client.status} /></div>
                       </button>
                     ))}
                   </div>
@@ -1186,27 +1244,44 @@ export default function DemoPage() {
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(26,24,20,0.08)] lg:hidden"
-        style={{ backgroundColor: 'rgba(255,253,248,0.96)', backdropFilter: 'blur(20px)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-        <div className="grid grid-cols-5 gap-1 p-2">
-          {[
+      {/* Mobile bottom nav — 5 tabs with Lumi orb center */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t lg:hidden"
+        style={{ backgroundColor: dTopbarBg, backdropFilter: 'blur(20px)', borderColor: dCardBorder, paddingBottom: 'env(safe-area-inset-bottom)', height: 64 }}>
+        <div className="grid grid-cols-5 h-full items-center px-1">
+          {([
             { id: 'overview' as Tab, icon: 'overview', label: 'Home' },
-            { id: 'activity' as Tab, icon: 'activity', label: 'Live' },
-            { id: 'conversations' as Tab, icon: 'conversations', label: 'Inbox' },
-            { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
-          ].map(({ id, icon, label }) => (
+            { id: 'activity' as Tab, icon: 'activity', label: 'Activity' },
+          ] as { id: Tab; icon: string; label: string }[]).map(({ id, icon, label }) => (
             <button key={id} type="button" onClick={() => setTab(id)}
-              className={`grid place-items-center gap-1 rounded-2xl px-2 py-2.5 text-[10px] font-bold transition-all ${tab === id ? 'bg-[#C4973F] text-[#1A1814]' : 'text-[#8A8278]'}`}>
-              <Icon name={icon} className="h-4 w-4" />
+              className="flex flex-col items-center justify-center gap-1 h-full text-[10px] font-bold transition-all"
+              style={{ color: tab === id ? '#C4973F' : dTextMuted }}>
+              <Icon name={icon} className="h-5 w-5" />
               {label}
             </button>
           ))}
+          {/* Lumi orb — center */}
           <button type="button" onClick={() => openLumi()}
-            className="grid place-items-center gap-1 rounded-2xl px-2 py-2.5 text-[10px] font-bold text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
-            <Icon name="spark" className="h-4 w-4" />
-            Lumi
+            className="flex flex-col items-center justify-center h-full">
+            <div
+              className="lumi-breathe"
+              style={{
+                width: 42, height: 42, borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 55%, #8B6420)',
+                boxShadow: '0 4px 20px rgba(196,151,63,0.55)',
+              }}
+            />
           </button>
+          {([
+            { id: 'conversations' as Tab, icon: 'conversations', label: 'Inbox' },
+            { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
+          ] as { id: Tab; icon: string; label: string }[]).map(({ id, icon, label }) => (
+            <button key={id} type="button" onClick={() => setTab(id)}
+              className="flex flex-col items-center justify-center gap-1 h-full text-[10px] font-bold transition-all"
+              style={{ color: tab === id ? '#C4973F' : dTextMuted }}>
+              <Icon name={icon} className="h-5 w-5" />
+              {label}
+            </button>
+          ))}
         </div>
       </nav>
 
