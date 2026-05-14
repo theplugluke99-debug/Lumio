@@ -7,7 +7,7 @@ export default function Nav() {
   return (
     <div className="relative z-10 w-full px-4 pt-5">
       <nav className="mx-auto max-w-6xl flex items-center justify-between rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl px-5 py-3">
-        <Logo light />
+        <Logo light width={100} />
         <div className="hidden md:flex items-center gap-8 text-sm text-white/60 font-medium">
           {NAV_LINKS.filter(l => !l.highlight).map(({ label, href }) => (
             <a key={label} href={href} className="hover:text-white transition-colors">

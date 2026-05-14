@@ -63,7 +63,7 @@ export default function DemoTeaser() {
 
         {/* CTA */}
         <div className="flex flex-col items-center gap-3">
-          <GoldButton href="/demo" large>Explore the live demo →</GoldButton>
+          <GoldButton href="/demo" large>Explore the live demo</GoldButton>
           <p className="text-sm text-white/35">Customise it with your clinic name. No signup required.</p>
         </div>
 

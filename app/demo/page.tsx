@@ -33,6 +33,7 @@ function Icon({ name, className = 'h-5 w-5' }: { name: string; className?: strin
     x: <path d="M18 6L6 18M6 6l12 12" {...SVG}/>,
     send: <><path d="M22 2L11 13" {...SVG}/><path d="M22 2l-7 20-4-9-9-4 20-7z" {...SVG}/></>,
     menu: <><path d="M3 12h18M3 6h18M3 18h18" {...SVG}/></>,
+    mic: <><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" {...SVG}/><path d="M19 10a7 7 0 0 1-14 0M12 19v3M8 22h8" {...SVG}/></>,
   };
   return <svg viewBox="0 0 24 24" className={className}>{m[name] ?? null}</svg>;
 }
@@ -191,6 +192,9 @@ export default function DemoPage() {
   const [lumiLoading, setLumiLoading] = useState(false);
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
+  const [lumiDark, setLumiDark] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
+  const [hasSpeech, setHasSpeech] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const bh = bannerDismissed ? 0 : 52;
@@ -229,6 +233,10 @@ export default function DemoPage() {
     }
   }, [lumiOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    setHasSpeech('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  }, []);
+
   const saveClinicName = () => {
     const name = bannerInput.trim() || 'Glow Aesthetics London';
     setClinicName(name);
@@ -237,6 +245,20 @@ export default function DemoPage() {
   };
 
   const clinicInitials = clinicName.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+  const startRecording = useCallback(() => {
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = 'en-GB';
+    rec.onresult = (e: any) => { setLumiInput(e.results[0][0].transcript); setIsRecording(false); };
+    rec.onerror = () => setIsRecording(false);
+    rec.onend = () => setIsRecording(false);
+    rec.start();
+    setIsRecording(true);
+  }, []);
 
   const openLumi = useCallback((prefill?: string) => {
     setLumiOpen(true);
@@ -325,7 +347,7 @@ export default function DemoPage() {
         style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)` }}
       >
         <div className="mb-8 pt-2 shrink-0">
-          <a href="/"><Logo /></a>
+          <a href="/"><Logo width={90} /></a>
         </div>
         <nav className="space-y-1.5 flex-1">
           {navItems.map(({ id, icon, label, locked }) => (
@@ -403,7 +425,7 @@ export default function DemoPage() {
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: '#FFFDF8' }}>
+        <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: '#FFFDF8' }}>
           <div className="mx-auto max-w-[1280px]">
 
             {/* Tier selector — overview only */}
@@ -453,7 +475,7 @@ export default function DemoPage() {
                     </div>
                     {/* Upgrade overlay */}
                     <div className="absolute inset-0 z-10 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.6)', backdropFilter: 'blur(4px)' }}>
-                      <div className="max-w-md w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
+                      <div className="w-[min(480px,90vw)] max-h-[80vh] overflow-y-auto rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
                         <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
                           <Icon name="lock" className="h-7 w-7" />
                         </div>
@@ -885,7 +907,7 @@ export default function DemoPage() {
                       </div>
                     </div>
                     <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(255,253,248,0.5)', backdropFilter: 'blur(2px)' }}>
-                      <div className="max-w-sm w-full rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
+                      <div className="w-[min(480px,90vw)] max-h-[80vh] overflow-y-auto rounded-[2.2rem] border border-[#C4973F]/25 p-8 text-center shadow-[0_35px_120px_rgba(26,24,20,.4)]" style={{ backgroundColor: '#1A1814' }}>
                         <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-[1.7rem] border border-[#C4973F]/20 bg-[#C4973F]/10 text-[#E8B44B]">
                           <Icon name="lock" className="h-7 w-7" />
                         </div>
@@ -917,63 +939,127 @@ export default function DemoPage() {
 
       {/* Lumi modal — slides up on mobile, centered on desktop */}
       <div
-        className={`fixed z-[51] flex flex-col overflow-hidden shadow-[0_40px_120px_rgba(26,24,20,.5)]
+        className={`fixed z-[51] flex flex-col overflow-hidden
           inset-x-0 bottom-0 h-[92vh] rounded-t-[2rem]
-          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(640px,90vw)] md:max-h-[72vh] md:h-auto md:rounded-[2rem]
-          transition-all duration-300
+          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(560px,92vw)] md:max-h-[78vh] md:h-auto md:rounded-[1.5rem]
+          transition-all duration-200
           ${lumiOpen
             ? 'translate-y-0 md:-translate-x-1/2 md:-translate-y-1/2 md:scale-100 md:opacity-100'
             : 'translate-y-full md:-translate-x-1/2 md:-translate-y-1/2 md:scale-95 md:opacity-0 pointer-events-none'}`}
+        style={{
+          boxShadow: '0 40px 120px rgba(26,24,20,0.3)',
+          border: lumiDark ? '1px solid rgba(196,151,63,0.3)' : '1px solid rgba(196,151,63,0.2)',
+        }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header — dark identity section with animated orb */}
-        <div className="relative flex flex-col items-center pt-8 pb-6 px-6 shrink-0 overflow-hidden" style={{ backgroundColor: '#1A1814' }}>
-          <div className="relative flex h-[80px] w-[80px] items-center justify-center mb-4">
-            <span className="absolute h-[80px] w-[80px] rounded-full border border-[#C4973F]/20 lumi-ring" />
-            <span className="absolute h-[64px] w-[64px] rounded-full border border-[#C4973F]/35 lumi-ring" style={{ animationDelay: '0.4s' }} />
-            <div className="relative h-[48px] w-[48px] rounded-full lumi-breathe flex items-center justify-center"
-              style={{ background: 'radial-gradient(ellipse at 55% 35%, #E8B44B 0%, #C4973F 55%, rgba(196,151,63,0.35) 100%)', boxShadow: '0 0 30px rgba(232,180,75,.5), 0 0 60px rgba(196,151,63,.2)' }}>
-              <div className="h-2 w-2 rounded-full bg-white/70" />
-            </div>
-          </div>
-          <div className="text-[18px] font-bold tracking-[-0.01em]" style={{ color: '#FFFDF8' }}>Lumi</div>
-          <div className="text-[13px] mt-1" style={{ color: 'rgba(250,247,242,0.5)' }}>Your clinic automation assistant</div>
+        {/* Section A — Identity header */}
+        <div
+          className="relative flex flex-col items-center pt-9 pb-7 px-6 shrink-0"
+          style={{ background: lumiDark ? '#1A1814' : 'linear-gradient(160deg, #FFFDF8 0%, #F9EDE8 100%)' }}
+        >
+          {/* Mode toggle — top left */}
           <button
+            type="button"
+            onClick={() => setLumiDark(d => !d)}
+            className="absolute top-4 left-4 flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium transition-all"
+            style={{
+              borderColor: 'rgba(196,151,63,0.3)',
+              backgroundColor: lumiDark ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.06)',
+              color: lumiDark ? 'rgba(255,253,248,0.7)' : '#8A8278',
+            }}
+          >
+            {lumiDark ? '☀ Light' : '☾ Dark'}
+          </button>
+          {/* Close — top right */}
+          <button
+            type="button"
             onClick={() => setLumiOpen(false)}
             className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-xl transition-colors"
-            style={{ color: 'rgba(255,253,248,0.45)' }}
+            style={{ color: lumiDark ? 'rgba(255,253,248,0.45)' : '#8A8278' }}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
+
+          {/* Orb with spinning arc */}
+          <div className="relative flex items-center justify-center mb-5" style={{ width: 160, height: 160 }}>
+            <svg
+              width="160" height="160"
+              style={{ position: 'absolute', top: 0, left: 0, animation: 'lumiSpin 8s linear infinite', transformOrigin: '80px 80px' }}
+            >
+              <path d="M 15 95 A 68 68 0 0 1 145 95" fill="none" stroke="#C4973F" strokeWidth="1.5" strokeLinecap="round" opacity="0.75" />
+            </svg>
+            <div
+              className="lumi-breathe relative"
+              style={{
+                width: 72, height: 72,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 50%, #8B6420)',
+                zIndex: 1,
+              }}
+            />
+          </div>
+
+          <div className="text-[20px] font-bold tracking-[-0.01em]" style={{ color: lumiDark ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
+          <div className="text-[13px] mt-1" style={{ color: lumiDark ? 'rgba(250,247,242,0.5)' : '#8A8278' }}>
+            Your clinic automation assistant
+          </div>
         </div>
 
-        {/* Pills section — visible until user sends first message */}
+        {/* Section B — Pills (disappear after first user message) */}
         {!lumiMsgs.some(m => m.role === 'user') && (
-          <div className="px-5 py-4 border-b border-[rgba(26,24,20,0.08)] shrink-0" style={{ backgroundColor: '#FFFDF8' }}>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { emoji: '📊', label: 'What am I losing this month?' },
-                { emoji: '👥', label: 'Which clients need attention?' },
-                { emoji: '⚡', label: 'What can Lumi actually do?' },
-              ].map(({ emoji, label }) => (
-                <button key={label} type="button" onClick={() => sendToLumi(label)}
-                  className="flex items-center gap-2 rounded-full border border-[rgba(196,151,63,0.3)] bg-[#F9EDE8] px-4 py-2.5 text-sm font-medium text-[#1A1814] hover:bg-[#C4973F]/10 hover:border-[#C4973F]/60 transition-all">
-                  <span>{emoji}</span> {label}
-                </button>
-              ))}
-            </div>
+          <div
+            className="px-4 py-3 flex flex-col gap-2 shrink-0"
+            style={{
+              backgroundColor: lumiDark ? '#111009' : '#FFFDF8',
+              borderBottom: lumiDark ? '1px solid rgba(255,253,248,0.07)' : '1px solid rgba(26,24,20,0.08)',
+            }}
+          >
+            {[
+              { emoji: '📊', label: 'What am I losing this month?' },
+              { emoji: '👥', label: 'Which clients need attention?' },
+              { emoji: '✦', label: 'What can Lumi actually do?' },
+            ].map(({ emoji, label }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => sendToLumi(label)}
+                className="w-full flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-left transition-all border"
+                style={{
+                  backgroundColor: lumiDark ? 'rgba(255,253,248,0.05)' : 'white',
+                  borderColor: lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.1)',
+                  color: lumiDark ? '#FFFDF8' : '#1A1814',
+                }}
+              >
+                <span style={{ color: '#C4973F', fontSize: 16, lineHeight: 1, minWidth: 20, textAlign: 'center' }}>{emoji}</span>
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Messages */}
-        <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4" style={{ backgroundColor: '#FFFDF8' }}>
+        {/* Section C — Messages */}
+        <div
+          ref={lumiScrollRef}
+          className="flex-1 overflow-y-auto px-4 py-4 space-y-4"
+          style={{ backgroundColor: lumiDark ? '#111009' : '#FFFDF8', minHeight: 180 }}
+        >
           {lumiMsgs.map((msg, i) => (
             <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
               {msg.role === 'assistant' && (
-                <span className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#C4973F] px-1">Lumi ✦</span>
+                <span
+                  className="text-[10px] font-extrabold uppercase tracking-[.16em] px-1"
+                  style={{ color: lumiDark ? '#E8B44B' : '#C4973F' }}
+                >
+                  Lumi ✦
+                </span>
               )}
-              <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
-                style={msg.role === 'assistant' ? { backgroundColor: '#F9EDE8', color: '#1A1814' } : { backgroundColor: '#1A1814', color: '#FFFDF8' }}>
+              <div
+                className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
+                style={msg.role === 'assistant'
+                  ? { backgroundColor: lumiDark ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: lumiDark ? '#FFFDF8' : '#1A1814' }
+                  : { backgroundColor: lumiDark ? '#C4973F' : '#1A1814', color: lumiDark ? '#1A1814' : '#FFFDF8' }
+                }
+              >
                 {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
                   ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#C4973F] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
                   : msg.role === 'assistant'
@@ -985,18 +1071,49 @@ export default function DemoPage() {
           ))}
         </div>
 
-        {/* Input */}
-        <div className="border-t border-[rgba(26,24,20,0.08)] p-4 shrink-0" style={{ backgroundColor: '#FFFDF8' }}>
-          <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex gap-2">
+        {/* Section D — Input + mic + send */}
+        <div
+          className="shrink-0 p-4"
+          style={{
+            backgroundColor: lumiDark ? '#1A1814' : '#FFFDF8',
+            borderTop: lumiDark ? '1px solid rgba(255,253,248,0.08)' : '1px solid rgba(26,24,20,0.08)',
+          }}
+        >
+          {isRecording && (
+            <div className="mb-2 text-center text-xs font-medium text-[#C4973F] animate-pulse">Listening...</div>
+          )}
+          <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex items-center gap-2">
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
               placeholder="Ask Lumi anything about your clinic..."
-              style={{ fontSize: '16px' }}
-              className="flex-1 rounded-full border border-[rgba(26,24,20,0.12)] bg-[#F9EDE8]/50 px-5 py-3 text-sm text-[#1A1814] placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
+              style={{
+                fontSize: '16px',
+                backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
+                color: lumiDark ? '#FFFDF8' : '#1A1814',
+                borderColor: lumiDark ? 'rgba(255,253,248,0.12)' : 'rgba(26,24,20,0.12)',
+              }}
+              className="flex-1 rounded-full border px-5 py-2.5 text-sm placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
             />
-            <button type="submit" disabled={!lumiInput.trim() || lumiLoading}
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40"
-              style={{ backgroundColor: '#C4973F', color: '#1A1814' }}>
+            {hasSpeech && (
+              <button
+                type="button"
+                onClick={startRecording}
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border transition-all"
+                style={{
+                  backgroundColor: isRecording ? '#C4973F' : 'transparent',
+                  borderColor: isRecording ? '#C4973F' : 'rgba(196,151,63,0.3)',
+                  color: isRecording ? '#1A1814' : '#C4973F',
+                }}
+              >
+                <Icon name="mic" className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={!lumiInput.trim() || lumiLoading}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40"
+              style={{ backgroundColor: '#C4973F', color: '#1A1814' }}
+            >
               <Icon name="send" className="h-4 w-4" />
             </button>
           </form>

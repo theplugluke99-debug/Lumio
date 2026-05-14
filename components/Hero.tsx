@@ -21,7 +21,7 @@ export default function Hero() {
 
       <Nav />
 
-      <div className="relative z-10 flex-1 flex items-start md:items-center px-4 pt-8 pb-12 md:py-0">
+      <div className="relative z-10 flex-1 flex items-start md:items-center px-4 pt-16 pb-16 md:py-0">
         <div className="mx-auto max-w-6xl w-full grid md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div className="flex flex-col gap-5 md:gap-7">
             <div className="reveal inline-flex items-center gap-2.5 self-start rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-xs font-semibold tracking-widest text-[#E8B44B] uppercase">
@@ -44,7 +44,7 @@ export default function Hero() {
             <div className="reveal-4 flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="relative group">
-                  <GoldButton href="/audit">Get my free Revenue Reveal →</GoldButton>
+                  <GoldButton href="/audit">Get my free Revenue Reveal</GoldButton>
                   <div className="pointer-events-none absolute bottom-full left-0 mb-3 w-52 opacity-0 group-hover:opacity-100 transition-opacity duration-150 hidden md:block z-50">
                     <div className="rounded-xl border border-[#C4973F]/30 bg-[#1A1814] px-4 py-3 text-xs text-white/70 leading-5">
                       Answer 8 questions about your clinic.<br />
