@@ -36,7 +36,7 @@ export default function DemoTeaser() {
             }}
           >
             <iframe
-              src="/demo"
+              src="/demo?preview=true"
               scrolling="no"
               tabIndex={-1}
               style={{

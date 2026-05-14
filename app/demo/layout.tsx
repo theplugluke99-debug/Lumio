@@ -34,6 +34,16 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
         .demo-wrapper textarea {
           cursor: text !important;
         }
+        @keyframes lumiRing {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.06); }
+        }
+        @keyframes lumiBreathe {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.07); }
+        }
+        .lumi-ring { animation: lumiRing 3s ease-in-out infinite; }
+        .lumi-breathe { animation: lumiBreathe 3s ease-in-out infinite; }
       `}</style>
       {children}
     </div>

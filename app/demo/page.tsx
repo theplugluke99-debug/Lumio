@@ -190,15 +190,22 @@ export default function DemoPage() {
   const [lumiInput, setLumiInput] = useState('');
   const [lumiLoading, setLumiLoading] = useState(false);
   const [fromReveal, setFromReveal] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const bh = bannerDismissed ? 0 : 52;
 
   useEffect(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('lumio_demo_clinic') : null;
-    if (saved) { setClinicName(saved); setBannerInput(saved === 'Glow Aesthetics London' ? '' : saved); }
     const params = new URLSearchParams(window.location.search);
+    const preview = params.get('preview') === 'true';
+    setIsPreview(preview);
     setFromReveal(params.get('from') === 'reveal');
+    if (preview) { setBannerDismissed(true); return; }
+    const saved = localStorage.getItem('lumio_demo_clinic');
+    if (saved && saved.trim().length >= 3 && saved.trim() !== 'Glow Aesthetics London') {
+      setClinicName(saved.trim());
+      setBannerInput(saved.trim());
+    }
   }, []);
 
   useEffect(() => {
@@ -354,11 +361,13 @@ export default function DemoPage() {
             <span>Ask Lumi</span>
           </button>
 
+          {!isPreview && (
           <a href="/audit" className="block rounded-[1.8rem] border border-[rgba(26,24,20,0.08)] bg-[#FFFDF8]/80 p-5 shadow-[0_20px_70px_rgba(26,24,20,.05)] hover:border-[#C4973F]/35 transition-colors">
             <div className="mb-3 text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
-            <p className="font-display text-xl italic leading-tight text-[#C4973F]">Ready for the real thing?</p>
+            <p className="text-xl italic leading-tight text-[#C4973F]">Ready for the real thing?</p>
             <p className="mt-2 text-[11px] font-bold text-[#8A8278]">Get your free Revenue Reveal →</p>
           </a>
+          )}
         </div>
       </aside>
 
@@ -374,11 +383,11 @@ export default function DemoPage() {
                 className="grid h-9 w-9 place-items-center rounded-xl bg-[#F9EDE8] text-[#1A1814] lg:hidden shrink-0">
                 <Icon name="menu" className="h-4 w-4" />
               </button>
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] font-display text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
+              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
                 {clinicInitials}
               </div>
               <div className="min-w-0">
-                <h1 className="font-display text-lg font-black tracking-[-0.03em] text-[#1A1814] truncate">{clinicName}</h1>
+                <h1 className="text-lg font-black tracking-[-0.03em] text-[#1A1814] truncate">{clinicName}</h1>
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-[#5B8A68]">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68] shrink-0" /> Live automation active
                 </div>
@@ -425,7 +434,7 @@ export default function DemoPage() {
                     <div className="p-8 select-none pointer-events-none" style={{ opacity: 0.3, filter: 'blur(4px)' }}>
                       <div className="grid gap-6 xl:grid-cols-2">
                         <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                          <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
+                          <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 text-3xl font-black">Tracker</h4></div>
                           {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending']].map(([name, time, status]) => (
                             <div key={name} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
                               <div><div className="font-bold text-[#1A1814]">{name}</div><div className="text-xs text-[#8A8278]">Appt · {time}</div></div>
@@ -436,8 +445,8 @@ export default function DemoPage() {
                         <div className="rounded-[2rem] p-8 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
                           <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
                           <div className="mt-6 grid grid-cols-2 gap-6">
-                            <div><div className="font-display text-5xl font-black">+38%</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Lead response</div></div>
-                            <div><div className="font-display text-5xl font-black">£18.4k</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                            <div><div className="text-5xl font-black">+38%</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                            <div><div className="text-5xl font-black">£18.4k</div><div className="mt-2 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
                           </div>
                         </div>
                       </div>
@@ -449,7 +458,7 @@ export default function DemoPage() {
                           <Icon name="lock" className="h-7 w-7" />
                         </div>
                         <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations Tier</div>
-                        <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Your complete back office running itself.</h4>
+                        <h4 className="mt-4 text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Your complete back office running itself.</h4>
                         <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
                         <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
                           From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
@@ -469,7 +478,7 @@ export default function DemoPage() {
                         <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">
                           {tier === 'fullsystem' ? 'Full System · Overview' : 'Overview'}
                         </p>
-                        <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Clinic command centre</h2>
+                        <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Clinic command centre</h2>
                       </div>
                       <p className="max-w-md text-sm leading-7 text-[#8A8278]">A live view of what Lumio has captured, handled, and protected this week.</p>
                     </div>
@@ -486,7 +495,7 @@ export default function DemoPage() {
                           <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/60 text-[#C4973F] shadow-inner">
                             <Icon name={card.icon} className="h-5 w-5" />
                           </div>
-                          <div className="mt-4 font-display text-4xl md:text-5xl font-black leading-none tracking-[-0.04em] text-[#1A1814]">{card.value}</div>
+                          <div className="mt-4 text-4xl md:text-5xl font-black leading-none tracking-[-0.04em] text-[#1A1814]">{card.value}</div>
                           <p className="mt-2 text-xs md:text-sm font-bold text-[#1A1814]">{card.label}</p>
                           <p className="mt-1 text-[11px] leading-5 text-[#8A8278] hidden sm:block">{card.note}</p>
                           <div className="mt-3 text-[10px] font-bold uppercase tracking-[.14em]" style={{ color: card.trendColor }}>{card.trend}</div>
@@ -498,7 +507,7 @@ export default function DemoPage() {
                       {/* Live feed */}
                       <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
                         <div className="mb-4 flex items-center justify-between">
-                          <h3 className="font-display text-2xl font-black tracking-[-0.04em]">Today&apos;s automation activity</h3>
+                          <h3 className="text-2xl font-black tracking-[-0.04em]">Today&apos;s automation activity</h3>
                           <span className="flex items-center gap-1.5 rounded-full bg-[#FFF4DD] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.15em] text-[#C4973F]">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#C4973F]" /> Live
                           </span>
@@ -525,7 +534,7 @@ export default function DemoPage() {
                       {/* Automation health */}
                       <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
                         <div className="mb-5 flex items-center justify-between">
-                          <h3 className="font-display text-2xl font-black tracking-[-0.04em]">Automation health</h3>
+                          <h3 className="text-2xl font-black tracking-[-0.04em]">Automation health</h3>
                           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="pulse" className="h-5 w-5" /></span>
                         </div>
                         <div className="space-y-5">
@@ -547,7 +556,7 @@ export default function DemoPage() {
                             <div className="inline-flex items-center gap-2 rounded-full border border-[#C4973F]/20 bg-white/[.05] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">
                               <LiveDot /> Lumi Intelligence
                             </div>
-                            <h3 className="mt-4 font-display text-3xl font-black leading-[1.05] tracking-[-0.04em] text-[#FFFDF8] md:text-4xl">
+                            <h3 className="mt-4 text-3xl font-black leading-[1.05] tracking-[-0.04em] text-[#FFFDF8] md:text-4xl">
                               Like having your<span className="italic text-[#E8B44B]"> best operator </span>inside the clinic.
                             </h3>
                           </div>
@@ -576,7 +585,7 @@ export default function DemoPage() {
                           </div>
                           <div className="rounded-[1.8rem] border border-white/10 bg-white/[.05] p-5 backdrop-blur-xl">
                             <div className="mb-4 flex items-center justify-between gap-3">
-                              <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">Client retention</div><h4 className="mt-1.5 font-display text-2xl font-black tracking-[-0.04em] text-[#FFFDF8]">Needs rebooking</h4></div>
+                              <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#E8B44B]">Client retention</div><h4 className="mt-1.5 text-2xl font-black tracking-[-0.04em] text-[#FFFDF8]">Needs rebooking</h4></div>
                               <span className="rounded-full border border-white/10 bg-white/[.04] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#FFFDF8]/55">4 clients</span>
                             </div>
                             <div className="space-y-2.5">
@@ -606,7 +615,7 @@ export default function DemoPage() {
                         <div className="flex items-center justify-between flex-wrap gap-4">
                           <div>
                             <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#C4973F]">Full System — Included</p>
-                            <h3 className="mt-1 font-display text-2xl font-black tracking-[-0.04em]">AI-handled conversations</h3>
+                            <h3 className="mt-1 text-2xl font-black tracking-[-0.04em]">AI-handled conversations</h3>
                             <p className="mt-1 text-sm text-[#8A8278]">Every Instagram DM, website enquiry and WhatsApp — answered by Lumi on your behalf.</p>
                           </div>
                           <button type="button" onClick={() => setTab('conversations')}
@@ -627,7 +636,7 @@ export default function DemoPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Live Activity</p>
-                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Everything that happened</h2>
+                    <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Everything that happened</h2>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -665,14 +674,14 @@ export default function DemoPage() {
               <div className="space-y-6">
                 <div>
                   <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
-                  <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumi</h2>
+                  <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Handled by Lumi</h2>
                 </div>
                 <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
                   <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
                     {CONVOS.map(c => (
                       <button key={c.id} type="button" onClick={() => setSelectedConvo(c.id)}
                         className={`w-full flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] p-5 text-left transition-all last:border-b-0 ${selectedConvo === c.id ? 'bg-[#FFF4DD]' : 'hover:bg-[#F9EDE8]/50'}`}>
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
                           {c.name.split(' ').map(w => w[0]).join('')}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -688,7 +697,7 @@ export default function DemoPage() {
                   {currentConvo && (
                     <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 flex flex-col overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
                       <div className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.08)] px-6 py-4">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>
                           {currentConvo.name.split(' ').map(w => w[0]).join('')}
                         </div>
                         <div className="flex-1">
@@ -724,7 +733,7 @@ export default function DemoPage() {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
-                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">Your client base</h2>
+                    <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Your client base</h2>
                   </div>
                   <p className="text-sm text-[#8A8278]">{CLIENTS.length} clients · click a row to view</p>
                 </div>
@@ -738,7 +747,7 @@ export default function DemoPage() {
                         onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
                         className={`w-full grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center border-t border-[rgba(26,24,20,0.06)] px-6 py-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
                         <div className="flex items-center gap-3">
-                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl font-display text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
+                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
                           <div><div className="font-bold text-[#1A1814]">{client.name}</div><div className="text-xs text-[#8A8278]">{client.spend} · via {client.channel}</div></div>
                         </div>
                         <div className="hidden text-sm text-[#8A8278] sm:block">{client.lastVisit}</div>
@@ -751,8 +760,8 @@ export default function DemoPage() {
                     <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] h-fit">
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex items-center gap-3">
-                          <div className="grid h-14 w-14 place-items-center rounded-2xl font-display text-xl font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{currentClient.initials}</div>
-                          <div><div className="font-display text-xl font-black text-[#1A1814]">{currentClient.name}</div><div className="mt-1"><StatusPill status={currentClient.status} /></div></div>
+                          <div className="grid h-14 w-14 place-items-center rounded-2xl text-xl font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{currentClient.initials}</div>
+                          <div><div className="text-xl font-black text-[#1A1814]">{currentClient.name}</div><div className="mt-1"><StatusPill status={currentClient.status} /></div></div>
                         </div>
                         <button onClick={() => setSelectedClient(null)} className="text-[#8A8278] hover:text-[#1A1814] transition-colors p-1">
                           <Icon name="x" className="h-5 w-5" />
@@ -762,7 +771,7 @@ export default function DemoPage() {
                         {[['Bookings', String(currentClient.bookings)], ['Total spend', currentClient.spend], ['Last visit', currentClient.lastVisit], ['Next appt', currentClient.nextAppt]].map(([label, val]) => (
                           <div key={label} className="rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/40 p-4">
                             <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278]">{label}</div>
-                            <div className="mt-1 font-display text-lg font-black text-[#1A1814]">{val}</div>
+                            <div className="mt-1 text-lg font-black text-[#1A1814]">{val}</div>
                           </div>
                         ))}
                       </div>
@@ -791,7 +800,7 @@ export default function DemoPage() {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Operations Suite</p>
-                    <h2 className="mt-1 font-display text-4xl font-black leading-none tracking-[-0.05em]">
+                    <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">
                       {tier === 'fullops' ? 'Your back office, automated.' : 'A back office that runs itself.'}
                     </h2>
                   </div>
@@ -806,7 +815,7 @@ export default function DemoPage() {
                   <div className="grid gap-6 xl:grid-cols-2">
                     <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)]">
                       <div className="mb-5 flex items-center justify-between">
-                        <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-2xl font-black">Tracker</h4></div>
+                        <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 text-2xl font-black">Tracker</h4></div>
                         <StatusPill status="Sent" />
                       </div>
                       {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
@@ -818,7 +827,7 @@ export default function DemoPage() {
                     </div>
                     <div className="space-y-4">
                       <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)]">
-                        <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-2xl font-black">Auto-chasing</h4></div>
+                        <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 text-2xl font-black">Auto-chasing</h4></div>
                         {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
                           <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
                             <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
@@ -829,12 +838,12 @@ export default function DemoPage() {
                       <div className="rounded-[2.2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
                         <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
                         <div className="mt-4 grid grid-cols-2 gap-4">
-                          <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
-                          <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                          <div><div className="text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                          <div><div className="text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
                         </div>
                         <div className="mt-4 grid grid-cols-2 gap-4">
-                          <div><div className="font-display text-4xl font-black">-77%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">No-shows</div></div>
-                          <div><div className="font-display text-4xl font-black">94%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Client retention</div></div>
+                          <div><div className="text-4xl font-black">-77%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">No-shows</div></div>
+                          <div><div className="text-4xl font-black">94%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Client retention</div></div>
                         </div>
                       </div>
                     </div>
@@ -845,7 +854,7 @@ export default function DemoPage() {
                       <div className="grid gap-6 xl:grid-cols-2">
                         <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
                           <div className="mb-5 flex items-center justify-between">
-                            <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 font-display text-3xl font-black">Tracker</h4></div>
+                            <div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Consent forms</div><h4 className="mt-2 text-3xl font-black">Tracker</h4></div>
                             <StatusPill status="Sent" />
                           </div>
                           {[['Amelia Clarke', '11:00am', 'Completed'], ['Grace Miller', '1:30pm', 'Pending'], ['Sophia Reed', '3:00pm', 'Sent']].map(([name, time, status]) => (
@@ -857,7 +866,7 @@ export default function DemoPage() {
                         </div>
                         <div className="space-y-4">
                           <div className="rounded-[2rem] border border-[rgba(26,24,20,0.08)] bg-white/80 p-6">
-                            <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 font-display text-3xl font-black">Auto-chasing</h4></div>
+                            <div className="mb-4"><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">Invoices</div><h4 className="mt-2 text-3xl font-black">Auto-chasing</h4></div>
                             {[['INV-2048', '£480', 'Paid'], ['INV-2051', '£220', 'Sent'], ['INV-2055', '£640', 'Overdue']].map(([id, amt, status]) => (
                               <div key={id} className="flex items-center justify-between rounded-2xl border border-[rgba(26,24,20,0.06)] bg-[#FFFDF8] px-4 py-4 mb-3 last:mb-0">
                                 <div><div className="font-bold text-[#1A1814]">{id}</div><div className="text-xs text-[#8A8278]">{amt}</div></div>
@@ -868,8 +877,8 @@ export default function DemoPage() {
                           <div className="rounded-[2rem] p-6 text-[#FFFDF8]" style={{ backgroundColor: '#1A1814' }}>
                             <div className="text-xs uppercase tracking-[.18em] text-[#E8B44B]">Monthly report · May 2026</div>
                             <div className="mt-4 grid grid-cols-2 gap-4">
-                              <div><div className="font-display text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
-                              <div><div className="font-display text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
+                              <div><div className="text-4xl font-black">+38%</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Lead response</div></div>
+                              <div><div className="text-4xl font-black">£18.4k</div><div className="mt-1 text-xs text-[#FFFDF8]/55">Revenue attributed</div></div>
                             </div>
                           </div>
                         </div>
@@ -881,7 +890,7 @@ export default function DemoPage() {
                           <Icon name="lock" className="h-7 w-7" />
                         </div>
                         <div className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#E8B44B]">Full Operations</div>
-                        <h4 className="mt-4 font-display text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
+                        <h4 className="mt-4 text-4xl font-black leading-[.95] tracking-[-0.05em] text-[#FFFDF8]">Unlock the complete back office.</h4>
                         <p className="mt-4 text-sm leading-7 text-[#FFFDF8]/62">Consent forms. Invoice chasing. Reporting. Stock intelligence. Your entire back office — automated.</p>
                         <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
                           From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
@@ -908,53 +917,63 @@ export default function DemoPage() {
 
       {/* Lumi modal — slides up on mobile, centered on desktop */}
       <div
-        className={`fixed z-[51] bg-[#FFFDF8] flex flex-col overflow-hidden shadow-[0_40px_120px_rgba(26,24,20,.4)]
+        className={`fixed z-[51] flex flex-col overflow-hidden shadow-[0_40px_120px_rgba(26,24,20,.5)]
           inset-x-0 bottom-0 h-[92vh] rounded-t-[2rem]
-          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(680px,90vw)] md:max-h-[70vh] md:h-auto md:rounded-[2rem]
+          md:inset-auto md:top-1/2 md:left-1/2 md:w-[min(640px,90vw)] md:max-h-[72vh] md:h-auto md:rounded-[2rem]
           transition-all duration-300
           ${lumiOpen
             ? 'translate-y-0 md:-translate-x-1/2 md:-translate-y-1/2 md:scale-100 md:opacity-100'
             : 'translate-y-full md:-translate-x-1/2 md:-translate-y-1/2 md:scale-95 md:opacity-0 pointer-events-none'}`}
         onClick={e => e.stopPropagation()}
       >
-        {/* Modal header */}
-        <div className="relative flex flex-col items-center pt-7 pb-5 px-6 border-b border-[rgba(26,24,20,0.08)] shrink-0">
-          <div className="relative grid h-12 w-12 place-items-center rounded-[1.4rem] border border-[#C4973F]/25 bg-[#C4973F]/10 mb-3">
-            <div className="absolute h-8 w-8 rounded-full bg-[#E8B44B]/35 blur-xl" />
-            <div className="relative h-4 w-4 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 20px rgba(232,180,75,.95)' }} />
+        {/* Header — dark identity section with animated orb */}
+        <div className="relative flex flex-col items-center pt-8 pb-6 px-6 shrink-0 overflow-hidden" style={{ backgroundColor: '#1A1814' }}>
+          <div className="relative flex h-[80px] w-[80px] items-center justify-center mb-4">
+            <span className="absolute h-[80px] w-[80px] rounded-full border border-[#C4973F]/20 lumi-ring" />
+            <span className="absolute h-[64px] w-[64px] rounded-full border border-[#C4973F]/35 lumi-ring" style={{ animationDelay: '0.4s' }} />
+            <div className="relative h-[48px] w-[48px] rounded-full lumi-breathe flex items-center justify-center"
+              style={{ background: 'radial-gradient(ellipse at 55% 35%, #E8B44B 0%, #C4973F 55%, rgba(196,151,63,0.35) 100%)', boxShadow: '0 0 30px rgba(232,180,75,.5), 0 0 60px rgba(196,151,63,.2)' }}>
+              <div className="h-2 w-2 rounded-full bg-white/70" />
+            </div>
           </div>
-          <div className="text-2xl font-bold text-[#1A1814]">Lumi</div>
-          <div className="text-xs text-[#8A8278] mt-1">Your clinic automation assistant</div>
+          <div className="text-[18px] font-bold tracking-[-0.01em]" style={{ color: '#FFFDF8' }}>Lumi</div>
+          <div className="text-[13px] mt-1" style={{ color: 'rgba(250,247,242,0.5)' }}>Your clinic automation assistant</div>
           <button
             onClick={() => setLumiOpen(false)}
-            className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-xl text-[#8A8278] hover:text-[#1A1814] hover:bg-[#F9EDE8] transition-all"
+            className="absolute top-4 right-4 grid h-9 w-9 place-items-center rounded-xl transition-colors"
+            style={{ color: 'rgba(255,253,248,0.45)' }}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Messages */}
-        <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
-          {lumiMsgs.length === 0 && (
-            <div className="flex flex-wrap gap-2 pt-2">
+        {/* Pills section — visible until user sends first message */}
+        {!lumiMsgs.some(m => m.role === 'user') && (
+          <div className="px-5 py-4 border-b border-[rgba(26,24,20,0.08)] shrink-0" style={{ backgroundColor: '#FFFDF8' }}>
+            <div className="flex flex-wrap gap-2">
               {[
                 { emoji: '📊', label: 'What am I losing this month?' },
                 { emoji: '👥', label: 'Which clients need attention?' },
-                { emoji: '⚡', label: 'Show me what Lumi can do' },
+                { emoji: '⚡', label: 'What can Lumi actually do?' },
               ].map(({ emoji, label }) => (
                 <button key={label} type="button" onClick={() => sendToLumi(label)}
-                  className="flex items-center gap-2 rounded-full border border-[rgba(196,151,63,0.3)] bg-[#FFFDF8] px-4 py-2.5 text-sm font-medium text-[#1A1814] hover:bg-[#C4973F]/10 hover:border-[#C4973F]/60 transition-all">
+                  className="flex items-center gap-2 rounded-full border border-[rgba(196,151,63,0.3)] bg-[#F9EDE8] px-4 py-2.5 text-sm font-medium text-[#1A1814] hover:bg-[#C4973F]/10 hover:border-[#C4973F]/60 transition-all">
                   <span>{emoji}</span> {label}
                 </button>
               ))}
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Messages */}
+        <div ref={lumiScrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4" style={{ backgroundColor: '#FFFDF8' }}>
           {lumiMsgs.map((msg, i) => (
             <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
               {msg.role === 'assistant' && (
                 <span className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#C4973F] px-1">Lumi ✦</span>
               )}
-              <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'bg-[#F9EDE8] text-[#1A1814] rounded-tl-sm' : 'bg-[#1A1814] text-[#FFFDF8] rounded-tr-sm'}`}>
+              <div className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
+                style={msg.role === 'assistant' ? { backgroundColor: '#F9EDE8', color: '#1A1814' } : { backgroundColor: '#1A1814', color: '#FFFDF8' }}>
                 {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
                   ? <span className="flex gap-1 pt-1">{[0, 1, 2].map(d => <span key={d} className="h-1.5 w-1.5 rounded-full bg-[#C4973F] typing-dot" style={{ animationDelay: `${d * 0.14}s` }} />)}</span>
                   : msg.role === 'assistant'
@@ -967,16 +986,17 @@ export default function DemoPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-[rgba(26,24,20,0.08)] p-4 shrink-0">
+        <div className="border-t border-[rgba(26,24,20,0.08)] p-4 shrink-0" style={{ backgroundColor: '#FFFDF8' }}>
           <form onSubmit={e => { e.preventDefault(); sendToLumi(lumiInput); }} className="flex gap-2">
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
               placeholder="Ask Lumi anything about your clinic..."
               style={{ fontSize: '16px' }}
-              className="flex-1 rounded-2xl border border-[rgba(26,24,20,0.12)] bg-[#F9EDE8]/50 px-4 py-3 text-sm text-[#1A1814] placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
+              className="flex-1 rounded-full border border-[rgba(26,24,20,0.12)] bg-[#F9EDE8]/50 px-5 py-3 text-sm text-[#1A1814] placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
             />
             <button type="submit" disabled={!lumiInput.trim() || lumiLoading}
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#C4973F] text-[#1A1814] hover:bg-[#E8B44B] transition-colors disabled:opacity-40">
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-full transition-colors disabled:opacity-40"
+              style={{ backgroundColor: '#C4973F', color: '#1A1814' }}>
               <Icon name="send" className="h-4 w-4" />
             </button>
           </form>
@@ -1008,6 +1028,7 @@ export default function DemoPage() {
       </nav>
 
       {/* Desktop sticky CTA — smart: changes when coming from reveal */}
+      {!isPreview && (
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 hidden lg:block">
         <div className="flex items-center gap-4 rounded-full border border-[rgba(26,24,20,0.1)] px-6 py-3 shadow-[0_20px_60px_rgba(26,24,20,.1)] backdrop-blur-xl hover:shadow-[0_20px_60px_rgba(196,151,63,.15)] transition-all"
           style={{ backgroundColor: 'rgba(255,253,248,0.92)' }}>
@@ -1022,6 +1043,7 @@ export default function DemoPage() {
           </a>
         </div>
       </div>
+      )}
 
     </div>
   );
