@@ -91,7 +91,7 @@ export default function ResultsCTA({ r }: Props) {
       </div>
 
       <div className="bg-[#0F0D0B] border-t border-white/[0.05] px-6 py-8 flex flex-wrap items-center justify-between gap-4">
-        <Logo light />
+        <Logo light width={100} />
         <p className="text-xs text-white/25">© Lumio · lumio.london · hello@lumio.london</p>
       </div>
     </>

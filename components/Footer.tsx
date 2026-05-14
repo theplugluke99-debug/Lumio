@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="bg-[#2E2B26] py-14 px-4">
       <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-start justify-between gap-8">
         <div className="flex flex-col gap-3 items-center text-center md:items-start md:text-left">
-          <Logo small light />
+          <Logo light width={120} />
           <p className="text-sm text-[#8A8278] max-w-xs">Work flows differently in the right light.</p>
           <p className="text-xs text-[#8A8278]">
             <a href="mailto:hello@lumio.london" className="hover:text-[#C4973F] transition-colors">hello@lumio.london</a>

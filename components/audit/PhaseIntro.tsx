@@ -30,7 +30,7 @@ export default function PhaseIntro({ onStart }: Props) {
       </div>
 
       <div className="relative z-10 px-6 pt-7 flex justify-between items-center">
-        <a href="/"><Logo light /></a>
+        <a href="/"><Logo light width={100} /></a>
         <a href="/" className="text-sm text-white/40 hover:text-white/70 transition-colors">← Back to site</a>
       </div>
 

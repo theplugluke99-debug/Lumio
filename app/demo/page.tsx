@@ -347,7 +347,7 @@ export default function DemoPage() {
         style={{ backgroundColor: 'rgba(249,237,232,0.96)', backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)` }}
       >
         <div className="mb-8 pt-2 shrink-0">
-          <a href="/"><Logo width={90} /></a>
+          <a href="/"><Logo width={80} /></a>
         </div>
         <nav className="space-y-1.5 flex-1">
           {navItems.map(({ id, icon, label, locked }) => (
