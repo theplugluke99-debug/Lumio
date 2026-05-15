@@ -22,12 +22,18 @@
 html {
   cursor: none;
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   cursor: none;
   background: #FFFDF8;
   color: #1A1814;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Prevent white body flashing through opacity transitions on dark pages */
