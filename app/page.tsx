@@ -1,13 +1,17 @@
 import CursorGlow from '@/components/ui/CursorGlow';
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
+import PainSection from '@/components/PainSection';
 import Stats from '@/components/Stats';
 import Problem from '@/components/Problem';
 import Services from '@/components/Services';
+import PivotSection from '@/components/PivotSection';
+import NumbersSection from '@/components/NumbersSection';
 import DemoTeaser from '@/components/DemoTeaser';
 import TalkToLumio from '@/components/TalkToLumio';
 import Process from '@/components/Process';
 import Pricing from '@/components/Pricing';
+import FinalCTA from '@/components/FinalCTA';
 import Guarantee from '@/components/Guarantee';
 import Testimonial from '@/components/Testimonial';
 import CTA from '@/components/CTA';
@@ -19,13 +23,17 @@ export default function Page() {
       <CursorGlow />
       <Hero />
       <Marquee />
+      <PainSection />
       <Stats />
       <Problem />
       <Services />
+      <PivotSection />
+      <NumbersSection />
       <DemoTeaser />
       <TalkToLumio />
       <Process />
       <Pricing />
+      <FinalCTA />
       <Guarantee />
       <Testimonial />
       <CTA />

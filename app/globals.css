@@ -21,6 +21,7 @@
 
 html {
   cursor: none;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -141,6 +142,24 @@ main {
   75%, 100% {
     transform: scale(2);
     opacity: 0;
+  }
+}
+
+@keyframes lumioSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes lumioBreathe {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(196,151,63,0.4),
+      0 0 40px rgba(196,151,63,0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(196,151,63,0.7),
+      0 0 60px rgba(196,151,63,0.3);
   }
 }
 
