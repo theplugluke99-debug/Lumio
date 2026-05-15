@@ -1,8 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { useCountUp } from '@/hooks/useCountUp';
 import { STATS } from '@/lib/data';
+
+const ease = [0.25, 0.1, 0.25, 1] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
 
 type StatDef = typeof STATS[0] & { delay: number; triggered: boolean };
 
@@ -45,7 +58,9 @@ function StatCard({
 
 export default function Stats() {
   const sectionRef = useRef<HTMLElement>(null);
+  const motionRef = useRef(null);
   const [triggered, setTriggered] = useState(false);
+  const inView = useInView(motionRef, { once: true, margin: '-100px' });
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -65,11 +80,19 @@ export default function Stats() {
 
   return (
     <section ref={sectionRef} className="bg-[#FFFDF8] py-20 px-4">
-      <div className="mx-auto max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <motion.div
+        ref={motionRef}
+        variants={stagger}
+        initial="hidden"
+        animate={inView ? 'visible' : 'hidden'}
+        className="mx-auto max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
+      >
         {STATS.map((s, i) => (
-          <StatCard key={s.value + s.source} {...s} delay={i * 150} triggered={triggered} />
+          <motion.div key={s.value + s.source} variants={fadeUp}>
+            <StatCard {...s} delay={i * 150} triggered={triggered} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }

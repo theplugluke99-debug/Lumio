@@ -1,14 +1,29 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { useChat } from '@/hooks/useChat';
 import { OPENING_MESSAGE } from '@/lib/chat';
 import { CHAT_TRUST } from '@/lib/data';
 import ChatMessages from '@/components/ui/ChatMessages';
 import ChatInput from '@/components/ui/ChatInput';
 
+const ease = [0.25, 0.1, 0.25, 1] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
+
 export default function TalkToLumio() {
   const sectionRef = useRef<HTMLElement>(null);
+  const headingRef = useRef(null);
+  const headingInView = useInView(headingRef, { once: true, margin: '-100px' });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
   const { messages, setMessages, input, setInput, isTyping, loading, sendMessage, retryLast } = useChat();
@@ -54,13 +69,19 @@ export default function TalkToLumio() {
     <section id="talk-to-lumio" ref={sectionRef} className="relative bg-[#1A1814] py-24 px-4 overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full blur-[180px] opacity-[0.07]" style={{ background: '#C4973F' }} />
 
-      <div className="relative mx-auto max-w-3xl text-center mb-12">
-        <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">AI ASSISTANT</span>
-        <h2 className="mt-3 font-display font-black text-5xl md:text-7xl leading-[.9] tracking-[-0.03em] text-[#FFFDF8]">Talk to Lumio</h2>
-        <p className="mt-4 text-[#8A8278] max-w-lg mx-auto text-base leading-relaxed">
+      <motion.div
+        ref={headingRef}
+        variants={stagger}
+        initial="hidden"
+        animate={headingInView ? 'visible' : 'hidden'}
+        className="relative mx-auto max-w-3xl text-center mb-12"
+      >
+        <motion.span variants={fadeUp} className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">AI ASSISTANT</motion.span>
+        <motion.h2 variants={fadeUp} className="mt-3 font-display font-black text-5xl md:text-7xl leading-[.9] tracking-[-0.03em] text-[#FFFDF8]">Talk to Lumio</motion.h2>
+        <motion.p variants={fadeUp} className="mt-4 text-[#8A8278] max-w-lg mx-auto text-base leading-relaxed">
           Ask anything. Get your personalised automation blueprint. See your numbers. No forms, no calls, no waiting.
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       <div className="relative mx-auto max-w-[800px]">
 

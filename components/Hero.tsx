@@ -1,9 +1,22 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import GoldButton from '@/components/ui/GoldButton';
 import Logo from '@/components/ui/Logo';
 import { HERO_ACTIVITY } from '@/lib/data';
+
+const ease = [0.25, 0.1, 0.25, 1] as const;
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+};
 
 export default function Hero() {
   return (
@@ -23,25 +36,41 @@ export default function Hero() {
 
       <div className="relative z-10 flex-1 flex items-start md:items-center px-4 pt-16 pb-16 md:py-0">
         <div className="mx-auto max-w-6xl w-full grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-          <div className="flex flex-col gap-5 md:gap-7 items-center text-center md:items-start md:text-left">
-            <div className="reveal inline-flex items-center gap-2.5 rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-xs font-semibold tracking-widest text-[#E8B44B] uppercase">
+
+          <motion.div
+            className="flex flex-col gap-5 md:gap-7 items-center text-center md:items-start md:text-left"
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div
+              variants={fadeUp}
+              className="inline-flex items-center gap-2.5 rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-xs font-semibold tracking-widest text-[#E8B44B] uppercase"
+            >
               <span className="pulse-dot h-2 w-2 rounded-full bg-[#C4973F]" />
               AI Automation · Aesthetic Clinics · London &amp; UK
-            </div>
+            </motion.div>
 
-            <h1 className="reveal-2 font-display font-black text-[#FFFDF8] leading-[.88] tracking-[-0.04em]"
-              style={{ fontSize: 'clamp(3rem, 12vw, 9.4rem)' }}>
+            <motion.h1
+              variants={fadeUp}
+              className="font-display font-black text-[#FFFDF8] leading-[.88] tracking-[-0.04em]"
+              style={{ fontSize: 'clamp(3rem, 12vw, 9.4rem)' }}
+            >
               Your clinic.<br />
               <span className="italic gold-text">Running itself.</span>
-            </h1>
+            </motion.h1>
 
-            <p className="reveal-3 text-base md:text-lg leading-relaxed mx-auto md:mx-0 max-w-sm md:max-w-md" style={{ color: 'rgba(255,253,248,0.62)' }}>
+            <motion.p
+              variants={fadeUp}
+              className="text-base md:text-lg leading-relaxed mx-auto md:mx-0 max-w-sm md:max-w-md"
+              style={{ color: 'rgba(255,253,248,0.62)' }}
+            >
               While you&apos;re with a client, Lumio answers enquiries, books appointments,
               automates your admin, and follows up — automatically. Every lead captured.
               Every task handled. Nothing missed.
-            </p>
+            </motion.p>
 
-            <div className="reveal-4 flex flex-col gap-3 w-full md:w-auto">
+            <motion.div variants={fadeUp} className="flex flex-col gap-3 w-full md:w-auto">
               <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3 w-full sm:w-auto">
                 <div className="relative group w-full sm:w-auto">
                   <GoldButton href="/audit" large>Get my free Revenue Reveal</GoldButton>
@@ -67,10 +96,10 @@ export default function Hero() {
                 Or explore the live demo first
                 <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">→</span>
               </a>
-            </div>
+            </motion.div>
 
             {/* Mobile phone mockup */}
-            <div className="block md:hidden mt-4 w-full flex justify-center">
+            <motion.div variants={fadeUp} className="block md:hidden mt-4 w-full flex justify-center">
               <div className="relative mx-auto" style={{ width: 280 }}>
                 <div className="rounded-[2rem] border-[3px] border-white/10 bg-white/[0.04] p-2.5 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
                   <div className="rounded-[1.5rem] bg-[#FFFDF8] p-4" style={{ fontFamily: 'var(--font-inter, system-ui)' }}>
@@ -108,10 +137,15 @@ export default function Hero() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="reveal-3 relative hidden md:block">
+          <motion.div
+            className="relative hidden md:block"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease, delay: 0.4 }}
+          >
             <div className="absolute inset-0 rounded-[3rem] blur-[60px] opacity-30 -z-10"
               style={{ background: 'radial-gradient(ellipse, #C4973F 0%, transparent 70%)' }} />
             <div className="rounded-[3rem] border border-white/10 bg-white/[0.06] backdrop-blur-2xl p-3">
@@ -138,7 +172,8 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
+
         </div>
       </div>
     </section>
