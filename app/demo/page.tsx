@@ -4,8 +4,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Logo from '@/components/ui/Logo';
 import { MD } from '@/lib/chat';
+import VoiceProfile from '@/components/demo/VoiceProfile';
+import SuggestedActions from '@/components/demo/SuggestedActions';
+import PerformanceGraph from '@/components/demo/PerformanceGraph';
+import ClientProfile from '@/components/demo/ClientProfile';
 
-type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'admin';
+type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
 type FeedItem = { id: number; time: string; title: string; detail: string; icon: string; category: string };
 type Convo = { id: string; name: string; channel: string; preview: string; time: string; messages: { role: 'lumio' | 'client'; text: string }[] };
@@ -34,6 +38,7 @@ function Icon({ name, className = 'h-5 w-5' }: { name: string; className?: strin
     send: <><path d="M22 2L11 13" {...SVG}/><path d="M22 2l-7 20-4-9-9-4 20-7z" {...SVG}/></>,
     menu: <><path d="M3 12h18M3 6h18M3 18h18" {...SVG}/></>,
     mic: <><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" {...SVG}/><path d="M19 10a7 7 0 0 1-14 0M12 19v3M8 22h8" {...SVG}/></>,
+    voice: <><path d="M12 20h9" {...SVG}/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" {...SVG}/></>,
   };
   return <svg viewBox="0 0 24 24" className={className}>{m[name] ?? null}</svg>;
 }
@@ -55,6 +60,7 @@ function StatusPill({ status }: { status: string }) {
   const t: Record<string, string> = {
     Active: 'bg-[#EDF4EE] text-[#5B8A68]', VIP: 'bg-[#FFF4DD] text-[#C4973F]',
     New: 'bg-[#F0EDF8] text-[#7C6B9A]', 'Due rebooking': 'bg-[#F9E1DF] text-[#B35A4C]',
+    Lapsed: 'bg-[#F2E8E8] text-[#8A5B5B]',
     Completed: 'bg-[#EDF4EE] text-[#5B8A68]', Pending: 'bg-[#F9E1DF] text-[#B35A4C]',
     Sent: 'bg-[#FFF4DD] text-[#C4973F]', Paid: 'bg-[#EDF4EE] text-[#5B8A68]',
     Overdue: 'bg-[#F9E1DF] text-[#B35A4C]',
@@ -163,7 +169,7 @@ const CLIENTS: Client[] = [
   { id: '5', initials: 'GM', name: 'Grace Mitchell', lastVisit: '5 Apr 2026', bookings: 8, spend: '£1,560', treatments: ['Botox', 'Filler'], status: 'Due rebooking', nextAppt: '—', phone: '+44 7700 900345', channel: 'WhatsApp' },
   { id: '6', initials: 'AC', name: 'Amelia Clarke', lastVisit: '12 May 2026', bookings: 2, spend: '£280', treatments: ['Dermaplaning'], status: 'New', nextAppt: '26 May 2026', phone: '+44 7700 900678', channel: 'Website' },
   { id: '7', initials: 'IM', name: 'Isabelle Moore', lastVisit: '22 May 2026', bookings: 15, spend: '£3,200', treatments: ['Lip filler', 'Botox', 'Hydrafacial', 'Cheek filler'], status: 'VIP', nextAppt: '2 Jun 2026', phone: '+44 7700 900901', channel: 'Referral' },
-  { id: '8', initials: 'LT', name: 'Lily Thompson', lastVisit: '19 May 2026', bookings: 1, spend: '£150', treatments: ['Consultation'], status: 'New', nextAppt: '28 May 2026', phone: '+44 7700 900234', channel: 'Google' },
+  { id: '8', initials: 'HT', name: 'Hannah Taylor', lastVisit: '5 Apr 2026', bookings: 3, spend: '£670', treatments: ['Lip filler', 'Skin booster'], status: 'Lapsed', nextAppt: '—', phone: '+44 7700 900234', channel: 'WhatsApp' },
 ];
 
 const METRIC_CARDS = [
@@ -192,23 +198,50 @@ export default function DemoPage() {
   const [lumiLoading, setLumiLoading] = useState(false);
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
-  const [lumiDark, setLumiDark] = useState(false);
   const [showPills, setShowPills] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [hasSpeech, setHasSpeech] = useState(false);
-  const [dashMode, setDashMode] = useState<'light' | 'dark'>('light');
+  const [dashMode, setDashMode] = useState<'light' | 'dark'>('dark');
   const [mobileConvoFull, setMobileConvoFull] = useState(false);
+  const [mobileProfileFull, setMobileProfileFull] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [clientFilter, setClientFilter] = useState('All');
+  const [showNotifs, setShowNotifs] = useState(false);
+  const [notifsRead, setNotifsRead] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
   const bh = bannerDismissed ? 0 : 52;
   const dm = dashMode === 'dark';
   const dBg = dm ? '#141210' : '#FFFDF8';
   const dSidebarBg = dm ? 'rgba(20,18,16,0.98)' : 'rgba(249,237,232,0.96)';
   const dTopbarBg = dm ? 'rgba(20,18,16,0.92)' : 'rgba(255,253,248,0.92)';
-  const dCardBg = dm ? 'rgba(255,253,248,0.05)' : undefined;
-  const dCardBorder = dm ? 'rgba(196,151,63,0.15)' : 'rgba(26,24,20,0.08)';
+  const dCardBg = dm ? 'rgba(255,253,248,0.04)' : 'rgba(255,255,255,0.72)';
+  const dCardBorder = dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)';
   const dText = dm ? '#FFFDF8' : '#1A1814';
   const dTextMuted = dm ? 'rgba(255,253,248,0.5)' : '#8A8278';
+  const dTextSub = dm ? 'rgba(255,253,248,0.35)' : 'rgba(26,24,20,0.4)';
+  const dBorderSoft = dm ? 'rgba(255,253,248,0.06)' : 'rgba(26,24,20,0.06)';
+  const dIconBg = dm ? 'rgba(196,151,63,0.15)' : '#FFF7E8';
+  const dTableHeader = dm ? 'rgba(255,253,248,0.04)' : 'rgba(249,237,232,0.55)';
+  const dSelectedBg = dm ? 'rgba(196,151,63,0.12)' : '#FFF4DD';
+  const dClientBubble = dm ? 'rgba(255,253,248,0.06)' : '#F9EDE8';
+  const dFilterBtn = dm ? 'rgba(255,253,248,0.06)' : '#F9EDE8';
+  const dTagBg = dm ? 'rgba(196,151,63,0.15)' : '#FFF4DD';
+  const dInputBg = dm ? 'rgba(255,253,248,0.06)' : '#FFFFFF';
+  const dInputBorder = dm ? 'rgba(255,253,248,0.12)' : 'rgba(26,24,20,0.12)';
+  const dSecBg = dm ? 'rgba(255,253,248,0.03)' : '#F9EDE8';
+
+  // Persist dashboard theme to localStorage
+  useEffect(() => {
+    localStorage.setItem('lumio-theme', dashMode);
+  }, [dashMode]);
+
+  // Restore theme from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('lumio-theme');
+    if (saved === 'light' || saved === 'dark') setDashMode(saved);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -247,6 +280,15 @@ export default function DemoPage() {
   useEffect(() => {
     setHasSpeech('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
   }, []);
+
+  useEffect(() => {
+    if (!showNotifs) return;
+    const handler = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotifs(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showNotifs]);
 
   const saveClinicName = () => {
     const name = bannerInput.trim() || 'Glow Aesthetics London';
@@ -310,11 +352,11 @@ export default function DemoPage() {
     { id: 'activity' as Tab, icon: 'activity', label: 'Live activity' },
     { id: 'conversations' as Tab, icon: 'conversations', label: 'Conversations' },
     { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
+    { id: 'voice' as Tab, icon: 'voice', label: 'My Style' },
     { id: 'admin' as Tab, icon: tier === 'fullops' ? 'spark' : 'lock', label: 'Admin hub', locked: tier !== 'fullops' },
   ];
 
   const currentConvo = CONVOS.find(c => c.id === selectedConvo);
-  const currentClient = CLIENTS.find(c => c.id === selectedClient);
   const filteredFeed = actFilter === 'all' ? FULL_FEED : FULL_FEED.filter(i => i.category === actFilter);
 
   return (
@@ -361,23 +403,33 @@ export default function DemoPage() {
           <a href="/"><Logo width={80} /></a>
         </div>
         <nav className="space-y-1.5 flex-1">
-          {navItems.map(({ id, icon, label, locked }) => (
-            <button key={id} type="button"
-              onClick={() => { setTab(id); setSidebarOpen(false); }}
-              className={`group w-full flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${tab === id ? 'border border-[#C4973F]/35 bg-[#FFFDF8] text-[#C4973F] shadow-[0_14px_40px_rgba(196,151,63,.09)]' : 'text-[#1A1814]/65 hover:bg-white/55 hover:text-[#1A1814]'}`}>
-              <div className="flex items-center gap-3">
-                <span className={`grid h-8 w-8 place-items-center rounded-xl ${tab === id ? 'bg-[#C4973F]/12' : 'bg-white/45'}`}>
-                  <Icon name={icon} className="h-4 w-4" />
-                </span>
-                <span className="font-semibold">{label}</span>
-              </div>
-              {locked && (
-                <span className="grid h-6 w-6 place-items-center rounded-full bg-[#C4973F]/12 text-[#C4973F]">
-                  <Icon name="lock" className="h-3 w-3" />
-                </span>
-              )}
-            </button>
-          ))}
+          {navItems.map(({ id, icon, label, locked }) => {
+            const active = tab === id;
+            return (
+              <button key={id} type="button"
+                onClick={() => { setTab(id); setSidebarOpen(false); }}
+                className="group w-full flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition-all duration-200"
+                style={{
+                  border: active ? '1px solid rgba(196,151,63,0.35)' : '1px solid transparent',
+                  backgroundColor: active ? (dm ? 'rgba(196,151,63,0.12)' : '#FFFDF8') : 'transparent',
+                  color: active ? '#C4973F' : dTextMuted,
+                  boxShadow: active ? '0 14px 40px rgba(196,151,63,0.09)' : 'none',
+                }}>
+                <div className="flex items-center gap-3">
+                  <span className="grid h-8 w-8 place-items-center rounded-xl"
+                    style={{ backgroundColor: active ? 'rgba(196,151,63,0.12)' : (dm ? 'rgba(255,253,248,0.06)' : 'rgba(255,255,255,0.45)') }}>
+                    <Icon name={icon} className="h-4 w-4" />
+                  </span>
+                  <span className="font-semibold">{label}</span>
+                </div>
+                {locked && (
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-[#C4973F]/12 text-[#C4973F]">
+                    <Icon name="lock" className="h-3 w-3" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
         <div className="pt-4 flex flex-col gap-3 shrink-0">
           {/* Ask Lumi sidebar button */}
@@ -423,23 +475,30 @@ export default function DemoPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              {/* Dark/light mode toggle */}
+              {/* Dashboard light/dark toggle */}
               <button
                 type="button"
                 onClick={() => setDashMode(m => m === 'light' ? 'dark' : 'light')}
-                className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-all"
-                style={{ borderColor: 'rgba(196,151,63,0.3)', backgroundColor: dm ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.05)', color: '#C4973F' }}
+                style={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  border: `1px solid ${dm ? 'rgba(250,247,242,0.15)' : 'rgba(26,24,20,0.15)'}`,
+                  background: 'transparent', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: dm ? 'rgba(250,247,242,0.6)' : 'rgba(26,24,20,0.5)',
+                  transition: 'all 200ms',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(196,151,63,0.4)'; (e.currentTarget as HTMLElement).style.color = '#C4973F'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = dm ? 'rgba(250,247,242,0.15)' : 'rgba(26,24,20,0.15)'; (e.currentTarget as HTMLElement).style.color = dm ? 'rgba(250,247,242,0.6)' : 'rgba(26,24,20,0.5)'; }}
               >
                 {dm ? (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
                   </svg>
                 ) : (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                   </svg>
                 )}
-                <span className="hidden sm:inline">{dm ? 'Light' : 'Dark'}</span>
               </button>
               {/* Ask Lumi — mobile only (sidebar hidden on mobile) */}
               <button type="button" onClick={() => openLumi()}
@@ -448,10 +507,66 @@ export default function DemoPage() {
                 <span className="h-2 w-2 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 8px rgba(232,180,75,.9)' }} />
                 Lumi
               </button>
-              <button className="relative grid h-10 w-10 place-items-center rounded-full bg-[#F0EDF8] text-[#1A1814] hover:bg-[#F9EDE8] transition-colors">
-                <Icon name="bell" className="h-4 w-4" />
-                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#C4973F]" style={{ boxShadow: '0 0 8px rgba(196,151,63,.8)' }} />
-              </button>
+              <div className="relative" ref={notifRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowNotifs(v => !v)}
+                  className="relative grid h-10 w-10 place-items-center rounded-full transition-colors"
+                  style={{ background: dm ? 'rgba(255,253,248,0.08)' : '#F0EDF8', color: dm ? '#FFFDF8' : '#1A1814' }}
+                >
+                  <Icon name="bell" className="h-4 w-4" />
+                  {!notifsRead && (
+                    <span className="absolute -top-1 -right-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#C4973F] text-[10px] font-bold text-[#1A1814]">4</span>
+                  )}
+                </button>
+
+                {showNotifs && (
+                  <div style={{
+                    position: 'absolute', top: 'calc(100% + 12px)', right: 0,
+                    width: 340, background: dm ? '#141210' : '#FFFDF8',
+                    border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3)', zIndex: 50, overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      padding: '1rem 1.25rem', borderBottom: `1px solid ${dCardBorder}`,
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    }}>
+                      <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText }}>Notifications</span>
+                      <button onClick={() => setNotifsRead(true)} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500, fontSize: 12, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        Mark all read
+                      </button>
+                    </div>
+
+                    {([
+                      { dot: '#C4973F', title: 'Lumi booked Emma Wilson', body: 'Lip filler consultation confirmed for Friday 11am', time: '2 min ago', read: false },
+                      { dot: '#C4973F', title: 'New 5-star review received', body: 'Sophie Carter left a Google review after her treatment', time: '14 min ago', read: false },
+                      { dot: '#5B8A68', title: 'No-show prevented', body: "Charlotte Reed confirmed after Lumi's reminder sequence", time: '1 hr ago', read: false },
+                      { dot: '#C4973F', title: 'Rebooking message sent', body: 'Lumi reached out to Olivia Bennett — 7 weeks since last visit', time: '2 hr ago', read: false },
+                      { dot: '#8A8278', title: 'Monthly report ready', body: 'May 2026 performance summary generated by Lumi', time: 'Yesterday', read: true },
+                    ] as { dot: string; title: string; body: string; time: string; read: boolean }[]).map((notif, ni, arr) => (
+                      <div key={ni} style={{
+                        padding: '1rem 1.25rem',
+                        borderBottom: ni < arr.length - 1 ? `1px solid ${dCardBorder}` : 'none',
+                        display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer',
+                        background: !notifsRead && !notif.read ? (dm ? 'rgba(196,151,63,0.04)' : 'rgba(196,151,63,0.03)') : 'transparent',
+                      }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: notifsRead ? '#8A8278' : notif.dot, marginTop: 5, flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 13, color: dText, lineHeight: 1.4 }}>{notif.title}</div>
+                          <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, lineHeight: 1.5, marginTop: 2 }}>{notif.body}</div>
+                        </div>
+                        <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextSub, whiteSpace: 'nowrap', flexShrink: 0 }}>{notif.time}</span>
+                      </div>
+                    ))}
+
+                    <div style={{ padding: '0.75rem 1.25rem', textAlign: 'center' }}>
+                      <button onClick={() => { setTab('activity'); setShowNotifs(false); }} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500, fontSize: 13, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        View all activity →
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -555,6 +670,49 @@ export default function DemoPage() {
                           <div className="mt-3 text-[10px] font-bold uppercase tracking-[.14em]" style={{ color: card.trendColor }}>{card.trend}</div>
                         </div>
                       ))}
+                    </div>
+
+                    {/* Response time + Revenue widgets */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', padding: '1.5rem', flex: 1 }}>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#C4973F', margin: '0 0 1rem' }}>RESPONSE TIME</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1rem' }}>
+                          <div>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, fontWeight: 500, color: dTextMuted, margin: '0 0 4px' }}>Before Lumio</p>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 40, fontWeight: 800, color: dTextSub, lineHeight: 1, margin: 0 }}>4.2h</p>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, margin: '4px 0 0' }}>average response</p>
+                          </div>
+                          <div style={{ color: '#C4973F', fontSize: 24, flexShrink: 0 }}>→</div>
+                          <div>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, fontWeight: 500, color: '#C4973F', margin: '0 0 4px' }}>With Lumio</p>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 40, fontWeight: 800, color: '#C4973F', lineHeight: 1, margin: 0 }}>23s</p>
+                            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, margin: '4px 0 0' }}>average response</p>
+                          </div>
+                        </div>
+                        <div style={{ width: '100%', background: dBorderSoft, borderRadius: 99, height: 6, marginBottom: 8 }}>
+                          <div style={{ width: '98%', height: '100%', background: '#C4973F', borderRadius: 99 }} />
+                        </div>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, margin: 0 }}>98% faster. Every enquiry. Every time.</p>
+                      </div>
+
+                      <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', padding: '1.5rem', flex: 1 }}>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#C4973F', margin: '0 0 1rem' }}>REVENUE RECOVERED</p>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 40, fontWeight: 800, color: '#C4973F', lineHeight: 1, margin: '0 0 4px' }}>£4,800</p>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, margin: '0 0 1rem' }}>captured this week alone</p>
+                        <div>
+                          {([
+                            { label: 'Missed enquiries recovered', amount: '£2,800' },
+                            { label: 'No-shows prevented', amount: '£1,200' },
+                            { label: 'Rebooking revenue', amount: '£800' },
+                          ] as { label: string; amount: string }[]).map((row, ri, arr) => (
+                            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: ri < arr.length - 1 ? `1px solid ${dBorderSoft}` : 'none' }}>
+                              <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, fontWeight: 500, color: dTextSub }}>{row.label}</span>
+                              <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, fontWeight: 600, color: '#C4973F' }}>{row.amount}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, fontStyle: 'italic', margin: '1rem 0 0' }}>vs £0 before Lumio</p>
+                      </div>
                     </div>
 
                     <div className="grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
@@ -679,6 +837,12 @@ export default function DemoPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Performance graph */}
+                    <PerformanceGraph darkMode={dm} />
+
+                    {/* Lumi suggests */}
+                    <SuggestedActions darkMode={dm} />
                   </>
                 )}
               </div>
@@ -791,89 +955,130 @@ export default function DemoPage() {
             )}
 
             {/* ── Clients ──────────────────────────────────────── */}
-            {tab === 'clients' && (
-              <div className="space-y-6">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
-                    <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Your client base</h2>
-                  </div>
-                  <p className="text-sm text-[#8A8278]">{CLIENTS.length} clients · click a row to view</p>
-                </div>
-                <div className={`grid gap-6 ${selectedClient ? 'xl:grid-cols-[1fr_380px]' : ''}`}>
-                  {/* Mobile card list */}
-                  <div className="block lg:hidden rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)] divide-y divide-[rgba(26,24,20,0.06)]">
-                    {CLIENTS.map(client => (
-                      <button key={client.id} type="button"
-                        onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
-                        className={`w-full flex items-center gap-4 p-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
-                        <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="font-bold text-[#1A1814] truncate">{client.name}</span>
-                            <StatusPill status={client.status} />
-                          </div>
-                          <div className="mt-0.5 text-xs text-[#8A8278]">{client.spend} · {client.lastVisit}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  {/* Desktop table */}
-                  <div className="hidden lg:block rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 overflow-hidden shadow-[0_26px_90px_rgba(26,24,20,.05)]">
-                    <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 bg-[#F9EDE8]/55 px-6 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8A8278]">
-                      <div>Client</div><div>Last visit</div><div>Bookings</div><div>Status</div>
-                    </div>
-                    {CLIENTS.map(client => (
-                      <button key={client.id} type="button"
-                        onClick={() => setSelectedClient(selectedClient === client.id ? null : client.id)}
-                        className={`w-full grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center border-t border-[rgba(26,24,20,0.06)] px-6 py-4 text-left transition-all ${selectedClient === client.id ? 'bg-[#FFF4DD]' : 'bg-white hover:bg-[#F9EDE8]/30'}`}>
-                        <div className="flex items-center gap-3">
-                          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-sm font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{client.initials}</div>
-                          <div><div className="font-bold text-[#1A1814]">{client.name}</div><div className="text-xs text-[#8A8278]">{client.spend} · via {client.channel}</div></div>
-                        </div>
-                        <div className="text-sm text-[#8A8278]">{client.lastVisit}</div>
-                        <div className="text-sm font-bold text-[#1A1814]">{client.bookings}</div>
-                        <div><StatusPill status={client.status} /></div>
-                      </button>
-                    ))}
-                  </div>
-                  {currentClient && (
-                    <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] h-fit">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                          <div className="grid h-14 w-14 place-items-center rounded-2xl text-xl font-black text-[#E8B44B]" style={{ backgroundColor: '#1A1814' }}>{currentClient.initials}</div>
-                          <div><div className="text-xl font-black text-[#1A1814]">{currentClient.name}</div><div className="mt-1"><StatusPill status={currentClient.status} /></div></div>
-                        </div>
-                        <button onClick={() => setSelectedClient(null)} className="text-[#8A8278] hover:text-[#1A1814] transition-colors p-1">
-                          <Icon name="x" className="h-5 w-5" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 mb-5">
-                        {[['Bookings', String(currentClient.bookings)], ['Total spend', currentClient.spend], ['Last visit', currentClient.lastVisit], ['Next appt', currentClient.nextAppt]].map(([label, val]) => (
-                          <div key={label} className="rounded-2xl border border-[rgba(26,24,20,0.08)] bg-[#F9EDE8]/40 p-4">
-                            <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278]">{label}</div>
-                            <div className="mt-1 text-lg font-black text-[#1A1814]">{val}</div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mb-4">
-                        <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-2">Treatments</div>
-                        <div className="flex flex-wrap gap-2">{currentClient.treatments.map(t => <span key={t} className="rounded-full bg-[#FFF4DD] px-3 py-1.5 text-xs font-bold text-[#C4973F]">{t}</span>)}</div>
-                      </div>
-                      <div className="mb-5">
-                        <div className="text-[10px] font-bold uppercase tracking-[.14em] text-[#8A8278] mb-1">Channel</div>
-                        <div className="text-sm text-[#1A1814]">via {currentClient.channel}</div>
-                      </div>
-                      <button
-                        onClick={() => openLumi(`Draft a rebooking message for ${currentClient.name} who last visited ${currentClient.lastVisit} and spends ${currentClient.spend} with us. Their treatments include ${currentClient.treatments.join(', ')}.`)}
-                        className="w-full rounded-2xl bg-[#C4973F] px-4 py-3 text-xs font-extrabold uppercase tracking-[.14em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                        Send rebooking message →
-                      </button>
+            {tab === 'clients' && (() => {
+              const AVATAR_GRADIENTS: Record<string, string> = {
+                '1': 'linear-gradient(135deg,#C4973F,#E8B44B)',
+                '2': 'linear-gradient(135deg,#5B8A68,#7AB088)',
+                '3': 'linear-gradient(135deg,#7C6B9A,#A08CC0)',
+                '4': 'linear-gradient(135deg,#C4973F,#D4A84B)',
+                '5': 'linear-gradient(135deg,#5B6A8A,#7A8FAA)',
+                '6': 'linear-gradient(135deg,#8A6B5B,#AA8B7B)',
+                '7': 'linear-gradient(135deg,#6B8A6B,#8BAA8B)',
+                '8': 'linear-gradient(135deg,#8A7B5B,#AA9B7B)',
+              };
+              const FILTER_PILLS = ['All', 'Active', 'VIP', 'Due rebooking', 'New', 'Lapsed'];
+              const filtered = CLIENTS.filter(c => {
+                const matchSearch = c.name.toLowerCase().includes(clientSearch.toLowerCase());
+                const matchFilter = clientFilter === 'All' || c.status === clientFilter;
+                return matchSearch && matchFilter;
+              });
+              const activeId = selectedClient ?? '1';
+              return (
+                <div>
+                  {/* Mobile back button */}
+                  {mobileProfileFull && (
+                    <button type="button" onClick={() => setMobileProfileFull(false)}
+                      className="mb-4 flex items-center gap-2 text-sm font-bold text-[#C4973F] lg:hidden">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                      All clients
+                    </button>
+                  )}
+                  {!mobileProfileFull && (
+                    <div className="mb-5">
+                      <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
+                      <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]" style={{ color: dText }}>Your client base</h2>
                     </div>
                   )}
+                  <div className="flex gap-4 lg:gap-6" style={{ alignItems: 'flex-start' }}>
+                    {/* LEFT PANEL */}
+                    <div className={`${mobileProfileFull ? 'hidden' : 'flex'} lg:flex flex-col gap-3`} style={{ width: '38%', flexShrink: 0 }}>
+                      {/* Search */}
+                      <div style={{ position: 'relative' }}>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                          style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                          <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input
+                          type="text"
+                          placeholder="Search clients…"
+                          value={clientSearch}
+                          onChange={e => setClientSearch(e.target.value)}
+                          style={{
+                            width: '100%', boxSizing: 'border-box',
+                            background: dCardBg, border: `1px solid ${dCardBorder}`,
+                            borderRadius: '0.875rem', padding: '10px 14px 10px 38px',
+                            fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13,
+                            color: dText, outline: 'none',
+                          }}
+                        />
+                      </div>
+                      {/* Filter pills */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {FILTER_PILLS.map(p => (
+                          <button key={p} type="button" onClick={() => setClientFilter(p)} style={{
+                            fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 11,
+                            borderRadius: 99, padding: '4px 12px', cursor: 'pointer', transition: 'all 150ms',
+                            background: clientFilter === p ? '#C4973F' : dFilterBtn,
+                            color: clientFilter === p ? '#1A1814' : dTextMuted,
+                            border: 'none',
+                          }}>
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Client list */}
+                      <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', overflow: 'hidden' }}>
+                        {filtered.length === 0 && (
+                          <div style={{ padding: '2rem', textAlign: 'center', fontSize: 13, color: dTextMuted }}>No clients found</div>
+                        )}
+                        {filtered.map((client, idx) => {
+                          const isActive = activeId === client.id;
+                          return (
+                            <button key={client.id} type="button"
+                              onClick={() => { setSelectedClient(client.id); setMobileProfileFull(true); }}
+                              style={{
+                                width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+                                padding: '14px 16px', textAlign: 'left', cursor: 'pointer',
+                                background: isActive ? (dm ? 'rgba(196,151,63,0.12)' : '#FFF4DD') : 'transparent',
+                                borderTop: idx === 0 ? 'none' : `1px solid ${dBorderSoft}`,
+                                transition: 'background 150ms', border: 'none',
+                              }}
+                            >
+                              <div style={{
+                                width: 40, height: 40, borderRadius: '0.75rem', flexShrink: 0,
+                                background: AVATAR_GRADIENTS[client.id] ?? '#C4973F',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 13,
+                                color: '#FFFDF8',
+                              }}>
+                                {client.initials}
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 13, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {client.name}
+                                  </span>
+                                  <StatusPill status={client.status} />
+                                </div>
+                                <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, marginTop: 2 }}>
+                                  {client.spend} · {client.lastVisit}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* RIGHT PANEL */}
+                    <div className={`${mobileProfileFull ? 'block' : 'hidden'} lg:block`} style={{ flex: 1, minWidth: 0 }}>
+                      <ClientProfile clientId={activeId} darkMode={dm} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
+
 
             {/* ── Admin Hub ───────────────────────────────────── */}
             {tab === 'admin' && (
@@ -986,6 +1191,9 @@ export default function DemoPage() {
               </div>
             )}
 
+            {/* ── Voice Profile ─────────────────────────────────── */}
+            {tab === 'voice' && <VoiceProfile darkMode={dm} />}
+
           </div>
         </main>
       </div>
@@ -996,7 +1204,7 @@ export default function DemoPage() {
         onClick={() => setLumiOpen(false)}
       />
 
-      {/* Lumi modal */}
+      {/* Lumi modal — theme follows dashboard mode (dm) */}
       <div
         className={`fixed z-[51] flex flex-col overflow-hidden transition-all duration-200
           inset-0 rounded-none
@@ -1005,10 +1213,10 @@ export default function DemoPage() {
             ? 'opacity-100 scale-100 sm:-translate-x-1/2 sm:-translate-y-1/2'
             : 'opacity-0 scale-95 pointer-events-none sm:-translate-x-1/2 sm:-translate-y-1/2'}`}
         style={{
-          background: lumiDark
+          background: dm
             ? 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.15) 0%, #1A1814 55%)'
             : 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.1) 0%, #FFFDF8 55%)',
-          border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.3)' : 'rgba(196,151,63,0.15)'}`,
+          border: `1px solid ${dm ? 'rgba(196,151,63,0.3)' : 'rgba(196,151,63,0.15)'}`,
           boxShadow: '0 40px 120px rgba(26,24,20,0.4)',
         }}
         onClick={e => e.stopPropagation()}
@@ -1017,41 +1225,20 @@ export default function DemoPage() {
         <div className="pointer-events-none absolute top-0 left-0 w-48 h-48 rounded-full blur-[80px] opacity-20 -translate-x-1/3 -translate-y-1/3" style={{ background: '#C4973F' }} />
         <div className="pointer-events-none absolute bottom-0 right-0 w-40 h-40 rounded-full blur-[60px] opacity-10 translate-x-1/3 translate-y-1/3" style={{ background: '#C4973F' }} />
 
-        {/* Top bar */}
-        <div className="relative z-10 flex items-center justify-between px-5 pt-5 shrink-0">
-          <button
-            type="button"
-            onClick={() => setLumiDark(d => !d)}
-            className="flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium transition-all"
-            style={{
-              borderColor: 'rgba(196,151,63,0.3)',
-              backgroundColor: lumiDark ? 'rgba(255,255,255,0.06)' : 'rgba(26,24,20,0.05)',
-              color: '#C4973F',
-            }}
-          >
-            {lumiDark ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-              </svg>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-              </svg>
-            )}
-            {lumiDark ? 'Light' : 'Dark'}
-          </button>
+        {/* Top bar — close button only, no internal theme toggle */}
+        <div className="relative z-10 flex items-center justify-end px-5 pt-5 shrink-0">
           <button
             type="button"
             onClick={() => setLumiOpen(false)}
             className="grid h-9 w-9 place-items-center rounded-xl transition-colors"
-            style={{ color: lumiDark ? 'rgba(255,253,248,0.45)' : '#8A8278' }}
+            style={{ color: dm ? 'rgba(255,253,248,0.45)' : '#8A8278' }}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
         </div>
 
         {/* Identity */}
-        <div className="relative z-10 flex flex-col items-center pt-5 pb-4 px-6 shrink-0">
+        <div className="relative z-10 flex flex-col items-center pt-3 pb-4 px-6 shrink-0">
           <div className="relative flex items-center justify-center mb-4" style={{ width: 130, height: 130 }}>
             <div className="absolute inset-6 rounded-full blur-[28px] opacity-40" style={{ background: '#C4973F' }} />
             <div className="absolute rounded-full" style={{ width: 120, height: 120, border: '1px solid rgba(196,151,63,0.25)' }} />
@@ -1068,8 +1255,8 @@ export default function DemoPage() {
               <div className="absolute" style={{ top: '16%', left: '18%', width: '32%', height: '28%', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', filter: 'blur(3px)' }} />
             </div>
           </div>
-          <div className="lumi-identity-name text-2xl font-black tracking-[-0.02em]" style={{ color: lumiDark ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
-          <div className="text-[10px] font-bold uppercase tracking-[.18em] mt-1" style={{ color: lumiDark ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>
+          <div className="lumi-identity-name text-2xl font-black tracking-[-0.02em]" style={{ color: dm ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
+          <div className="text-[10px] font-bold uppercase tracking-[.18em] mt-1" style={{ color: dm ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>
             Your clinic automation assistant
           </div>
         </div>
@@ -1086,10 +1273,10 @@ export default function DemoPage() {
                   className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
-                    backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
-                    border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
-                    boxShadow: lumiDark ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
-                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                    border: `1px solid ${dm ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
+                    boxShadow: dm ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    color: dm ? '#FFFDF8' : '#1A1814',
                   }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
@@ -1103,10 +1290,10 @@ export default function DemoPage() {
                   className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
-                    backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
-                    border: `1px solid ${lumiDark ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
-                    boxShadow: lumiDark ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
-                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                    border: `1px solid ${dm ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
+                    boxShadow: dm ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    color: dm ? '#FFFDF8' : '#1A1814',
                   }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
@@ -1120,9 +1307,9 @@ export default function DemoPage() {
                   className="col-span-2 flex items-center gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
-                    backgroundColor: lumiDark ? 'rgba(196,151,63,0.1)' : 'rgba(196,151,63,0.06)',
+                    backgroundColor: dm ? 'rgba(196,151,63,0.1)' : 'rgba(196,151,63,0.06)',
                     border: '1px solid rgba(196,151,63,0.25)',
-                    color: lumiDark ? '#FFFDF8' : '#1A1814',
+                    color: dm ? '#FFFDF8' : '#1A1814',
                   }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
@@ -1134,7 +1321,7 @@ export default function DemoPage() {
 
               {/* Stats card */}
               <div className="relative mx-4 mb-4 rounded-[1.45rem] p-4 overflow-hidden" style={{
-                background: lumiDark ? 'rgba(196,151,63,0.07)' : 'rgba(196,151,63,0.05)',
+                background: dm ? 'rgba(196,151,63,0.07)' : 'rgba(196,151,63,0.05)',
                 border: '1px solid rgba(196,151,63,0.12)',
               }}>
                 <svg className="absolute bottom-0 left-0 right-0 w-full opacity-20" height="40" viewBox="0 0 400 40" preserveAspectRatio="none" fill="none">
@@ -1146,19 +1333,19 @@ export default function DemoPage() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.47 2 2 0 0 1 3.56 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                     </svg>
-                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>31 enquiries responded to instantly</span>
+                    <span className="text-xs font-medium" style={{ color: dm ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>31 enquiries responded to instantly</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                       <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>19 bookings confirmed automatically</span>
+                    <span className="text-xs font-medium" style={{ color: dm ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>19 bookings confirmed automatically</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
-                    <span className="text-xs font-medium" style={{ color: lumiDark ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>9 no-shows prevented</span>
+                    <span className="text-xs font-medium" style={{ color: dm ? 'rgba(250,247,242,0.65)' : '#8A8278' }}>9 no-shows prevented</span>
                   </div>
                 </div>
               </div>
@@ -1171,15 +1358,15 @@ export default function DemoPage() {
               {lumiMsgs.map((msg, i) => (
                 <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                   {msg.role === 'assistant' && (
-                    <span className="text-[10px] font-extrabold uppercase tracking-[.16em] px-1" style={{ color: lumiDark ? '#E8B44B' : '#C4973F' }}>
+                    <span className="text-[10px] font-extrabold uppercase tracking-[.16em] px-1" style={{ color: dm ? '#E8B44B' : '#C4973F' }}>
                       Lumi
                     </span>
                   )}
                   <div
                     className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
                     style={msg.role === 'assistant'
-                      ? { backgroundColor: lumiDark ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: lumiDark ? '#FFFDF8' : '#1A1814' }
-                      : { backgroundColor: lumiDark ? '#C4973F' : '#1A1814', color: lumiDark ? '#1A1814' : '#FFFDF8' }
+                      ? { backgroundColor: dm ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: dm ? '#FFFDF8' : '#1A1814' }
+                      : { backgroundColor: dm ? '#C4973F' : '#1A1814', color: dm ? '#1A1814' : '#FFFDF8' }
                     }
                   >
                     {msg.content === '' && lumiLoading && i === lumiMsgs.length - 1
@@ -1198,9 +1385,7 @@ export default function DemoPage() {
         {/* Input row */}
         <div
           className="relative z-10 shrink-0 p-4"
-          style={{
-            borderTop: `1px solid ${lumiDark ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}`,
-          }}
+          style={{ borderTop: `1px solid ${dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}` }}
         >
           {isRecording && (
             <div className="mb-2 text-center text-xs font-medium text-[#C4973F] animate-pulse">Listening...</div>
@@ -1211,9 +1396,9 @@ export default function DemoPage() {
               placeholder="Ask Lumi anything about your clinic..."
               style={{
                 fontSize: '16px',
-                backgroundColor: lumiDark ? 'rgba(255,253,248,0.06)' : 'white',
-                color: lumiDark ? '#FFFDF8' : '#1A1814',
-                borderColor: lumiDark ? 'rgba(255,253,248,0.12)' : 'rgba(26,24,20,0.12)',
+                backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                color: dm ? '#FFFDF8' : '#1A1814',
+                borderColor: dm ? 'rgba(255,253,248,0.12)' : 'rgba(26,24,20,0.12)',
               }}
               className="flex-1 rounded-full border px-5 py-2.5 text-sm placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
             />

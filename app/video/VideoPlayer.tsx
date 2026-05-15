@@ -10,7 +10,7 @@ const CREAM = '#FFFDF8'
 const BG = '#0A0907'
 const CHARCOAL = '#1A1814'
 
-const DURATIONS = [4000, 4000, 4000, 5000, 5000, 4000, 4000, 5000, 6000]
+const DURATIONS = [4000, 4000, 4000, 5000, 5000, 5000, 4000, 4000, 5000, 6000]
 const TOTAL = DURATIONS.reduce((a, b) => a + b, 0)
 const CUM = DURATIONS.map((_, i) => DURATIONS.slice(0, i + 1).reduce((a, b) => a + b, 0))
 
@@ -362,6 +362,101 @@ function Scene5({ isMobile }: SceneProps) {
         {stat(a2, n2, 'fewer no-shows')}
         {stat(a3, '< 30s', 'response time')}
       </div>
+    </motion.div>
+  )
+}
+
+// ─── Scene 5a — Voice Moment ─────────────────────────────────────────────────
+
+function Scene5a({ isMobile }: SceneProps) {
+  const [line2, setLine2] = useState(false)
+  const [cards, setCards] = useState(false)
+  const [caption, setCaption] = useState(false)
+
+  useEffect(() => {
+    const ts = [
+      setTimeout(() => setLine2(true), 1500),
+      setTimeout(() => setCards(true), 2800),
+      setTimeout(() => setCaption(true), 4200),
+    ]
+    return () => ts.forEach(clearTimeout)
+  }, [])
+
+  const cardS = (lumi: boolean): React.CSSProperties => ({
+    background: lumi ? 'rgba(196,151,63,0.06)' : 'rgba(255,253,248,0.03)',
+    border: `1px solid ${lumi ? 'rgba(196,151,63,0.2)' : 'rgba(255,253,248,0.08)'}`,
+    borderRadius: '1rem', padding: '1.25rem',
+    maxWidth: isMobile ? '90%' : 260, width: '100%', textAlign: 'left' as const,
+  })
+
+  return (
+    <motion.div variants={sceneV} initial="initial" animate="animate" exit="exit"
+      style={{ ...fill, flexDirection: 'column', padding: '0 1.5rem', textAlign: 'center' as const }}>
+
+      <motion.p
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.7 }}
+        style={{
+          fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 300, fontSize: 18,
+          color: 'rgba(250,247,242,0.35)', margin: '0 0 0.6rem',
+        }}>
+        Most AI sounds like AI.
+      </motion.p>
+
+      {line2 && (
+        <motion.p
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            fontFamily: 'var(--font-display), serif', fontWeight: 700, fontStyle: 'italic',
+            fontSize: isMobile ? 'clamp(26px,5vw,36px)' : 'clamp(28px,4vw,52px)',
+            color: CREAM, margin: '0 0 1.5rem', lineHeight: 1.2,
+          }}>
+          Lumi sounds like you.
+        </motion.p>
+      )}
+
+      {cards && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+          style={{
+            display: 'flex', flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? 12 : 16, justifyContent: 'center', alignItems: 'flex-start',
+            marginBottom: '1.5rem', width: '100%', maxWidth: isMobile ? '90vw' : 580,
+          }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={cardS(false)}>
+            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 500, letterSpacing: '0.15em', textTransform: 'uppercase' as const, color: 'rgba(250,247,242,0.2)', margin: '0 0 10px' }}>
+              OTHER AGENCIES
+            </p>
+            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(250,247,242,0.35)', lineHeight: 1.6, margin: 0 }}>
+              &ldquo;Thank you for your enquiry. We will respond within 24 hours.&rdquo;
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={cardS(true)}>
+            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 500, letterSpacing: '0.15em', textTransform: 'uppercase' as const, color: GOLD, margin: '0 0 10px' }}>
+              LUMI · YOUR VOICE
+            </p>
+            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13, color: CREAM, lineHeight: 1.6, margin: 0 }}>
+              &ldquo;Hey lovely! 💛 So excited you&apos;re thinking about lip filler — I&apos;d love to chat through what you&apos;re after. Thursday 2pm or Friday 11am free. Which works? x&rdquo;
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {caption && (
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}
+          style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13, fontStyle: 'italic', color: 'rgba(250,247,242,0.3)', margin: 0 }}>
+          Because warm converts. Cold doesn&apos;t.
+        </motion.p>
+      )}
     </motion.div>
   )
 }
@@ -785,9 +880,10 @@ export default function VideoPlayer() {
         {!replay && scene === 3 && <Scene3 key="s3" isMobile={isMobile} />}
         {!replay && scene === 4 && <Scene4 key="s4" isMobile={isMobile} />}
         {!replay && scene === 5 && <Scene5 key="s5" isMobile={isMobile} />}
-        {!replay && scene === 6 && <Scene6 key="s6" isMobile={isMobile} />}
-        {!replay && scene === 7 && <Scene7 key="s7" isMobile={isMobile} />}
-        {!replay && scene === 8 && <Scene8 key="s8" isMobile={isMobile} />}
+        {!replay && scene === 6 && <Scene5a key="s5a" isMobile={isMobile} />}
+        {!replay && scene === 7 && <Scene6 key="s6" isMobile={isMobile} />}
+        {!replay && scene === 8 && <Scene7 key="s7" isMobile={isMobile} />}
+        {!replay && scene === 9 && <Scene8 key="s8" isMobile={isMobile} />}
         {replay && <ReplayScreen key="replay" onReplay={handleReplay} />}
       </AnimatePresence>
 
