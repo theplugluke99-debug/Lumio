@@ -16,7 +16,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
 };
 
-function ProductDemoPanel() {
+function HeroVideoFrame() {
   return (
     <div className="relative mx-auto w-full max-w-[560px]">
       <div
@@ -24,27 +24,13 @@ function ProductDemoPanel() {
         style={{ background: 'radial-gradient(ellipse, rgba(196,151,63,.55) 0%, transparent 70%)' }}
       />
       <div className="rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#211E19]/88 p-2.5 shadow-[0_34px_100px_rgba(0,0,0,.42)] backdrop-blur-2xl">
-        <div className="relative overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/25 bg-[#FFFDF8] px-6 py-9 md:px-10 md:py-12 min-h-[320px] md:min-h-[460px] flex flex-col items-center justify-center text-center">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-70"
-            style={{ background: 'radial-gradient(circle at 50% 42%, rgba(232,180,75,.16), transparent 42%)' }}
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/25 bg-[#0A0907]">
+          <iframe
+            src="/video"
+            title="Lumio product video"
+            className="h-full w-full border-0"
+            allow="autoplay; clipboard-write"
           />
-          <div className="relative grid h-20 w-20 md:h-24 md:w-24 place-items-center rounded-full bg-[#C4973F] shadow-[0_20px_60px_rgba(196,151,63,.35)]">
-            <div className="ml-1 h-0 w-0 border-y-[12px] border-y-transparent border-l-[18px] border-l-[#1A1814]" />
-          </div>
-          <p className="relative mt-8 font-display text-3xl md:text-4xl italic text-[#1A1814]">
-            Lumio product demo
-          </p>
-          <p className="relative mt-3 max-w-xs text-sm md:text-base leading-relaxed text-[#8A8278]">
-            Feature walkthrough coming soon
-          </p>
-          <div className="relative mt-9 flex flex-wrap justify-center gap-2.5">
-            {['Leads', 'Bookings', 'Reviews', 'Admin'].map((label) => (
-              <span key={label} className="rounded-full border border-[#C4973F]/20 bg-[#F9EDE8]/80 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[.14em] text-[#1A1814]/70">
-                {label}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </div>
@@ -81,7 +67,8 @@ export default function Hero() {
               className="inline-flex w-full max-w-full min-w-0 items-center justify-center gap-2.5 rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-center text-[10px] sm:w-auto sm:text-xs font-semibold leading-relaxed tracking-[.18em] sm:tracking-widest text-[#E8B44B] uppercase"
             >
               <span className="pulse-dot h-2 w-2 rounded-full bg-[#C4973F]" />
-              <span className="min-w-0 whitespace-normal">AI Automation · Aesthetic Clinics · London &amp; UK</span>
+              <span className="min-w-0 sm:hidden">AI Automation · UK Clinics</span>
+              <span className="hidden min-w-0 sm:inline">AI Automation · Aesthetic Clinics · London &amp; UK</span>
             </motion.div>
 
             <motion.h1
@@ -125,7 +112,7 @@ export default function Hero() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="block md:hidden mt-10 w-full">
-              <ProductDemoPanel />
+              <HeroVideoFrame />
             </motion.div>
           </motion.div>
 
@@ -135,7 +122,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.4 }}
           >
-            <ProductDemoPanel />
+            <HeroVideoFrame />
           </motion.div>
 
         </div>

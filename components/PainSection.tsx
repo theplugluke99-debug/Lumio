@@ -175,13 +175,12 @@ export default function PainSection() {
               }}
             >
               <p
-                className="font-display"
                 style={{
-                  fontStyle: 'italic',
+                  fontFamily: 'var(--font-sans, Inter, sans-serif)',
                   fontWeight: 400,
-                  fontSize: '17px',
-                  color: 'rgba(250,247,242,0.75)',
-                  lineHeight: 1.75,
+                  fontSize: '18px',
+                  color: 'rgba(250,247,242,0.86)',
+                  lineHeight: 1.68,
                   paddingBottom: '1.25rem',
                   borderBottom: '1px solid rgba(196,151,63,0.1)',
                   marginBottom: '1.25rem',

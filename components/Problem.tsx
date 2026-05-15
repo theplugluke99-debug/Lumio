@@ -2,7 +2,6 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { PAINS } from '@/lib/data';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -15,6 +14,29 @@ const stagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
 };
+
+const LEAKS = [
+  {
+    n: '01',
+    title: 'Missed response windows',
+    text: 'Enquiries arrive while you are in treatment, then cool off before anyone has time to reply.',
+  },
+  {
+    n: '02',
+    title: 'Unconfirmed appointments',
+    text: 'Bookings sit in limbo without the right confirmation, reminder, or next step at the right moment.',
+  },
+  {
+    n: '03',
+    title: 'Clients not rebooked',
+    text: 'Happy clients leave without a clear follow-up path, so revenue depends on them remembering you first.',
+  },
+  {
+    n: '04',
+    title: 'No-shows not prevented',
+    text: 'Empty slots are treated as bad luck instead of a preventable sequence of missed reminders.',
+  },
+];
 
 export default function Problem() {
   const leftRef = useRef(null);
@@ -57,8 +79,11 @@ export default function Problem() {
           animate={rightInView ? 'visible' : 'hidden'}
           className="flex flex-col gap-6"
         >
-          <motion.span variants={fadeUp} className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Sound familiar?</motion.span>
-          {PAINS.map((p) => (
+          <motion.span variants={fadeUp} className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Where the money leaks</motion.span>
+          <motion.p variants={fadeUp} className="max-w-md text-base leading-relaxed text-white/55">
+            These are not isolated moments. They are quiet revenue leaks happening underneath a busy clinic.
+          </motion.p>
+          {LEAKS.map((p) => (
             <motion.div
               key={p.n}
               variants={fadeUp}
@@ -67,7 +92,10 @@ export default function Problem() {
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = ''; (e.currentTarget as HTMLElement).style.boxShadow = ''; }}
             >
               <span className="font-display italic text-[#C4973F]/40 text-lg font-black shrink-0 mt-0.5">{p.n}</span>
-              <p className="text-sm text-white/60 leading-relaxed">{p.text}</p>
+              <div>
+                <h3 className="text-sm font-bold text-white/80">{p.title}</h3>
+                <p className="mt-1 text-sm text-white/55 leading-relaxed">{p.text}</p>
+              </div>
             </motion.div>
           ))}
         </motion.div>

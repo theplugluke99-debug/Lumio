@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import GoldButton from '@/components/ui/GoldButton';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -47,15 +46,21 @@ export default function CTA() {
           how much you&apos;re <span className="italic gold-text">leaving.</span>
         </motion.h2>
 
-        <motion.p variants={fadeUp} className="text-[#8A8278] max-w-md text-base leading-relaxed">
+        <motion.p variants={fadeUp} className="text-[#8A8278] max-w-xl text-base leading-relaxed">
           Takes 3 minutes. Instant results. No call required. We&apos;ll show you exactly
           where your clinic is losing leads and revenue — and what Lumio would do about it.
         </motion.p>
 
-        <motion.div variants={fadeUp}>
-          <GoldButton href="/audit">
-            Find out what your clinic is losing — free, instant, no call needed
-          </GoldButton>
+        <motion.div variants={fadeUp} className="flex flex-col items-center gap-3">
+          <a
+            href="/audit"
+            className="inline-flex max-w-full items-center justify-center rounded-full bg-[#C4973F] px-7 py-4 text-sm font-semibold text-[#1A1814] shadow-[0_20px_60px_rgba(196,151,63,.2)] transition-all duration-200 hover:-translate-y-1 hover:bg-[#E8B44B] md:px-9 md:text-base"
+          >
+            Find out what your clinic is losing — free, instant, no call needed →
+          </a>
+          <p className="text-xs text-white/30">
+            Personalised to your clinic · Free Revenue Reveal · No call required
+          </p>
         </motion.div>
 
         {/* Secondary: email */}
