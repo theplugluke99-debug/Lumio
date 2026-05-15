@@ -2,6 +2,7 @@ import CursorGlow from '@/components/ui/CursorGlow';
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
 import PainSection from '@/components/PainSection';
+import VideoTeaser from '@/components/VideoTeaser';
 import Stats from '@/components/Stats';
 import Problem from '@/components/Problem';
 import Services from '@/components/Services';
@@ -24,6 +25,7 @@ export default function Page() {
       <Hero />
       <Marquee />
       <PainSection />
+      <VideoTeaser />
       <Stats />
       <Problem />
       <Services />
