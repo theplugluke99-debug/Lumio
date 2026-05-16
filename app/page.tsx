@@ -8,7 +8,7 @@ import Services from '@/components/Services';
 import PivotSection from '@/components/PivotSection';
 import NumbersSection from '@/components/NumbersSection';
 import Integrations from '@/components/Integrations';
-import DemoTeaser from '@/components/DemoTeaser';
+import ProductShowcase from '@/components/ProductShowcase';
 import TalkToLumio from '@/components/TalkToLumio';
 import Process from '@/components/Process';
 import Pricing from '@/components/Pricing';
@@ -30,7 +30,7 @@ export default function Page() {
       <PivotSection />
       <NumbersSection />
       <Integrations />
-      <DemoTeaser />
+      <ProductShowcase />
       <Process />
       <Pricing />
       <Guarantee />
