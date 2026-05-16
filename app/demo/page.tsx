@@ -11,6 +11,7 @@ import ClientProfile from '@/components/demo/ClientProfile';
 import IntegrationsTab from '@/components/demo/IntegrationsTab';
 import MicButton from '@/components/MicButton';
 import { PWASetup } from '@/components/PWASetup';
+import LumiLens from '@/components/LumiLens';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin' | 'integrations';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
@@ -428,10 +429,7 @@ export default function DemoPage() {
             className="w-full flex items-center gap-3 rounded-2xl border border-[#C4973F]/30 px-4 py-3.5 text-sm font-semibold text-[#FFFDF8] hover:border-[#C4973F]/60 hover:bg-[#C4973F]/5 transition-all"
             style={{ backgroundColor: '#1A1814' }}
           >
-            <div className="relative flex h-5 w-5 shrink-0 items-center justify-center">
-              <span className="absolute h-5 w-5 rounded-full bg-[#E8B44B]/30 blur-sm" style={{ animation: 'ping 2s cubic-bezier(0,0,0.2,1) infinite' }} />
-              <span className="relative h-2.5 w-2.5 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 10px rgba(232,180,75,.9)' }} />
-            </div>
+            <LumiLens size={22} variant="light" animated />
             <span>Ask Lumi</span>
           </button>
 
@@ -493,7 +491,7 @@ export default function DemoPage() {
               <button type="button" onClick={() => openLumi()}
                 className="lg:hidden flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold text-[#FFFDF8] transition-colors"
                 style={{ backgroundColor: '#1A1814' }}>
-                <span className="h-2 w-2 rounded-full bg-[#E8B44B]" style={{ boxShadow: '0 0 8px rgba(232,180,75,.9)' }} />
+                <LumiLens size={16} variant="light" animated />
                 Lumi
               </button>
               <div className="relative" ref={notifRef}>
@@ -766,7 +764,9 @@ export default function DemoPage() {
                           <div className="space-y-4">
                             <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
                               <div className="mb-3 flex items-center gap-3">
-                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD] text-[#C4973F]"><Icon name="spark" className="h-5 w-5" /></div>
+                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#FFF4DD]">
+                                  <LumiLens size={26} variant="dark" animated />
+                                </div>
                                 <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumi</div><div className="text-xs text-[#FFFDF8]/45">2 seconds ago</div></div>
                               </div>
                               <p className="text-sm leading-7 text-[#FFFDF8]/72">Instagram DM automation paused Friday 6pm to Monday 9am. I&apos;ll resume automatically.</p>
@@ -776,7 +776,9 @@ export default function DemoPage() {
                             </div>
                             <div className="rounded-[1.8rem] border border-white/10 bg-white/[.045] p-5 backdrop-blur-xl">
                               <div className="mb-3 flex items-center gap-3">
-                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F0EDF8] text-[#C4973F]"><Icon name="mail" className="h-5 w-5" /></div>
+                                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[#F0EDF8]">
+                                  <LumiLens size={26} variant="dark" />
+                                </div>
                                 <div><div className="text-xs font-bold uppercase tracking-[.16em] text-[#E8B44B]">Lumi</div><div className="text-xs text-[#FFFDF8]/45">Now active</div></div>
                               </div>
                               <div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm leading-7 text-[#FFFDF8]/72">
@@ -1232,20 +1234,9 @@ export default function DemoPage() {
         {/* Identity */}
         <div className="relative z-10 flex flex-col items-center pt-3 pb-4 px-6 shrink-0">
           <div className="relative flex items-center justify-center mb-4" style={{ width: 130, height: 130 }}>
-            <div className="absolute inset-6 rounded-full blur-[28px] opacity-40" style={{ background: '#C4973F' }} />
-            <div className="absolute rounded-full" style={{ width: 120, height: 120, border: '1px solid rgba(196,151,63,0.25)' }} />
-            <div className="absolute rounded-full" style={{ width: 88, height: 88, border: '1px solid rgba(196,151,63,0.2)' }} />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2" style={{ width: 120, height: 1, background: 'linear-gradient(90deg, transparent, rgba(196,151,63,0.5), transparent)' }} />
-            <div
-              className="lumi-breathe relative"
-              style={{
-                width: 60, height: 60, borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 55%, #8B6420)',
-                zIndex: 2,
-              }}
-            >
-              <div className="absolute" style={{ top: '16%', left: '18%', width: '32%', height: '28%', borderRadius: '50%', background: 'rgba(255,255,255,0.5)', filter: 'blur(3px)' }} />
-            </div>
+            <div className="absolute inset-4 rounded-full border border-[#C4973F]/20" />
+            <div className="absolute inset-8 rounded-full border border-[#C4973F]/15" />
+            <LumiLens size={74} variant={dm ? 'light' : 'dark'} animated />
           </div>
           <div className="lumi-identity-name text-2xl font-black tracking-[-0.02em]" style={{ color: dm ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
           <div className="text-[10px] font-bold uppercase tracking-[.18em] mt-1" style={{ color: dm ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>
@@ -1404,7 +1395,7 @@ export default function DemoPage() {
         </div>
       </div>
 
-      {/* Mobile bottom nav — 5 tabs with Lumi orb center */}
+      {/* Mobile bottom nav — 5 tabs with Lumi Lens center */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t lg:hidden"
         style={{ backgroundColor: dTopbarBg, backdropFilter: 'blur(20px)', borderColor: dCardBorder, paddingBottom: 'env(safe-area-inset-bottom)', height: 64 }}>
         <div className="grid grid-cols-5 h-full items-center px-1">
@@ -1419,17 +1410,10 @@ export default function DemoPage() {
               {label}
             </button>
           ))}
-          {/* Lumi orb — center */}
+          {/* Lumi Lens — center */}
           <button type="button" onClick={() => openLumi()}
             className="flex flex-col items-center justify-center h-full">
-            <div
-              className="lumi-breathe"
-              style={{
-                width: 42, height: 42, borderRadius: '50%',
-                background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F 55%, #8B6420)',
-                boxShadow: '0 4px 20px rgba(196,151,63,0.55)',
-              }}
-            />
+            <LumiLens size={42} variant={dm ? 'light' : 'dark'} animated />
           </button>
           {([
             { id: 'conversations' as Tab, icon: 'conversations', label: 'Inbox' },

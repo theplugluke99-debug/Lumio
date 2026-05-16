@@ -151,22 +151,39 @@ main {
   }
 }
 
-@keyframes lumioSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes lumioBreathe {
+@keyframes lumiLensBreathe {
   0%, 100% {
     box-shadow:
-      0 0 20px rgba(196,151,63,0.4),
-      0 0 40px rgba(196,151,63,0.2);
+      0 0 0 1px rgba(196,151,63,0.14),
+      0 0 18px var(--lens-glow);
   }
   50% {
     box-shadow:
-      0 0 30px rgba(196,151,63,0.7),
-      0 0 60px rgba(196,151,63,0.3);
+      0 0 0 1px rgba(232,180,75,0.22),
+      0 0 26px var(--lens-glow);
   }
+}
+
+@keyframes lumiLensShimmer {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+.lumi-lens {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  transform: translateZ(0);
+}
+
+.lumi-lens--animated {
+  animation: lumiLensBreathe 3.8s ease-in-out infinite;
+}
+
+.lumi-lens--animated .lumi-lens__aperture {
+  animation: lumiLensShimmer 4.8s ease-in-out infinite;
 }
 
 .chat-messages::-webkit-scrollbar {

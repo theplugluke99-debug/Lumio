@@ -7,6 +7,7 @@ import { OPENING_MESSAGE } from '@/lib/chat';
 import { CHAT_TRUST } from '@/lib/data';
 import ChatMessages from '@/components/ui/ChatMessages';
 import ChatInput from '@/components/ui/ChatInput';
+import LumiLens from '@/components/LumiLens';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -89,9 +90,7 @@ export default function TalkToLumio() {
         {!expanded && (
           <div className="md:hidden rounded-[2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl p-6 flex flex-col items-center gap-5">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#C4973F]/15 border border-[#C4973F]/30 flex items-center justify-center shrink-0">
-                <span className="font-display font-black text-xs text-[#C4973F] leading-none">L</span>
-              </div>
+              <LumiLens size={32} variant="light" animated />
               <div>
                 <p className="text-sm font-semibold text-[#FFFDF8]">Lumio AI</p>
                 <p className="text-xs text-white/40">Ready to answer your questions</p>

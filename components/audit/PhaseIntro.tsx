@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Logo from '@/components/ui/Logo';
 import GoldButton from '@/components/ui/GoldButton';
-import { LumioOrb } from '@/components/ui/LumioOrb';
+import LumiLens from '@/components/LumiLens';
 import MicButton from '@/components/MicButton';
 
 interface Props { onStart: (clinicName: string) => void; }
@@ -89,7 +89,7 @@ export default function PhaseIntro({ onStart }: Props) {
               <div className="flex-1 h-px bg-white/10" />
             </div>
             <a href="/ai" className="group flex items-center gap-3 mx-auto w-fit px-5 py-3 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:border-[#C4973F]/40 hover:bg-[#C4973F]/[0.06]">
-              <LumioOrb size="sm" />
+              <LumiLens size={24} variant="light" animated />
               <span className="text-sm text-[#FFFDF8]/45 group-hover:text-[#E8B44B] transition-colors duration-200">
                 Prefer to talk it through? Chat with Lumio AI instead
               </span>

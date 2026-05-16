@@ -20,7 +20,7 @@
 
 import { useEffect, useRef } from 'react';
 import Logo from '@/components/ui/Logo';
-import { LumioOrb } from '@/components/ui/LumioOrb';
+import LumiLens from '@/components/LumiLens';
 import { CHAT_TRUST } from '@/lib/data';
 import { useChat } from '@/hooks/useChat';
 import { OPENING_MESSAGE } from '@/lib/chat';
@@ -61,7 +61,7 @@ export default function AiPage() {
       <div className="relative z-10 flex flex-col items-center text-center pb-5 px-4 shrink-0">
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[140px] opacity-10"
           style={{ background: '#C4973F' }} />
-        <LumioOrb size="lg" />
+        <LumiLens size={56} variant="light" animated />
         <h1 className="font-display font-black text-4xl text-[#FFFDF8] mt-4 relative z-10">Lumio AI</h1>
         <p className="text-sm text-white/40 mt-1 relative z-10">Your clinic automation advisor</p>
       </div>

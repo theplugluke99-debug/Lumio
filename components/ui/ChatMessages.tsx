@@ -2,7 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import { Message, MD, parseContent } from '@/lib/chat';
-import { LumioOrb } from '@/components/ui/LumioOrb';
+import LumiLens from '@/components/LumiLens';
 
 interface Props {
   messages: Message[];
@@ -35,7 +35,7 @@ export default function ChatMessages({ messages, isTyping, loading, onOptionSele
             ) : (
               <div className="flex items-start gap-2.5 max-w-[92%]">
                 <div className="mt-0.5 shrink-0">
-                  <LumioOrb size="sm" />
+                  <LumiLens size={24} variant="light" animated />
                 </div>
                 <div className={`flex-1 min-w-0 rounded-[1.2rem] rounded-tl-sm border-l-2 px-5 py-4 ${msg.isError ? 'bg-white/[0.04] border-red-700/40' : 'bg-white/[0.06] border-[#C4973F]/35'}`}>
                   {msg.isError ? (
@@ -74,9 +74,7 @@ export default function ChatMessages({ messages, isTyping, loading, onOptionSele
 
       {isTyping && (
         <div className="flex items-start gap-2.5">
-          <div className="mt-0.5 w-[22px] h-[22px] rounded-full bg-[#C4973F]/15 border border-[#C4973F]/30 flex items-center justify-center shrink-0">
-            <span className="font-display font-black text-[9px] text-[#C4973F] leading-none">L</span>
-          </div>
+          <div className="mt-0.5 shrink-0"><LumiLens size={22} variant="light" animated /></div>
           <div className="bg-white/[0.06] border-l-2 border-[#C4973F]/35 rounded-[1.2rem] rounded-tl-sm px-5 py-3.5 flex items-center gap-1.5">
             <span className="typing-dot w-2 h-2 rounded-full bg-[#C4973F] inline-block" />
             <span className="typing-dot w-2 h-2 rounded-full bg-[#C4973F] inline-block" style={{ animationDelay: '0.2s' }} />

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState, useRef, useCallback } from 'react'
+import LumiLens from '@/components/LumiLens'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -240,7 +241,7 @@ const RING_LOGOS = [
 ]
 
 function Scene3a({ isMobile }: SceneProps) {
-  const [orb, setOrb] = useState(false)
+  const [lens, setLens] = useState(false)
   const [logos, setLogos] = useState(false)
   const [lines, setLines] = useState(false)
   const [pulse, setPulse] = useState(false)
@@ -248,7 +249,7 @@ function Scene3a({ isMobile }: SceneProps) {
 
   useEffect(() => {
     const ts = [
-      setTimeout(() => setOrb(true), 600),
+      setTimeout(() => setLens(true), 600),
       setTimeout(() => setLogos(true), 1000),
       setTimeout(() => setLines(true), 2600),
       setTimeout(() => setPulse(true), 3600),
@@ -261,7 +262,7 @@ function Scene3a({ isMobile }: SceneProps) {
   const SIZE = R * 2 + 60
   const CX = SIZE / 2
   const CY = SIZE / 2
-  const orbSize = isMobile ? 44 : 56
+  const lensSize = isMobile ? 44 : 56
 
   const logoPos = (angle: number) => {
     const rad = (angle * Math.PI) / 180
@@ -307,23 +308,19 @@ function Scene3a({ isMobile }: SceneProps) {
           })}
         </svg>
 
-        {/* Center orb */}
-        {orb && (
+        {/* Center Lens */}
+        {lens && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'absolute',
-              left: CX - orbSize / 2, top: CY - orbSize / 2,
-              width: orbSize, height: orbSize, borderRadius: '50%',
-              background: pulse
-                ? 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F, #8B6420)'
-                : 'radial-gradient(circle at 35% 30%, rgba(245,230,200,0.6), rgba(196,151,63,0.4), rgba(139,100,32,0.4))',
-              boxShadow: pulse ? '0 0 32px rgba(196,151,63,0.6)' : 'none',
-              transition: 'background 0.4s, box-shadow 0.4s',
+              left: CX - lensSize / 2, top: CY - lensSize / 2,
               zIndex: 2,
             }}
-          />
+          >
+            <LumiLens size={lensSize} variant="light" animated={pulse} />
+          </motion.div>
         )}
 
         {/* Ring logos */}
@@ -724,14 +721,14 @@ function Scene7({ isMobile }: SceneProps) {
 // ─── Scene 8 — Closing ────────────────────────────────────────────────────────
 
 function Scene8({ isMobile }: SceneProps) {
-  const [orb, setOrb] = useState(false)
+  const [lens, setLens] = useState(false)
   const [txt, setTxt] = useState(false)
   const [gold, setGold] = useState(false)
   const [url, setUrl] = useState(false)
 
   useEffect(() => {
     const ts = [
-      setTimeout(() => setOrb(true), 400),
+      setTimeout(() => setLens(true), 400),
       setTimeout(() => setTxt(true), 1200),
       setTimeout(() => setGold(true), 1700),
       setTimeout(() => setUrl(true), 3200),
@@ -739,29 +736,15 @@ function Scene8({ isMobile }: SceneProps) {
     return () => ts.forEach(clearTimeout)
   }, [])
 
-  const orbSize = isMobile ? 64 : 80
-  const arcSize = orbSize + 40
+  const lensSize = isMobile ? 72 : 88
 
   return (
     <motion.div variants={sceneV} initial="initial" animate="animate" exit="exit"
       style={{ ...fill, flexDirection: 'column', padding: '0 1.5rem', textAlign: 'center' as const }}>
-      {orb && (
+      {lens && (
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}
-          style={{ position: 'relative', width: arcSize, height: arcSize, marginBottom: '2rem', flexShrink: 0 }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, animation: 'lumioSpin 8s linear infinite' }}>
-            <svg viewBox={`0 0 ${arcSize} ${arcSize}`} width={arcSize} height={arcSize}>
-              <path
-                d={`M${arcSize * 0.1} ${arcSize * 0.75} Q${arcSize * 0.5} ${arcSize * 0.12} ${arcSize * 0.9} ${arcSize * 0.75}`}
-                stroke={GOLD} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.7"
-              />
-            </svg>
-          </div>
-          <div style={{
-            position: 'absolute', width: orbSize, height: orbSize, borderRadius: '50%',
-            bottom: 0, left: '50%', transform: 'translateX(-50%)',
-            background: 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F, #8B6420)',
-            animation: 'lumioBreathe 3s ease infinite',
-          }} />
+          style={{ marginBottom: '2rem', flexShrink: 0 }}>
+          <LumiLens size={lensSize} variant="light" animated />
         </motion.div>
       )}
       {txt && (

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Logo from '@/components/ui/Logo';
 import GoldButton from '@/components/ui/GoldButton';
-import { LumioOrb } from '@/components/ui/LumioOrb';
+import LumiLens from '@/components/LumiLens';
 import { QUESTIONS } from '@/lib/data';
 import { Answers } from '@/lib/audit';
 
@@ -137,7 +137,7 @@ export default function PhaseQuestions({ onComplete }: Props) {
                 transition: 'border-color 0.6s ease, background 0.6s ease',
               }}
             >
-              <LumioOrb size="sm" />
+              <LumiLens size={24} variant="light" animated={showHesitation} />
               <span className={`text-sm transition-colors duration-500 ${showHesitation ? 'text-[#E8B44B]/80' : 'text-[#FFFDF8]/45 group-hover:text-[#E8B44B]'}`}>
                 Prefer to talk it through? Chat with Lumio AI instead
               </span>
