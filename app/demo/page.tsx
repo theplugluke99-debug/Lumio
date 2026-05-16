@@ -10,6 +10,7 @@ import PerformanceGraph from '@/components/demo/PerformanceGraph';
 import ClientProfile from '@/components/demo/ClientProfile';
 import IntegrationsTab from '@/components/demo/IntegrationsTab';
 import MicButton from '@/components/MicButton';
+import { PWASetup } from '@/components/PWASetup';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin' | 'integrations';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
@@ -201,6 +202,7 @@ export default function DemoPage() {
   const [lumiLoading, setLumiLoading] = useState(false);
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [showPills, setShowPills] = useState(true);
   const [dashMode, setDashMode] = useState<'light' | 'dark'>('dark');
   const [mobileConvoFull, setMobileConvoFull] = useState(false);
@@ -248,6 +250,7 @@ export default function DemoPage() {
     const params = new URLSearchParams(window.location.search);
     const preview = params.get('preview') === 'true';
     setIsPreview(preview);
+    setIsClient(params.get('client') === 'true');
     setFromReveal(params.get('from') === 'reveal');
     if (preview) { setBannerDismissed(true); return; }
     const saved = localStorage.getItem('lumio_demo_clinic');
@@ -345,6 +348,7 @@ export default function DemoPage() {
 
   return (
     <div className="demo-wrapper antialiased overflow-x-hidden" style={{ backgroundColor: dBg, color: dText, minHeight: '100dvh' }}>
+      {isClient && <PWASetup />}
 
       {/* Demo banner */}
       {!bannerDismissed && (

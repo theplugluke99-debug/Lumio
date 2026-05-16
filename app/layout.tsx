@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Syne, Inter } from "next/font/google";
 import "./globals.css";
-import { PWASetup } from "@/components/PWASetup";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -80,7 +79,6 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
         className="antialiased"
       >
-        <PWASetup />
         {children}
       </body>
     </html>
