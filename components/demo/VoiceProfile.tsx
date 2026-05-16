@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import MicButton from '@/components/MicButton';
 
 const GOLD = '#C4973F';
 
@@ -140,24 +141,32 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
         <div>
           {/* Q1 */}
           {questionCard('01', 'How do you greet your clients?', 'The first word matters most.', (
-            <input
-              type="text"
-              value={greeting}
-              onChange={e => setGreeting(e.target.value)}
-              placeholder='e.g. "Hey lovely!" or "Hi there!"'
-              style={inputStyle}
-            />
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                type="text"
+                value={greeting}
+                onChange={e => setGreeting(e.target.value)}
+                placeholder='e.g. "Hey lovely!" or "Hi there!"'
+                style={{ ...inputStyle, flex: 1, width: 'auto' }}
+              />
+              <MicButton onResult={setGreeting} />
+            </div>
           ))}
 
           {/* Q2 */}
           {questionCard('02', 'Paste a real message you\'ve sent to a client.', 'This teaches Lumi your exact writing style.', (
-            <textarea
-              rows={4}
-              value={sampleMsg}
-              onChange={e => setSampleMsg(e.target.value)}
-              placeholder="Type or paste a message you'd normally send..."
-              style={inputStyle}
-            />
+            <div>
+              <textarea
+                rows={4}
+                value={sampleMsg}
+                onChange={e => setSampleMsg(e.target.value)}
+                placeholder="Type or paste a message you'd normally send..."
+                style={inputStyle}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+                <MicButton onResult={setSampleMsg} />
+              </div>
+            </div>
           ))}
 
           {/* Q3 */}
@@ -195,13 +204,18 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
 
           {/* Q4 */}
           {questionCard('04', "Is there anything you'd never say to a client?", "These become Lumi's rules.", (
-            <textarea
-              rows={3}
-              value={neverSay}
-              onChange={e => setNeverSay(e.target.value)}
-              placeholder="e.g. Never sound corporate, never say 'enquiry', never be pushy about pricing..."
-              style={inputStyle}
-            />
+            <div>
+              <textarea
+                rows={3}
+                value={neverSay}
+                onChange={e => setNeverSay(e.target.value)}
+                placeholder="e.g. Never sound corporate, never say 'enquiry', never be pushy about pricing..."
+                style={inputStyle}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+                <MicButton onResult={setNeverSay} />
+              </div>
+            </div>
           ))}
 
           {/* Q5 */}

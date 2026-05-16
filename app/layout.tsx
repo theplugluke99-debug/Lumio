@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Syne, Inter } from "next/font/google";
 import "./globals.css";
+import { PWASetup } from "@/components/PWASetup";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -24,6 +25,10 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#C4973F",
+};
+
 export const metadata: Metadata = {
   title: "Lumio — Your aesthetic clinic, running itself.",
   description:
@@ -34,6 +39,12 @@ export const metadata: Metadata = {
     "clinic lead response",
     "aesthetic clinic software London",
   ],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Lumio",
+  },
   openGraph: {
     title: "Lumio — Your aesthetic clinic, running itself.",
     description:
@@ -69,6 +80,7 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
         className="antialiased"
       >
+        <PWASetup />
         {children}
       </body>
     </html>

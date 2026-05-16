@@ -1,0 +1,49 @@
+{
+  "name": "Lumio",
+  "short_name": "Lumio",
+  "description": "Your clinic. Running itself.",
+  "start_url": "/demo",
+  "display": "standalone",
+  "background_color": "#1A1814",
+  "theme_color": "#C4973F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Revenue Reveal",
+      "short_name": "Reveal",
+      "description": "See what your clinic is losing",
+      "url": "/audit",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Your clinic dashboard",
+      "url": "/demo",
+      "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

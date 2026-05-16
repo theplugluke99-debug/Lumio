@@ -8,6 +8,7 @@ import VoiceProfile from '@/components/demo/VoiceProfile';
 import SuggestedActions from '@/components/demo/SuggestedActions';
 import PerformanceGraph from '@/components/demo/PerformanceGraph';
 import ClientProfile from '@/components/demo/ClientProfile';
+import MicButton from '@/components/MicButton';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
@@ -199,8 +200,6 @@ export default function DemoPage() {
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [showPills, setShowPills] = useState(true);
-  const [isRecording, setIsRecording] = useState(false);
-  const [hasSpeech, setHasSpeech] = useState(false);
   const [dashMode, setDashMode] = useState<'light' | 'dark'>('dark');
   const [mobileConvoFull, setMobileConvoFull] = useState(false);
   const [mobileProfileFull, setMobileProfileFull] = useState(false);
@@ -278,10 +277,6 @@ export default function DemoPage() {
   }, [lumiOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    setHasSpeech('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-  }, []);
-
-  useEffect(() => {
     if (!showNotifs) return;
     const handler = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) setShowNotifs(false);
@@ -298,20 +293,6 @@ export default function DemoPage() {
   };
 
   const clinicInitials = clinicName.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
-
-  const startRecording = useCallback(() => {
-    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    if (!SR) return;
-    const rec = new SR();
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.lang = 'en-GB';
-    rec.onresult = (e: any) => { setLumiInput(e.results[0][0].transcript); setIsRecording(false); };
-    rec.onerror = () => setIsRecording(false);
-    rec.onend = () => setIsRecording(false);
-    rec.start();
-    setIsRecording(true);
-  }, []);
 
   const openLumi = useCallback((prefill?: string) => {
     setLumiOpen(true);
@@ -379,6 +360,7 @@ export default function DemoPage() {
                 onKeyDown={e => e.key === 'Enter' && saveClinicName()}
                 className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-[#FFFDF8] placeholder:text-[#FFFDF8]/35 outline-none focus:border-[#C4973F]/60 w-44 transition-colors"
               />
+              <MicButton onResult={setBannerInput} />
               <button onClick={saveClinicName} className="rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
                 Personalise →
               </button>
@@ -1387,9 +1369,6 @@ export default function DemoPage() {
           className="relative z-10 shrink-0 p-4"
           style={{ borderTop: `1px solid ${dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}` }}
         >
-          {isRecording && (
-            <div className="mb-2 text-center text-xs font-medium text-[#C4973F] animate-pulse">Listening...</div>
-          )}
           <form onSubmit={e => { e.preventDefault(); setShowPills(false); sendToLumi(lumiInput); }} className="flex items-center gap-2">
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
@@ -1402,21 +1381,7 @@ export default function DemoPage() {
               }}
               className="flex-1 rounded-full border px-5 py-2.5 text-sm placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
             />
-            {hasSpeech && (
-              <button
-                type="button"
-                onClick={startRecording}
-                className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-full border transition-all"
-                style={{
-                  backgroundColor: isRecording ? '#C4973F' : 'transparent',
-                  borderColor: isRecording ? '#C4973F' : 'rgba(196,151,63,0.3)',
-                  color: isRecording ? '#1A1814' : '#C4973F',
-                  boxShadow: isRecording ? '0 0 0 4px rgba(196,151,63,0.2), 0 0 20px rgba(196,151,63,0.3)' : 'none',
-                }}
-              >
-                <Icon name="mic" className="h-4 w-4" />
-              </button>
-            )}
+            <MicButton onResult={setLumiInput} />
             <button
               type="submit"
               disabled={!lumiInput.trim() || lumiLoading}

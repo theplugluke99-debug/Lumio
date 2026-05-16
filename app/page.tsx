@@ -1,5 +1,6 @@
 import CursorGlow from '@/components/ui/CursorGlow';
 import Hero from '@/components/Hero';
+import InstallBanner from '@/components/InstallBanner';
 import Marquee from '@/components/Marquee';
 import PainSection from '@/components/PainSection';
 import Stats from '@/components/Stats';
@@ -36,6 +37,7 @@ export default function Page() {
       <Testimonial />
       <CTA />
       <Footer />
+      <InstallBanner />
     </main>
   );
 }

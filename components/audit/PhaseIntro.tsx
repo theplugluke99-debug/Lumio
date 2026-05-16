@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Logo from '@/components/ui/Logo';
 import GoldButton from '@/components/ui/GoldButton';
 import { LumioOrb } from '@/components/ui/LumioOrb';
+import MicButton from '@/components/MicButton';
 
 interface Props { onStart: (clinicName: string) => void; }
 
@@ -60,14 +61,17 @@ export default function PhaseIntro({ onStart }: Props) {
               <label className="text-xs text-white/40 font-semibold uppercase tracking-widest px-1">
                 Your clinic name (optional)
               </label>
-              <input
-                type="text"
-                placeholder="e.g. Glow Aesthetics London"
-                value={clinicName}
-                onChange={(e) => setClinicName(e.target.value)}
-                className="rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm px-5 py-3 text-white placeholder-white/25 outline-none focus:border-[#C4973F]/50 transition-colors"
-                style={{ fontSize: '16px' }}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. Glow Aesthetics London"
+                  value={clinicName}
+                  onChange={(e) => setClinicName(e.target.value)}
+                  className="flex-1 rounded-full border border-white/10 bg-white/[0.05] backdrop-blur-sm px-5 py-3 text-white placeholder-white/25 outline-none focus:border-[#C4973F]/50 transition-colors"
+                  style={{ fontSize: '16px' }}
+                />
+                <MicButton onResult={setClinicName} />
+              </div>
             </div>
             <GoldButton onClick={() => onStart(clinicName.trim())} large>Start my Revenue Reveal</GoldButton>
             <div className="flex flex-col gap-1.5 pt-1">

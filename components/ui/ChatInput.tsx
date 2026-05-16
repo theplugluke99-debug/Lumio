@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import { CHAT_PILLS } from '@/lib/data';
+import MicButton from '@/components/MicButton';
 
 interface Props {
   input: string;
@@ -47,6 +48,7 @@ export default function ChatInput({ input, onChange, onSubmit, onPill, loading }
           className="flex-1 min-w-0 bg-white/[0.06] border border-white/15 rounded-full px-5 text-[#FFFDF8] placeholder-white/30 outline-none transition-colors focus:border-[#C4973F]/40 disabled:opacity-50"
           style={{ fontSize: '16px', WebkitTextSizeAdjust: '100%', minHeight: '44px', paddingTop: '10px', paddingBottom: '10px' }}
         />
+        <MicButton onResult={onChange} />
         <button
           type="submit"
           disabled={!input.trim() || loading}
