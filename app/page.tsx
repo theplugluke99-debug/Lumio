@@ -1,7 +1,7 @@
 import CursorGlow from '@/components/ui/CursorGlow';
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
-import PainSection from '@/components/PainSection';
+import PainSolution from '@/components/PainSolution';
 import Stats from '@/components/Stats';
 import Problem from '@/components/Problem';
 import Services from '@/components/Services';
@@ -23,7 +23,7 @@ export default function Page() {
       <CursorGlow />
       <Hero />
       <Marquee />
-      <PainSection />
+      <PainSolution />
       <Stats />
       <Problem />
       <Services />
@@ -31,12 +31,12 @@ export default function Page() {
       <NumbersSection />
       <Integrations />
       <DemoTeaser />
-      <TalkToLumio />
       <Process />
       <Pricing />
       <Guarantee />
       <Testimonial />
       <CTA />
+      <TalkToLumio />
       <Footer />
     </main>
   );

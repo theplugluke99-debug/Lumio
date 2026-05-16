@@ -77,10 +77,10 @@ export default function TalkToLumio() {
         animate={headingInView ? 'visible' : 'hidden'}
         className="relative mx-auto max-w-3xl text-center mb-12"
       >
-        <motion.span variants={fadeUp} className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">AI ASSISTANT</motion.span>
-        <motion.h2 variants={fadeUp} className="mt-3 font-display font-black text-5xl md:text-7xl leading-[.9] tracking-[-0.03em] text-[#FFFDF8]">Talk to Lumio</motion.h2>
-        <motion.p variants={fadeUp} className="mt-4 text-[#8A8278] max-w-lg mx-auto text-base leading-relaxed">
-          Ask anything. Get your personalised automation blueprint. See your numbers. No forms, no calls, no waiting.
+        <motion.span variants={fadeUp} style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)', fontWeight: 600, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C4973F', display: 'block' }}>Still have questions?</motion.span>
+        <motion.h2 variants={fadeUp} className="mt-4 font-display" style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 700, color: '#FFFDF8', lineHeight: 1.15 }}>Ask Lumi directly.</motion.h2>
+        <motion.p variants={fadeUp} className="mt-4 max-w-sm mx-auto" style={{ fontFamily: 'var(--font-sans, Inter, sans-serif)', fontWeight: 400, fontSize: '16px', color: 'rgba(250,247,242,0.4)', lineHeight: 1.7 }}>
+          No forms. No calls. Just ask.
         </motion.p>
       </motion.div>
 
