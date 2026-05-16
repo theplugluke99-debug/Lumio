@@ -362,7 +362,7 @@ function Phone() {
 /* ─── Main export ─── */
 export default function ProductShowcase() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, margin: '0px' });
 
   return (
     <section
@@ -386,7 +386,7 @@ export default function ProductShowcase() {
           <motion.span
             variants={fadeUp}
             style={{
-              fontFamily: 'var(--font-syne, Syne, sans-serif)',
+              fontFamily: 'var(--font-sans, Syne, sans-serif)',
               fontSize: 11,
               fontWeight: 800,
               letterSpacing: '0.25em',
@@ -402,7 +402,7 @@ export default function ProductShowcase() {
           <motion.h2
             variants={fadeUp}
             style={{
-              fontFamily: 'var(--font-playfair, Georgia, serif)',
+              fontFamily: 'var(--font-display, Georgia, serif)',
               fontWeight: 700,
               fontSize: 'clamp(42px, 7vw, 96px)',
               lineHeight: 0.92,
@@ -427,7 +427,7 @@ export default function ProductShowcase() {
           <motion.p
             variants={fadeUp}
             style={{
-              fontFamily: 'var(--font-syne, Syne, sans-serif)',
+              fontFamily: 'var(--font-sans, Syne, sans-serif)',
               fontSize: 18,
               lineHeight: 1.8,
               color: 'rgba(250,247,242,0.55)',
