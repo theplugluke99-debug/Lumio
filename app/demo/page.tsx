@@ -206,6 +206,8 @@ export default function DemoPage() {
   const [isPreview, setIsPreview] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [onboardingDismissed, setOnboardingDismissed] = useState(true);
+  const [mobileTab, setMobileTab] = useState<'home' | 'activity' | 'chats' | 'clients' | 'more'>('home');
+  const [mobileSubView, setMobileSubView] = useState('');
   const [showPills, setShowPills] = useState(true);
   const [dashMode, setDashMode] = useState<'light' | 'dark'>('dark');
   const [mobileConvoFull, setMobileConvoFull] = useState(false);
@@ -452,8 +454,328 @@ export default function DemoPage() {
         </div>
       </aside>
 
+      {/* ─── Mobile layout (< md) ─────────────────────────── */}
+      <div className="md:hidden" style={{ minHeight: '100dvh', background: dBg, position: 'relative' }}>
+
+        {/* Mobile fixed top bar */}
+        <header style={{ position: 'fixed', top: bh, left: 0, right: 0, zIndex: 40, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', background: dTopbarBg, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${dCardBorder}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5B8A68', flexShrink: 0, display: 'inline-block' }} />
+            <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 16, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{clinicName}</span>
+          </div>
+          <div style={{ position: 'relative' }} ref={notifRef}>
+            <button type="button" onClick={() => setShowNotifs(v => !v)} style={{ width: 40, height: 40, borderRadius: '50%', background: dm ? 'rgba(255,253,248,0.08)' : '#F0EDF8', border: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center', color: dText, position: 'relative' }}>
+              <Icon name="bell" className="h-4 w-4" />
+              {!notifsRead && <span style={{ position: 'absolute', top: -2, right: -2, width: 16, height: 16, borderRadius: '50%', background: '#C4973F', fontSize: 9, fontWeight: 700, color: '#1A1814', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>4</span>}
+            </button>
+            {showNotifs && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 10px)', right: 0, width: 300, background: dm ? '#141210' : '#FFFDF8', border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', boxShadow: '0 20px 60px rgba(0,0,0,0.35)', zIndex: 50, overflow: 'hidden' }}>
+                <div style={{ padding: '0.875rem 1rem', borderBottom: `1px solid ${dCardBorder}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 14, color: dText }}>Notifications</span>
+                  <button onClick={() => setNotifsRead(true)} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500, fontSize: 11, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer' }}>Mark all read</button>
+                </div>
+                {[
+                  { dot: '#C4973F', title: 'Lumi booked Emma Wilson', body: 'Lip filler confirmed for Friday 11am', time: '2 min ago' },
+                  { dot: '#C4973F', title: 'New 5-star review', body: 'Sophie Carter left a Google review', time: '14 min ago' },
+                  { dot: '#5B8A68', title: 'No-show prevented', body: "Charlotte Reed confirmed after reminder", time: '1 hr ago' },
+                  { dot: '#C4973F', title: 'Rebooking message sent', body: 'Lumi reached out to Olivia Bennett', time: '2 hr ago' },
+                ].map((notif, ni) => (
+                  <div key={ni} style={{ padding: '0.75rem 1rem', borderBottom: `1px solid ${dCardBorder}`, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: notifsRead ? '#8A8278' : notif.dot, marginTop: 4, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 12, color: dText }}>{notif.title}</div>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, marginTop: 1 }}>{notif.body}</div>
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, color: dTextSub, whiteSpace: 'nowrap', flexShrink: 0 }}>{notif.time}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Scrollable content */}
+        <div style={{ paddingTop: bh + 56, paddingBottom: 76 }}>
+
+          {/* HOME */}
+          {mobileTab === 'home' && (
+            <div style={{ padding: '16px 14px 0' }}>
+              {/* Hero card */}
+              <div style={{ background: '#1A1814', borderRadius: '1.5rem', padding: '20px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: -50, right: -50, width: 160, height: 160, borderRadius: '50%', background: 'rgba(196,151,63,0.2)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+                <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#E8B44B', margin: '0 0 6px' }}>THIS WEEK</p>
+                <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 20, fontWeight: 800, color: '#FFFDF8', lineHeight: 1.15, margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{clinicName}</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#5B8A68' }} />
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, fontWeight: 500, color: '#5B8A68' }}>Live automation active</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  {METRIC_CARDS.map(card => (
+                    <div key={card.label} style={{ background: card.bg, borderRadius: '0.875rem', padding: '12px 14px' }}>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 24, fontWeight: 800, color: '#1A1814', lineHeight: 1 }}>{card.value}</div>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, fontWeight: 600, color: '#6B6259', marginTop: 4, lineHeight: 1.3 }}>{card.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Lumi suggests */}
+              <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C4973F', margin: '0 0 10px' }}>LUMI SUGGESTS</p>
+              {[
+                { dot: '#C4973F', title: 'Sophie Carter needs a rebooking nudge', body: 'Last visit 7 weeks ago — at risk of booking elsewhere.' },
+                { dot: '#5B8A68', title: '3 clients haven\'t left a Google review', body: 'Emma, Charlotte and Olivia — all treated in the last 10 days.' },
+              ].map((c, i) => (
+                <div key={i} style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1rem', padding: '12px 14px', marginBottom: 8, display: 'flex', gap: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.dot, marginTop: 4, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 13, color: dText, lineHeight: 1.35 }}>{c.title}</div>
+                    <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, lineHeight: 1.5, marginTop: 2 }}>{c.body}</div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Recent activity */}
+              <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C4973F', margin: '14px 0 10px' }}>TODAY</p>
+              <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1rem', overflow: 'hidden', marginBottom: 4 }}>
+                {feedItems.slice(0, 5).map((item, i) => (
+                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderTop: i === 0 ? 'none' : `1px solid ${dBorderSoft}` }}>
+                    <div style={{ width: 34, height: 34, borderRadius: '0.625rem', background: dIconBg, display: 'grid', placeItems: 'center', color: '#C4973F', flexShrink: 0 }}>
+                      <Icon name={item.icon} className="h-3.5 w-3.5" />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 12, color: dText, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.detail}</div>
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, color: dTextSub, flexShrink: 0 }}>{item.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ACTIVITY */}
+          {mobileTab === 'activity' && (
+            <div style={{ padding: '16px 14px' }}>
+              <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 14px' }}>Activity</h2>
+              <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12, marginBottom: 12, msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+                {[{ key: 'all', label: 'All' }, { key: 'lead', label: 'Leads' }, { key: 'booking', label: 'Bookings' }, { key: 'noshow', label: 'No-shows' }, { key: 'review', label: 'Reviews' }, { key: 'admin', label: 'Admin' }].map(f => (
+                  <button key={f.key} type="button" onClick={() => setActFilter(f.key)} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 11, borderRadius: 99, padding: '6px 14px', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer', background: actFilter === f.key ? '#C4973F' : dFilterBtn, color: actFilter === f.key ? '#1A1814' : dTextMuted, flexShrink: 0 }}>{f.label}</button>
+                ))}
+              </div>
+              <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1rem', overflow: 'hidden' }}>
+                {filteredFeed.map((item, i) => (
+                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', borderTop: i === 0 ? 'none' : `1px solid ${dBorderSoft}` }}>
+                    <div style={{ width: 34, height: 34, borderRadius: '0.625rem', background: dIconBg, display: 'grid', placeItems: 'center', color: '#C4973F', flexShrink: 0 }}>
+                      <Icon name={item.icon} className="h-3.5 w-3.5" />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 12, color: dText, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+                      <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.detail}</div>
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, color: dTextSub, flexShrink: 0 }}>{item.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* CHATS */}
+          {mobileTab === 'chats' && (
+            <div style={{ padding: '16px 14px' }}>
+              {mobileConvoFull && currentConvo ? (
+                <div>
+                  <button type="button" onClick={() => setMobileConvoFull(false)} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 14, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 16px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    All chats
+                  </button>
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 17, color: dText }}>{currentConvo.name}</div>
+                    <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted }}>{currentConvo.channel}</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {currentConvo.messages.map((msg, i) => (
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.role === 'client' ? 'flex-end' : 'flex-start', gap: 3 }}>
+                        {msg.role === 'lumio' && <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#C4973F', paddingLeft: 2 }}>Lumi</span>}
+                        <div style={{ maxWidth: '84%', borderRadius: '1.25rem', padding: '10px 14px', fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13, lineHeight: 1.55, background: msg.role === 'lumio' ? dClientBubble : '#C4973F', color: msg.role === 'lumio' ? dText : '#1A1814' }}>
+                          {msg.text}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 14px' }}>Chats</h2>
+                  <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1rem', overflow: 'hidden' }}>
+                    {CONVOS.map((convo, i) => (
+                      <button key={convo.id} type="button" onClick={() => { setSelectedConvo(convo.id); setMobileConvoFull(true); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', textAlign: 'left', cursor: 'pointer', background: 'transparent', border: 'none', borderTop: i === 0 ? 'none' : `1px solid ${dBorderSoft}` }}>
+                        <div style={{ width: 44, height: 44, borderRadius: '0.875rem', background: '#1A1814', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 14, color: '#E8B44B', flexShrink: 0 }}>
+                          {convo.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                            <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 14, color: dText }}>{convo.name}</span>
+                            <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextSub, flexShrink: 0 }}>{convo.time}</span>
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12, color: dTextMuted, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{convo.channel} · {convo.preview}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CLIENTS */}
+          {mobileTab === 'clients' && (() => {
+            const AG: Record<string, string> = {
+              '1': 'linear-gradient(135deg,#C4973F,#E8B44B)', '2': 'linear-gradient(135deg,#7C6B9A,#9B8CB8)',
+              '3': 'linear-gradient(135deg,#5B8A68,#7BAA88)', '4': 'linear-gradient(135deg,#B35A4C,#D07A6C)',
+              '5': 'linear-gradient(135deg,#4A6B8A,#6A8BAA)', '6': 'linear-gradient(135deg,#8A5B5B,#AA7B7B)',
+              '7': 'linear-gradient(135deg,#C4973F,#E8B44B)', '8': 'linear-gradient(135deg,#8A7B5B,#AA9B7B)',
+            };
+            const FP = ['All', 'Active', 'VIP', 'Due rebooking', 'New', 'Lapsed'];
+            const filtered = CLIENTS.filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()) && (clientFilter === 'All' || c.status === clientFilter));
+            if (mobileProfileFull && selectedClient) {
+              return (
+                <div style={{ padding: 14 }}>
+                  <button type="button" onClick={() => setMobileProfileFull(false)} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 14, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 16px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    All clients
+                  </button>
+                  <ClientProfile clientId={selectedClient} darkMode={dm} />
+                </div>
+              );
+            }
+            return (
+              <div style={{ padding: '16px 14px' }}>
+                <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 12px' }}>Clients</h2>
+                <div style={{ position: 'relative', marginBottom: 10 }}>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                  <input type="text" placeholder="Search clients…" value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{ width: '100%', boxSizing: 'border-box', background: dInputBg, border: `1px solid ${dInputBorder}`, borderRadius: '0.875rem', padding: '10px 14px 10px 34px', fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 14, color: dText, outline: 'none' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 10, marginBottom: 8, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {FP.map(p => (
+                    <button key={p} type="button" onClick={() => setClientFilter(p)} style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 11, borderRadius: 99, padding: '5px 12px', whiteSpace: 'nowrap', border: 'none', cursor: 'pointer', background: clientFilter === p ? '#C4973F' : dFilterBtn, color: clientFilter === p ? '#1A1814' : dTextMuted, flexShrink: 0 }}>{p}</button>
+                  ))}
+                </div>
+                <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1rem', overflow: 'hidden' }}>
+                  {filtered.map((client, idx) => (
+                    <button key={client.id} type="button" onClick={() => { setSelectedClient(client.id); setMobileProfileFull(true); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', textAlign: 'left', cursor: 'pointer', background: 'transparent', border: 'none', borderTop: idx === 0 ? 'none' : `1px solid ${dBorderSoft}` }}>
+                      <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: AG[client.id] ?? '#C4973F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 13, color: '#FFFDF8', flexShrink: 0 }}>{client.initials}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                          <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 13, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{client.name}</span>
+                          <StatusPill status={client.status} />
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: dTextMuted, marginTop: 2 }}>{client.spend} · {client.lastVisit}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* MORE */}
+          {mobileTab === 'more' && (
+            <div style={{ padding: '16px 14px' }}>
+              <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 20px' }}>More</h2>
+              <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', overflow: 'hidden' }}>
+                <button type="button" onClick={() => openLumi()} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: '#1A1814', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                    <LumiLens size={22} variant="light" animated />
+                  </div>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText, flex: 1 }}>Ask Lumi</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button type="button" onClick={() => setMobileSubView('voice')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: dIconBg, display: 'grid', placeItems: 'center', flexShrink: 0, color: '#C4973F' }}><Icon name="voice" className="h-5 w-5" /></div>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText, flex: 1 }}>My Style</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button type="button" onClick={() => setMobileSubView('performance')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: dIconBg, display: 'grid', placeItems: 'center', flexShrink: 0, color: '#C4973F' }}><Icon name="activity" className="h-5 w-5" /></div>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText, flex: 1 }}>Performance</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button type="button" onClick={() => setMobileSubView('integrations')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: dIconBg, display: 'grid', placeItems: 'center', flexShrink: 0, color: '#C4973F' }}><Icon name="plug" className="h-5 w-5" /></div>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText, flex: 1 }}>Integrations</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button type="button" onClick={() => setMobileSubView('admin')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: dIconBg, display: 'grid', placeItems: 'center', flexShrink: 0, color: '#C4973F' }}><Icon name={tier === 'fullops' ? 'spark' : 'lock'} className="h-5 w-5" /></div>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText }}>Admin Hub</span>
+                    {tier === 'fullops' && <span style={{ marginLeft: 8, fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, color: '#5B8A68', background: '#EDF4EE', borderRadius: 99, padding: '2px 8px' }}>Full Ops</span>}
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={dTextMuted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px' }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: dIconBg, display: 'grid', placeItems: 'center', flexShrink: 0, color: '#C4973F' }}>
+                    {dm ? (
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    )}
+                  </div>
+                  <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 15, color: dText, flex: 1 }}>{dm ? 'Dark mode' : 'Light mode'}</span>
+                  <button type="button" onClick={() => setDashMode(m => m === 'light' ? 'dark' : 'light')} style={{ width: 48, height: 28, borderRadius: 99, background: dm ? '#C4973F' : 'rgba(26,24,20,0.15)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 200ms', flexShrink: 0 }}>
+                    <div style={{ position: 'absolute', top: 3, left: dm ? 23 : 3, width: 22, height: 22, borderRadius: '50%', background: '#FFFDF8', transition: 'left 200ms', boxShadow: '0 1px 4px rgba(0,0,0,0.2)' }} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Sub-view overlay */}
+        {mobileSubView !== '' && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: dBg, overflowY: 'auto' }}>
+            <div style={{ padding: `${bh + 16}px 14px 80px` }}>
+              <button type="button" onClick={() => setMobileSubView('')} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 14, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 20px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                Back
+              </button>
+              {mobileSubView === 'voice' && <VoiceProfile darkMode={dm} />}
+              {mobileSubView === 'performance' && <PerformanceGraph darkMode={dm} />}
+              {mobileSubView === 'integrations' && <IntegrationsTab darkMode={dm} />}
+              {mobileSubView === 'admin' && (
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <div style={{ width: 60, height: 60, borderRadius: '1.2rem', background: 'rgba(196,151,63,0.1)', border: '1px solid rgba(196,151,63,0.2)', display: 'grid', placeItems: 'center', margin: '0 auto 20px', color: '#C4973F' }}>
+                    <Icon name="lock" className="h-7 w-7" />
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4973F', marginBottom: 12 }}>Full Operations</div>
+                  <h3 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 24, color: dText, lineHeight: 1.15, margin: '0 0 12px' }}>Admin hub unlocks with Full Ops</h3>
+                  <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 14, color: dTextMuted, lineHeight: 1.65, margin: '0 0 24px' }}>Consent forms, invoice chasing, monthly reports — your entire back office automated.</p>
+                  <a href="/#pricing" style={{ display: 'inline-block', background: '#C4973F', color: '#1A1814', borderRadius: 99, padding: '12px 28px', fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>Upgrade to Full Operations →</a>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile bottom tab bar */}
+        <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, height: 60, background: dTopbarBg, backdropFilter: 'blur(20px)', borderTop: `1px solid ${dCardBorder}`, paddingBottom: 'env(safe-area-inset-bottom)', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
+          {([
+            { id: 'home' as const, icon: 'overview', label: 'Home' },
+            { id: 'activity' as const, icon: 'activity', label: 'Activity' },
+            { id: 'chats' as const, icon: 'conversations', label: 'Chats' },
+            { id: 'clients' as const, icon: 'clients', label: 'Clients' },
+            { id: 'more' as const, icon: 'menu', label: 'More' },
+          ] as { id: 'home' | 'activity' | 'chats' | 'clients' | 'more'; icon: string; label: string }[]).map(({ id, icon, label }) => (
+            <button key={id} type="button" onClick={() => { setMobileTab(id); setMobileSubView(''); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: mobileTab === id ? '#C4973F' : (dm ? 'rgba(255,253,248,0.4)' : '#8A8278'), transition: 'color 150ms' }}>
+              <Icon name={icon} className="h-5 w-5" />
+              <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em' }}>{label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
       {/* Main column — offset by sidebar width on desktop */}
-      <div className="flex flex-col lg:ml-[280px] min-h-screen" style={{ paddingTop: bh }}>
+      <div className="hidden md:flex flex-col lg:ml-[280px] min-h-screen" style={{ paddingTop: bh }}>
 
         {/* Topbar */}
         <header className="sticky z-30 border-b px-5 py-4 backdrop-blur-2xl shrink-0"
@@ -1438,7 +1760,7 @@ export default function DemoPage() {
       </div>
 
       {/* Mobile bottom nav — 5 tabs with Lumi Lens center */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t lg:hidden"
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t hidden md:block lg:hidden"
         style={{ backgroundColor: dTopbarBg, backdropFilter: 'blur(20px)', borderColor: dCardBorder, paddingBottom: 'env(safe-area-inset-bottom)', height: 64 }}>
         <div className="grid grid-cols-5 h-full items-center px-1">
           {([
