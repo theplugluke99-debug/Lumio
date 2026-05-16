@@ -1,7 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import GoldButton from '@/components/ui/GoldButton';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
@@ -361,15 +360,11 @@ function Phone() {
 
 /* ─── Main export ─── */
 export default function ProductShowcase() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '0px' });
-
   return (
     <section
-      ref={ref}
       style={{
         background: '#111009',
-        overflow: 'hidden',
+        overflowX: 'clip',
         paddingTop: 'clamp(5rem, 8vw, 8rem)',
         paddingBottom: 'clamp(6rem, 10vw, 10rem)',
       }}
@@ -380,7 +375,8 @@ export default function ProductShowcase() {
         <motion.div
           variants={stagger}
           initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 5vw, 5rem)' }}
         >
           <motion.span
@@ -443,7 +439,8 @@ export default function ProductShowcase() {
         <motion.div
           variants={fadeUp}
           initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
           className="flex flex-col md:flex-row items-center md:items-end justify-center"
           style={{ gap: 'clamp(1.5rem, 4vw, 4rem)', position: 'relative' }}
         >
@@ -478,7 +475,8 @@ export default function ProductShowcase() {
         <motion.div
           variants={fadeUp}
           initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
           style={{ textAlign: 'center', marginTop: 'clamp(2.5rem, 4vw, 4rem)' }}
         >
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>

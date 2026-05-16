@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   InstagramLogo, WhatsAppLogo, GoogleLogo, PhorestLogo, FreshaLogo, StripeLogo,
   CalendlyLogo, TreatwellLogo, FacesLogo, GmailLogo, FacebookLogo, TrustpilotLogo,
@@ -26,14 +25,11 @@ const ROW2 = [
 ]
 
 export default function Integrations() {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
-
   const itemVariant = (i: number) => ({
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1, y: 0,
-      transition: { duration: 0.5, delay: i * 0.08, ease: 'easeOut' as const },
+      transition: { duration: 0.5, delay: i * 0.06, ease: 'easeOut' as const },
     },
   })
 
@@ -65,7 +61,7 @@ export default function Integrations() {
         payment processor. Everything works together from day one.
       </p>
 
-      <div ref={ref} style={{ maxWidth: 700, margin: '0 auto' }}>
+      <div style={{ maxWidth: 700, margin: '0 auto' }}>
         {/* Row 1 */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem 3rem', marginBottom: '2rem' }}>
           {ROW1.map(({ Logo, name }, i) => (
@@ -73,7 +69,8 @@ export default function Integrations() {
               key={name}
               variants={itemVariant(i)}
               initial="hidden"
-              animate={isInView ? 'visible' : 'hidden'}
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
             >
               <motion.div
@@ -101,7 +98,8 @@ export default function Integrations() {
               key={name}
               variants={itemVariant(i + ROW1.length)}
               initial="hidden"
-              animate={isInView ? 'visible' : 'hidden'}
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
             >
               <motion.div
