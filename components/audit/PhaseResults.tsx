@@ -8,6 +8,7 @@ import ResultsTotal from './ResultsTotal';
 import ResultsTier from './ResultsTier';
 import ResultsRoi from './ResultsRoi';
 import ResultsCTA from './ResultsCTA';
+import { InstagramLogo, WhatsAppLogo, GoogleLogo, PhorestLogo, FreshaLogo, StripeLogo } from '@/components/logos/IntegrationLogos';
 import { calculate, Answers } from '@/lib/audit';
 
 interface Props { answers: Answers; clinicName: string; }
@@ -51,6 +52,23 @@ export default function PhaseResults({ answers, clinicName }: Props) {
       <ResultsTotal r={r} label={label} totalVisible={totalVisible} />
       <ResultsTier r={r} label={label} />
       <ResultsRoi r={r} totalVisible={totalVisible} />
+
+      {/* Integration strip */}
+      <div className="py-10 px-4 bg-[#1A1814]">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[.18em] text-white/30 mb-5">
+            Works with your existing tools
+          </p>
+          <div className="flex items-center justify-center gap-6 flex-wrap">
+            {[InstagramLogo, WhatsAppLogo, GoogleLogo, PhorestLogo, FreshaLogo, StripeLogo].map((Logo, i) => (
+              <div key={i} style={{ opacity: 0.5 }}>
+                <Logo size={28} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <ResultsCTA r={r} />
     </div>
   );

@@ -10,7 +10,7 @@ const CREAM = '#FFFDF8'
 const BG = '#0A0907'
 const CHARCOAL = '#1A1814'
 
-const DURATIONS = [4000, 4000, 4000, 5000, 5000, 5000, 4000, 4000, 5000, 6000]
+const DURATIONS = [4000, 4000, 4000, 5000, 5000, 5000, 5000, 4000, 4000, 5000, 6000]
 const TOTAL = DURATIONS.reduce((a, b) => a + b, 0)
 const CUM = DURATIONS.map((_, i) => DURATIONS.slice(0, i + 1).reduce((a, b) => a + b, 0))
 
@@ -224,6 +224,145 @@ function Scene3({ isMobile }: SceneProps) {
           </motion.div>
         ))}
       </motion.div>
+    </motion.div>
+  )
+}
+
+// ─── Scene 3a — Everything Connects ──────────────────────────────────────────
+
+const RING_LOGOS = [
+  { label: 'Instagram', color: '#E1306C', angle: 270 },
+  { label: 'WhatsApp', color: '#25D366', angle: 330 },
+  { label: 'Google', color: '#4285F4', angle: 30 },
+  { label: 'Phorest', color: '#1D9B8E', angle: 90 },
+  { label: 'Fresha', color: '#00C2A8', angle: 150 },
+  { label: 'Stripe', color: '#635BFF', angle: 210 },
+]
+
+function Scene3a({ isMobile }: SceneProps) {
+  const [orb, setOrb] = useState(false)
+  const [logos, setLogos] = useState(false)
+  const [lines, setLines] = useState(false)
+  const [pulse, setPulse] = useState(false)
+  const [caption, setCaption] = useState(false)
+
+  useEffect(() => {
+    const ts = [
+      setTimeout(() => setOrb(true), 600),
+      setTimeout(() => setLogos(true), 1000),
+      setTimeout(() => setLines(true), 2600),
+      setTimeout(() => setPulse(true), 3600),
+      setTimeout(() => setCaption(true), 4000),
+    ]
+    return () => ts.forEach(clearTimeout)
+  }, [])
+
+  const R = isMobile ? 85 : 110
+  const SIZE = R * 2 + 60
+  const CX = SIZE / 2
+  const CY = SIZE / 2
+  const orbSize = isMobile ? 44 : 56
+
+  const logoPos = (angle: number) => {
+    const rad = (angle * Math.PI) / 180
+    return { x: CX + R * Math.cos(rad), y: CY + R * Math.sin(rad) }
+  }
+
+  return (
+    <motion.div variants={sceneV} initial="initial" animate="animate" exit="exit"
+      style={{ ...fill, flexDirection: 'column', padding: '0 1.5rem', textAlign: 'center' as const }}>
+
+      <motion.p
+        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.7 }}
+        style={{
+          fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 300, fontSize: 16,
+          color: 'rgba(250,247,242,0.35)', margin: '0 0 2.5rem',
+        }}>
+        Works with everything you already use.
+      </motion.p>
+
+      {/* Ring diagram */}
+      <div style={{ position: 'relative', width: SIZE, height: SIZE }}>
+        {/* SVG lines */}
+        <svg
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+          width={SIZE} height={SIZE}
+          style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+        >
+          {lines && RING_LOGOS.map((l, i) => {
+            const pos = logoPos(l.angle)
+            return (
+              <motion.path
+                key={l.label}
+                d={`M ${CX} ${CY} L ${pos.x} ${pos.y}`}
+                stroke="rgba(196,151,63,0.3)"
+                strokeWidth={1}
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.4, delay: i * 0.1, ease: 'linear' }}
+              />
+            )
+          })}
+        </svg>
+
+        {/* Center orb */}
+        {orb && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: 'absolute',
+              left: CX - orbSize / 2, top: CY - orbSize / 2,
+              width: orbSize, height: orbSize, borderRadius: '50%',
+              background: pulse
+                ? 'radial-gradient(circle at 35% 30%, #F5E6C8, #C4973F, #8B6420)'
+                : 'radial-gradient(circle at 35% 30%, rgba(245,230,200,0.6), rgba(196,151,63,0.4), rgba(139,100,32,0.4))',
+              boxShadow: pulse ? '0 0 32px rgba(196,151,63,0.6)' : 'none',
+              transition: 'background 0.4s, box-shadow 0.4s',
+              zIndex: 2,
+            }}
+          />
+        )}
+
+        {/* Ring logos */}
+        {logos && RING_LOGOS.map((l, i) => {
+          const pos = logoPos(l.angle)
+          return (
+            <motion.div
+              key={l.label}
+              initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.25, delay: i * 0.2, ease: [0.22, 1, 0.36, 1] }}
+              style={{
+                position: 'absolute',
+                left: pos.x - 18, top: pos.y - 18,
+                width: 36, height: 36, borderRadius: '0.75rem',
+                background: 'rgba(255,253,248,0.06)',
+                border: '1px solid rgba(255,253,248,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: 2,
+              }}
+            >
+              <div style={{
+                width: 14, height: 14, borderRadius: '50%',
+                background: l.color, opacity: 0.85,
+              }} />
+            </motion.div>
+          )
+        })}
+      </div>
+
+      {caption && (
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+          style={{
+            fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 400, fontSize: 12,
+            color: 'rgba(250,247,242,0.3)', margin: '2rem 0 0',
+          }}>
+          50+ integrations. Zero disruption.
+        </motion.p>
+      )}
     </motion.div>
   )
 }
@@ -878,12 +1017,13 @@ export default function VideoPlayer() {
         {!replay && scene === 1 && <Scene1 key="s1" isMobile={isMobile} />}
         {!replay && scene === 2 && <Scene2 key="s2" isMobile={isMobile} />}
         {!replay && scene === 3 && <Scene3 key="s3" isMobile={isMobile} />}
-        {!replay && scene === 4 && <Scene4 key="s4" isMobile={isMobile} />}
-        {!replay && scene === 5 && <Scene5 key="s5" isMobile={isMobile} />}
-        {!replay && scene === 6 && <Scene5a key="s5a" isMobile={isMobile} />}
-        {!replay && scene === 7 && <Scene6 key="s6" isMobile={isMobile} />}
-        {!replay && scene === 8 && <Scene7 key="s7" isMobile={isMobile} />}
-        {!replay && scene === 9 && <Scene8 key="s8" isMobile={isMobile} />}
+        {!replay && scene === 4 && <Scene3a key="s3a" isMobile={isMobile} />}
+        {!replay && scene === 5 && <Scene4 key="s4" isMobile={isMobile} />}
+        {!replay && scene === 6 && <Scene5 key="s5" isMobile={isMobile} />}
+        {!replay && scene === 7 && <Scene5a key="s5a" isMobile={isMobile} />}
+        {!replay && scene === 8 && <Scene6 key="s6" isMobile={isMobile} />}
+        {!replay && scene === 9 && <Scene7 key="s7" isMobile={isMobile} />}
+        {!replay && scene === 10 && <Scene8 key="s8" isMobile={isMobile} />}
         {replay && <ReplayScreen key="replay" onReplay={handleReplay} />}
       </AnimatePresence>
 

@@ -8,9 +8,10 @@ import VoiceProfile from '@/components/demo/VoiceProfile';
 import SuggestedActions from '@/components/demo/SuggestedActions';
 import PerformanceGraph from '@/components/demo/PerformanceGraph';
 import ClientProfile from '@/components/demo/ClientProfile';
+import IntegrationsTab from '@/components/demo/IntegrationsTab';
 import MicButton from '@/components/MicButton';
 
-type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin';
+type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin' | 'integrations';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
 type FeedItem = { id: number; time: string; title: string; detail: string; icon: string; category: string };
 type Convo = { id: string; name: string; channel: string; preview: string; time: string; messages: { role: 'lumio' | 'client'; text: string }[] };
@@ -40,6 +41,7 @@ function Icon({ name, className = 'h-5 w-5' }: { name: string; className?: strin
     menu: <><path d="M3 12h18M3 6h18M3 18h18" {...SVG}/></>,
     mic: <><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z" {...SVG}/><path d="M19 10a7 7 0 0 1-14 0M12 19v3M8 22h8" {...SVG}/></>,
     voice: <><path d="M12 20h9" {...SVG}/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" {...SVG}/></>,
+    plug: <><path d="M18.36 6.64a9 9 0 1 1-12.73 0" {...SVG}/><line x1="12" y1="2" x2="12" y2="12" {...SVG}/></>,
   };
   return <svg viewBox="0 0 24 24" className={className}>{m[name] ?? null}</svg>;
 }
@@ -335,6 +337,7 @@ export default function DemoPage() {
     { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
     { id: 'voice' as Tab, icon: 'voice', label: 'My Style' },
     { id: 'admin' as Tab, icon: tier === 'fullops' ? 'spark' : 'lock', label: 'Admin hub', locked: tier !== 'fullops' },
+    { id: 'integrations' as Tab, icon: 'plug', label: 'Integrations' },
   ];
 
   const currentConvo = CONVOS.find(c => c.id === selectedConvo);
@@ -1175,6 +1178,9 @@ export default function DemoPage() {
 
             {/* ── Voice Profile ─────────────────────────────────── */}
             {tab === 'voice' && <VoiceProfile darkMode={dm} />}
+
+            {/* ── Integrations ─────────────────────────────────── */}
+            {tab === 'integrations' && <IntegrationsTab darkMode={dm} />}
 
           </div>
         </main>
