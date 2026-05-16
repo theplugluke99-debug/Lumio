@@ -89,6 +89,19 @@ export default function PerformanceGraph({ darkMode: dm }: Props) {
               stroke={gridClr} strokeDasharray="4 4" strokeWidth={1}
             />
           ))}
+          {/* Lumi activated annotation — shown for 8W and 3M where W4 is the inflection */}
+          {(period === '8W' || period === '3M') && (() => {
+            const ax = xp(3);
+            return (
+              <>
+                <line x1={ax} y1={padY} x2={ax} y2={H} stroke="#C4973F" strokeWidth={1} strokeDasharray="3 3" opacity={0.5} />
+                <rect x={ax + 4} y={padY + 2} width={90} height={14} rx={3} fill={dm ? 'rgba(20,18,16,0.85)' : 'rgba(255,253,248,0.9)'} />
+                <text x={ax + 8} y={padY + 12} fill="#C4973F" fontSize={9} fontFamily="Inter, sans-serif" fontWeight="600">
+                  ✦ Lumi activated
+                </text>
+              </>
+            );
+          })()}
           <path d={areaPath('leads')} fill="rgba(196,151,63,0.08)" />
           <path d={areaPath('booked')} fill="rgba(91,138,104,0.08)" />
           <path d={linePath('leads')} fill="none" stroke="#C4973F" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
@@ -115,6 +128,11 @@ export default function PerformanceGraph({ darkMode: dm }: Props) {
         <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 13, color: '#5B8A68' }}>↑ 158% leads vs 8 weeks ago</span>
         <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 13, color: '#5B8A68' }}>↑ 171% bookings vs 8 weeks ago</span>
       </div>
+      {(period === '8W' || period === '3M') && (
+        <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 11, color: textMut, marginTop: 8, lineHeight: 1.5 }}>
+          The dashed line marks when Lumi went live. Notice the step change in both leads and bookings from that point.
+        </p>
+      )}
     </div>
   )
 }

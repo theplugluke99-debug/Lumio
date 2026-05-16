@@ -54,6 +54,9 @@ const INFO_COLS = [
 interface Props { darkMode: boolean }
 
 export default function VoiceProfile({ darkMode: dm }: Props) {
+  const [whyOpen, setWhyOpen] = useState<Record<string, boolean>>({});
+  const toggleWhy = (num: string) => setWhyOpen(prev => ({ ...prev, [num]: !prev[num] }));
+
   const [greeting, setGreeting] = useState('Hey lovely! 💛');
   const [sampleMsg, setSampleMsg] = useState(
     "Hey gorgeous! So excited you're thinking about lip filler — I'd love to chat through exactly what you're after first. What days work for you? ✨"
@@ -99,7 +102,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
     transition: 'border-color 200ms',
   };
 
-  const questionCard = (num: string, question: string, sub: string, children: React.ReactNode) => (
+  const questionCard = (num: string, question: string, sub: string, children: React.ReactNode, whyNote?: string) => (
     <div style={{
       background: cardBg, border: `1px solid ${cardBorder}`,
       borderRadius: '1rem', padding: '1.25rem 1.5rem', marginBottom: '1rem',
@@ -110,10 +113,39 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
       <div style={{ fontWeight: 600, fontSize: 14, color: text, marginBottom: '0.25rem', fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
         {question}
       </div>
-      <div style={{ fontWeight: 400, fontSize: 12, color: textSub, marginBottom: '0.75rem', fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
-        {sub}
-      </div>
+      {sub && (
+        <div style={{ fontWeight: 400, fontSize: 12, color: textSub, marginBottom: '0.75rem', fontFamily: 'var(--font-inter), Inter, sans-serif' }}>
+          {sub}
+        </div>
+      )}
       {children}
+      {whyNote && (
+        <div style={{ marginTop: '0.75rem' }}>
+          <button
+            type="button"
+            onClick={() => toggleWhy(num)}
+            style={{
+              fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500, fontSize: 11,
+              background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+              color: GOLD, display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            {whyOpen[num] ? '▲ Hide' : '▼ Why we ask this'}
+          </button>
+          {whyOpen[num] && (
+            <div style={{
+              marginTop: 8, padding: '10px 14px',
+              background: dm ? 'rgba(196,151,63,0.06)' : 'rgba(196,151,63,0.05)',
+              border: '1px solid rgba(196,151,63,0.15)',
+              borderRadius: '0.5rem',
+              fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 12,
+              color: textMuted, lineHeight: 1.65,
+            }}>
+              {whyNote}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -151,7 +183,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
               />
               <MicButton onResult={setGreeting} />
             </div>
-          ))}
+          ), "The opening word sets the emotional tone of every message Lumi sends. A warm, personal greeting creates a 3× higher reply rate than a generic opener like 'Hello'.")}
 
           {/* Q2 */}
           {questionCard('02', 'Paste a real message you\'ve sent to a client.', 'This teaches Lumi your exact writing style.', (
@@ -167,7 +199,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
                 <MicButton onResult={setSampleMsg} />
               </div>
             </div>
-          ))}
+          ), "Lumi learns your writing style by analysing real messages — your vocabulary, sentence length, warmth level, and emoji use. This is how she sounds exactly like you, not a bot.")}
 
           {/* Q3 */}
           {questionCard('03', "What matters most to your clients when they first get in touch?", '', (
@@ -200,7 +232,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
                 );
               })}
             </div>
-          ))}
+          ), "Different clients have different concerns. By knowing what matters most, Lumi leads with the right message every time — whether that's price, safety, or social proof — without you having to brief her.")}
 
           {/* Q4 */}
           {questionCard('04', "Is there anything you'd never say to a client?", "These become Lumi's rules.", (
@@ -216,7 +248,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
                 <MicButton onResult={setNeverSay} />
               </div>
             </div>
-          ))}
+          ), "These become hard rules Lumi never breaks. If you'd never use the word 'enquiry' or be pushy about pricing — Lumi won't either. Ever. These constraints are enforced on every single message.")}
 
           {/* Q5 */}
           {questionCard('05', 'How do you want clients to feel after speaking to you?', '', (
@@ -242,7 +274,7 @@ export default function VoiceProfile({ darkMode: dm }: Props) {
                 );
               })}
             </div>
-          ))}
+          ), "Lumi uses these emotional goals to shape how she closes conversations — word choices, tone, sign-offs. Clients who feel 'cared for' and 'seen' rebook at 2× the rate of those who feel 'informed' only.")}
 
           {/* Save button */}
           <button

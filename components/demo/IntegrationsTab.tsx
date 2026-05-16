@@ -14,20 +14,21 @@ const INTEGRATIONS: {
   Logo: React.ComponentType<{ size?: number }>
   name: string
   description: string
+  detail: string
   status: Status
 }[] = [
-  { Logo: InstagramLogo, name: 'Instagram', description: 'DM responses & lead capture', status: 'connected' },
-  { Logo: WhatsAppLogo, name: 'WhatsApp', description: 'Client messaging & reminders', status: 'connected' },
-  { Logo: GoogleLogo, name: 'Google Business', description: 'Review generation & responses', status: 'connected' },
-  { Logo: PhorestLogo, name: 'Phorest', description: 'Booking sync & client records', status: 'connected' },
-  { Logo: StripeLogo, name: 'Stripe', description: 'Payment processing & invoices', status: 'connected' },
-  { Logo: GmailLogo, name: 'Gmail', description: 'Email enquiries & follow-ups', status: 'pending' },
-  { Logo: FreshaLogo, name: 'Fresha', description: 'Booking system integration', status: 'none' },
-  { Logo: CalendlyLogo, name: 'Calendly', description: 'Appointment scheduling', status: 'none' },
-  { Logo: FacebookLogo, name: 'Facebook', description: 'Messenger enquiries', status: 'none' },
-  { Logo: TreatwellLogo, name: 'Treatwell', description: 'Booking platform sync', status: 'none' },
-  { Logo: FacesLogo, name: 'Faces', description: 'Consent form management', status: 'none' },
-  { Logo: TrustpilotLogo, name: 'Trustpilot', description: 'Review collection & display', status: 'none' },
+  { Logo: InstagramLogo, name: 'Instagram', description: 'DM responses & lead capture', detail: 'Lumi reads every incoming DM, qualifies the lead, and replies in your voice within seconds — 24/7.', status: 'connected' },
+  { Logo: WhatsAppLogo, name: 'WhatsApp', description: 'Client messaging & reminders', detail: 'Sends booking confirmations, no-show reminders, and rebooking nudges automatically via WhatsApp.', status: 'connected' },
+  { Logo: GoogleLogo, name: 'Google Business', description: 'Review generation & responses', detail: 'Triggers post-treatment review requests at the optimal moment, and responds to new reviews on your behalf.', status: 'connected' },
+  { Logo: PhorestLogo, name: 'Phorest', description: 'Booking sync & client records', detail: 'Lumi pulls live appointment data, updates client notes, and triggers automations based on booking status.', status: 'connected' },
+  { Logo: StripeLogo, name: 'Stripe', description: 'Payment processing & invoices', detail: 'Tracks outstanding balances and sends automated payment chasers for unpaid or overdue invoices.', status: 'connected' },
+  { Logo: GmailLogo, name: 'Gmail', description: 'Email enquiries & follow-ups', detail: 'Handles inbound email enquiries and sends aftercare, follow-up, and rebooking sequences automatically.', status: 'pending' },
+  { Logo: FreshaLogo, name: 'Fresha', description: 'Booking system integration', detail: 'Syncs bookings and client profiles from Fresha to trigger Lumi automations at the right moment.', status: 'none' },
+  { Logo: CalendlyLogo, name: 'Calendly', description: 'Appointment scheduling', detail: 'Connects Lumi to your Calendly so bookings trigger immediate confirmation and reminder sequences.', status: 'none' },
+  { Logo: FacebookLogo, name: 'Facebook', description: 'Messenger enquiries', detail: 'Lumi responds to Facebook Messenger DMs with the same speed and warmth as Instagram.', status: 'none' },
+  { Logo: TreatwellLogo, name: 'Treatwell', description: 'Booking platform sync', detail: 'Pulls Treatwell bookings into Lumi so reminders and follow-ups go out on time, every time.', status: 'none' },
+  { Logo: FacesLogo, name: 'Faces', description: 'Consent form management', detail: 'Tracks consent form completion and chases clients automatically before their appointment.', status: 'none' },
+  { Logo: TrustpilotLogo, name: 'Trustpilot', description: 'Review collection & display', detail: 'Automates Trustpilot review requests post-treatment and monitors your rating over time.', status: 'none' },
 ]
 
 function StatusBadge({ status, dm }: { status: Status; dm: boolean }) {
@@ -89,32 +90,37 @@ export default function IntegrationsTab({ darkMode: dm }: Props) {
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: '0.75rem',
       }}>
-        {INTEGRATIONS.map(({ Logo, name, description, status }) => (
+        {INTEGRATIONS.map(({ Logo, name, description, detail, status }) => (
           <div
             key={name}
             style={{
               background: cardBg, border: `1px solid ${cardBorder}`,
               borderRadius: '1rem', padding: '1.25rem',
-              display: 'flex', alignItems: 'center', gap: '0.875rem',
+              display: 'flex', flexDirection: 'column', gap: '0.75rem',
               transition: 'border-color 200ms',
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = dm ? 'rgba(255,253,248,0.18)' : 'rgba(26,24,20,0.18)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = cardBorder }}
           >
-            <div style={{ flexShrink: 0 }}>
-              <Logo size={32} />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 14, color: textPri, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {name}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+              <div style={{ flexShrink: 0 }}>
+                <Logo size={32} />
               </div>
-              <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 400, fontSize: 12, color: textMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {description}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 14, color: textPri, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {name}
+                </div>
+                <div style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 400, fontSize: 12, color: textMuted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {description}
+                </div>
+              </div>
+              <div style={{ flexShrink: 0 }}>
+                <StatusBadge status={status} dm={dm} />
               </div>
             </div>
-            <div style={{ flexShrink: 0 }}>
-              <StatusBadge status={status} dm={dm} />
-            </div>
+            <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 400, fontSize: 12, color: textMuted, lineHeight: 1.55, margin: 0 }}>
+              {detail}
+            </p>
           </div>
         ))}
       </div>

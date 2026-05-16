@@ -12,6 +12,7 @@ import IntegrationsTab from '@/components/demo/IntegrationsTab';
 import MicButton from '@/components/MicButton';
 import { PWASetup } from '@/components/PWASetup';
 import LumiLens from '@/components/LumiLens';
+import Tooltip from '@/components/demo/Tooltip';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin' | 'integrations';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
@@ -178,10 +179,10 @@ const CLIENTS: Client[] = [
 ];
 
 const METRIC_CARDS = [
-  { bg: '#F9EDE8', icon: 'lead', value: '31', label: 'Leads captured', note: 'Across website, phone and Instagram.', trend: '+18% this week', trendColor: '#5B8A68', arrow: '↑', arrowColor: '#C4973F' },
-  { bg: '#F0EDF8', icon: 'booking', value: '19', label: 'Bookings by AI', note: 'Confirmed without manual chasing.', trend: 'AI handled', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
-  { bg: '#EDF4EE', icon: 'noshow', value: '2', label: 'No-shows this week', note: 'Down from 9 after reminders launched.', trend: '-77% vs before', trendColor: '#5B8A68', arrow: '↓', arrowColor: '#5B8A68' },
-  { bg: '#F2DDD8', icon: 'money', value: '£4,800', label: 'Pipeline value', note: 'Revenue attributed to Lumio leads.', trend: 'Live tracking', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
+  { bg: '#F9EDE8', icon: 'lead', value: '31', label: 'Leads captured', tooltip: 'Every Instagram DM, website form and phone call Lumi captured and qualified this week — without you doing anything.', note: 'Across website, phone and Instagram.', trend: '+18% this week', trendColor: '#5B8A68', arrow: '↑', arrowColor: '#C4973F' },
+  { bg: '#F0EDF8', icon: 'booking', value: '19', label: 'Bookings by AI', tooltip: 'Appointments confirmed by Lumi without manual input — enquiry to calendar entry in under 30 seconds.', note: 'Confirmed without manual chasing.', trend: 'AI handled', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
+  { bg: '#EDF4EE', icon: 'noshow', value: '2', label: 'No-shows this week', tooltip: 'Appointments that almost didn\'t happen — saved by Lumi\'s automated reminder sequences. Down from 9 before Lumi.', note: 'Down from 9 after reminders launched.', trend: '-77% vs before', trendColor: '#5B8A68', arrow: '↓', arrowColor: '#5B8A68' },
+  { bg: '#F2DDD8', icon: 'money', value: '£4,800', label: 'Pipeline value', tooltip: 'The total revenue value of all leads currently being handled by Lumi — from first message through to confirmed booking.', note: 'Revenue attributed to Lumio leads.', trend: 'Live tracking', trendColor: '#C4973F', arrow: '↑', arrowColor: '#C4973F' },
 ];
 
 // ─── Main ──────────────────────────────────────────────────────────────────────
@@ -204,6 +205,7 @@ export default function DemoPage() {
   const [fromReveal, setFromReveal] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(true);
   const [showPills, setShowPills] = useState(true);
   const [dashMode, setDashMode] = useState<'light' | 'dark'>('dark');
   const [mobileConvoFull, setMobileConvoFull] = useState(false);
@@ -258,6 +260,10 @@ export default function DemoPage() {
     if (saved && saved.trim().length >= 3 && saved.trim() !== 'Glow Aesthetics London') {
       setClinicName(saved.trim());
       setBannerInput(saved.trim());
+    }
+    if (!localStorage.getItem('lumio-demo-visited')) {
+      setOnboardingDismissed(false);
+      localStorage.setItem('lumio-demo-visited', '1');
     }
   }, []);
 
@@ -335,13 +341,13 @@ export default function DemoPage() {
   }, [lumiMsgs, lumiLoading]);
 
   const navItems = [
-    { id: 'overview' as Tab, icon: 'overview', label: 'Overview' },
-    { id: 'activity' as Tab, icon: 'activity', label: 'Live activity' },
-    { id: 'conversations' as Tab, icon: 'conversations', label: 'Conversations' },
-    { id: 'clients' as Tab, icon: 'clients', label: 'Clients' },
-    { id: 'voice' as Tab, icon: 'voice', label: 'My Style' },
-    { id: 'admin' as Tab, icon: tier === 'fullops' ? 'spark' : 'lock', label: 'Admin hub', locked: tier !== 'fullops' },
-    { id: 'integrations' as Tab, icon: 'plug', label: 'Integrations' },
+    { id: 'overview' as Tab, icon: 'overview', label: 'Overview', sub: 'Your clinic at a glance' },
+    { id: 'activity' as Tab, icon: 'activity', label: 'Live activity', sub: 'Every action Lumi took' },
+    { id: 'conversations' as Tab, icon: 'conversations', label: 'Conversations', sub: 'DMs handled by Lumi' },
+    { id: 'clients' as Tab, icon: 'clients', label: 'Clients', sub: 'Profiles & rebooking' },
+    { id: 'voice' as Tab, icon: 'voice', label: 'My Style', sub: 'Your tone & personality' },
+    { id: 'admin' as Tab, icon: tier === 'fullops' ? 'spark' : 'lock', label: 'Admin hub', sub: 'Consent, invoices & ops', locked: tier !== 'fullops' },
+    { id: 'integrations' as Tab, icon: 'plug', label: 'Integrations', sub: 'Connected tools' },
   ];
 
   const currentConvo = CONVOS.find(c => c.id === selectedConvo);
@@ -393,7 +399,7 @@ export default function DemoPage() {
           <a href="/"><Logo width={80} /></a>
         </div>
         <nav className="space-y-1.5 flex-1">
-          {navItems.map(({ id, icon, label, locked }) => {
+          {navItems.map(({ id, icon, label, sub, locked }) => {
             const active = tab === id;
             return (
               <button key={id} type="button"
@@ -406,11 +412,14 @@ export default function DemoPage() {
                   boxShadow: active ? '0 14px 40px rgba(196,151,63,0.09)' : 'none',
                 }}>
                 <div className="flex items-center gap-3">
-                  <span className="grid h-8 w-8 place-items-center rounded-xl"
+                  <span className="grid h-8 w-8 place-items-center rounded-xl shrink-0"
                     style={{ backgroundColor: active ? 'rgba(196,151,63,0.12)' : (dm ? 'rgba(255,253,248,0.06)' : 'rgba(255,255,255,0.45)') }}>
                     <Icon name={icon} className="h-4 w-4" />
                   </span>
-                  <span className="font-semibold">{label}</span>
+                  <span className="text-left">
+                    <span className="block font-semibold leading-tight">{label}</span>
+                    <span className="block text-[10px] font-normal leading-tight mt-0.5" style={{ color: active ? 'rgba(196,151,63,0.7)' : dTextSub }}>{sub}</span>
+                  </span>
                 </div>
                 {locked && (
                   <span className="grid h-6 w-6 place-items-center rounded-full bg-[#C4973F]/12 text-[#C4973F]">
@@ -564,18 +573,44 @@ export default function DemoPage() {
 
             {/* Tier selector — overview only */}
             {tab === 'overview' && (
-              <div className="mb-6 flex items-center gap-2 flex-wrap">
-                {([
-                  { id: 'foundation' as Tier, label: 'Foundation' },
-                  { id: 'fullsystem' as Tier, label: 'Full System' },
-                  { id: 'fullops' as Tier, label: 'Full Operations' },
-                ] as { id: Tier; label: string }[]).map(t => (
-                  <button key={t.id} type="button"
-                    onClick={() => setTier(t.id)}
-                    className={`rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 ${tier === t.id ? 'bg-[#1A1814] text-[#E8B44B] shadow-[0_8px_24px_rgba(26,24,20,.15)]' : 'bg-[#F9EDE8] text-[#8A8278] hover:bg-[#F0EDF8] hover:text-[#1A1814]'}`}>
-                    {t.label}
-                  </button>
-                ))}
+              <div className="mb-6 space-y-3">
+                {/* First-visit onboarding banner */}
+                {!onboardingDismissed && (
+                  <div className="flex items-start justify-between gap-4 rounded-2xl border border-[#C4973F]/30 bg-[#FFF4DD]/60 px-5 py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 text-[#C4973F] shrink-0">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-[#1A1814]">Welcome to the Lumio demo</p>
+                        <p className="mt-0.5 text-xs text-[#8A8278] leading-relaxed">Use the sidebar tabs to explore what Lumi handles for your clinic. Switch tiers below to see how the dashboard changes. Tap <strong>Ask Lumi</strong> any time to dig deeper.</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => setOnboardingDismissed(true)} className="shrink-0 text-[#8A8278] hover:text-[#1A1814] transition-colors mt-0.5">
+                      <Icon name="x" className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {([
+                    { id: 'foundation' as Tier, label: 'Foundation' },
+                    { id: 'fullsystem' as Tier, label: 'Full System' },
+                    { id: 'fullops' as Tier, label: 'Full Operations' },
+                  ] as { id: Tier; label: string }[]).map(t => (
+                    <button key={t.id} type="button"
+                      onClick={() => setTier(t.id)}
+                      className={`rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-200 ${tier === t.id ? 'bg-[#1A1814] text-[#E8B44B] shadow-[0_8px_24px_rgba(26,24,20,.15)]' : 'bg-[#F9EDE8] text-[#8A8278] hover:bg-[#F0EDF8] hover:text-[#1A1814]'}`}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs" style={{ color: dTextMuted }}>
+                  {tier === 'foundation'
+                    ? 'Automated enquiry responses, booking confirmations, and no-show reminders.'
+                    : tier === 'fullsystem'
+                    ? 'Everything in Foundation plus AI-handled conversations across all channels.'
+                    : 'Full clinic automation including consent forms, invoicing, and monthly reports.'}
+                </p>
               </div>
             )}
 
@@ -652,7 +687,10 @@ export default function DemoPage() {
                             <Icon name={card.icon} className="h-5 w-5" />
                           </div>
                           <div className="mt-4 text-4xl md:text-5xl font-black leading-none tracking-[-0.04em] text-[#1A1814]">{card.value}</div>
-                          <p className="mt-2 text-xs md:text-sm font-bold text-[#1A1814]">{card.label}</p>
+                          <div className="mt-2 flex items-center gap-1.5 text-xs md:text-sm font-bold text-[#1A1814]">
+                            {card.label}
+                            <Tooltip content={card.tooltip} position="bottom" />
+                          </div>
                           <p className="mt-1 text-[11px] leading-5 text-[#8A8278] hidden sm:block">{card.note}</p>
                           <div className="mt-3 text-[10px] font-bold uppercase tracking-[.14em]" style={{ color: card.trendColor }}>{card.trend}</div>
                         </div>
@@ -713,7 +751,7 @@ export default function DemoPage() {
                         </div>
                         {feedItems.slice(0, 6).map(item => (
                           <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-3.5 last:border-b-0">
-                            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-4 w-4" /></div>
+                            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]" title={{ lead: 'Lead captured & qualified', booking: 'Booking confirmed', noshow: 'No-show reminder sent', review: 'Review request triggered', admin: 'Admin task automated', conversations: 'Enquiry answered by Lumi' }[item.category] ?? 'Automated by Lumi'}><Icon name={item.icon} className="h-4 w-4" /></div>
                             <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
                             <div className="min-w-0 flex-1">
                               <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
@@ -846,6 +884,7 @@ export default function DemoPage() {
                   <div>
                     <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Live Activity</p>
                     <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">Everything that happened</h2>
+                    <p className="mt-2 text-sm" style={{ color: dTextMuted }}>A timestamped log of every action Lumi completed today — fully automated, nothing missed.</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {[
@@ -862,7 +901,7 @@ export default function DemoPage() {
                 <div className="rounded-[2.2rem] border border-[rgba(26,24,20,0.08)] bg-white/72 p-6 shadow-[0_26px_90px_rgba(26,24,20,.05)] backdrop-blur-xl">
                   {filteredFeed.map(item => (
                     <div key={item.id} className="flex items-center gap-4 border-b border-[rgba(26,24,20,0.06)] py-4 last:border-b-0">
-                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]"><Icon name={item.icon} className="h-5 w-5" /></div>
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#FFF7E8] text-[#C4973F]" title={{ lead: 'Lead captured & qualified by Lumi', booking: 'Booking confirmed automatically', noshow: 'No-show reminder sent by Lumi', review: 'Review request triggered post-treatment', admin: 'Admin task handled automatically', conversations: 'Enquiry answered in your voice' }[item.category] ?? 'Automated by Lumi'}><Icon name={item.icon} className="h-5 w-5" /></div>
                       <div className="w-12 shrink-0 text-xs font-semibold text-[#8A8278]">{item.time}</div>
                       <div className="min-w-0 flex-1">
                         <div className="text-sm font-bold text-[#1A1814]">{item.title}</div>
@@ -885,6 +924,7 @@ export default function DemoPage() {
                   <div>
                     <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Conversations</p>
                     <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]" style={{ color: dText }}>Handled by Lumi</h2>
+                    <p className="mt-2 text-sm" style={{ color: dTextMuted }}>Real conversations Lumi had with your clients — from first DM to confirmed booking, in your voice.</p>
                   </div>
                 )}
                 {mobileConvoFull && (
@@ -978,6 +1018,7 @@ export default function DemoPage() {
                     <div className="mb-5">
                       <p className="text-[10px] font-extrabold uppercase tracking-[.22em] text-[#C4973F]">Clients</p>
                       <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]" style={{ color: dText }}>Your client base</h2>
+                      <p className="mt-2 text-sm" style={{ color: dTextMuted }}>Every client profile Lumi tracks — spend, visit history, and who needs a rebooking nudge right now.</p>
                     </div>
                   )}
                   <div className="flex gap-4 lg:gap-6" style={{ alignItems: 'flex-start' }}>
@@ -1080,6 +1121,7 @@ export default function DemoPage() {
                     <h2 className="mt-1 text-4xl font-black leading-none tracking-[-0.05em]">
                       {tier === 'fullops' ? 'Your back office, automated.' : 'A back office that runs itself.'}
                     </h2>
+                    <p className="mt-2 text-sm" style={{ color: dTextMuted }}>Consent forms, invoice chasing, and monthly reporting — handled without you lifting a finger. Full Operations tier only.</p>
                   </div>
                   {tier === 'fullops' && (
                     <span className="inline-flex items-center gap-2 rounded-full bg-[#EDF4EE] px-4 py-2 text-xs font-bold text-[#5B8A68] self-start sm:self-auto">
