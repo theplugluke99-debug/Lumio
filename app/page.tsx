@@ -7,14 +7,14 @@ import Problem from '@/components/Problem';
 import Services from '@/components/Services';
 import PivotSection from '@/components/PivotSection';
 import NumbersSection from '@/components/NumbersSection';
+import DemoDevices from '@/components/DemoDevices';
 import Integrations from '@/components/Integrations';
-import ProductShowcase from '@/components/ProductShowcase';
-import TalkToLumio from '@/components/TalkToLumio';
 import Process from '@/components/Process';
 import Pricing from '@/components/Pricing';
 import Guarantee from '@/components/Guarantee';
 import Testimonial from '@/components/Testimonial';
 import CTA from '@/components/CTA';
+import TalkToLumio from '@/components/TalkToLumio';
 import Footer from '@/components/Footer';
 
 export default function Page() {
@@ -29,8 +29,8 @@ export default function Page() {
       <Services />
       <PivotSection />
       <NumbersSection />
+      <DemoDevices />
       <Integrations />
-      <ProductShowcase />
       <Process />
       <Pricing />
       <Guarantee />
