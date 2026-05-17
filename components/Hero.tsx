@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import GoldButton from '@/components/ui/GoldButton';
-import Logo from '@/components/ui/Logo';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -19,20 +18,13 @@ const stagger = {
 
 function HeroVideoFrame() {
   return (
-    <div className="relative mx-auto w-full max-w-[560px]">
+    <div className="relative mx-auto w-full max-w-[520px]">
       <div
         className="absolute inset-0 -z-10 rounded-[2rem] md:rounded-[3rem] blur-[48px] opacity-30"
         style={{ background: 'radial-gradient(ellipse, rgba(196,151,63,.55) 0%, transparent 70%)' }}
       />
       <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#211E19]/88 p-2.5 shadow-[0_34px_100px_rgba(0,0,0,.42)] backdrop-blur-2xl">
-        <div className="flex items-center justify-between rounded-t-[1.55rem] md:rounded-t-[2.35rem] border-x border-t border-[#C4973F]/20 bg-[#14120F]/92 px-4 py-3">
-          <Logo light width={76} />
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#C4973F]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#C4973F]" />
-            Product walkthrough
-          </div>
-        </div>
-        <div className="relative aspect-[4/5] overflow-hidden rounded-b-[1.55rem] md:rounded-b-[2.35rem] border border-[#C4973F]/20 bg-[#0A0907]">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/20 bg-[#0A0907]">
           <iframe
             src="/video?embed=hero"
             title="Lumio product video"
@@ -63,18 +55,18 @@ export default function Hero() {
 
       <Nav />
 
-      <div className="relative z-10 flex flex-1 items-start px-6 pt-18 pb-20 md:items-center md:px-4 md:pt-24 md:pb-28 lg:pt-28 lg:pb-32">
-        <div className="mobile-safe-shell mx-auto grid min-w-0 max-w-7xl grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,660px)_minmax(360px,1fr)] md:gap-16 lg:gap-24">
+      <div className="relative z-10 flex flex-1 items-start px-6 pt-18 pb-20 sm:px-8 md:items-center md:px-10 md:pt-24 md:pb-28 lg:px-12 lg:pt-28 lg:pb-32 xl:px-16">
+        <div className="mx-auto grid w-full min-w-0 max-w-[1440px] grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,620px)_minmax(360px,520px)] md:justify-between md:gap-16 lg:gap-24">
 
           <motion.div
-            className="flex w-full min-w-0 max-w-[calc(100vw-3rem)] flex-col items-center text-center sm:max-w-[660px] md:items-start md:text-left"
+            className="flex w-full min-w-0 max-w-[620px] flex-col items-center text-center md:items-start md:text-left"
             variants={stagger}
             initial="hidden"
             animate="visible"
           >
             <motion.div
               variants={fadeUp}
-              className="mobile-safe-shell inline-flex min-w-0 items-center justify-center gap-2.5 rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-center text-[10px] sm:w-auto sm:max-w-full sm:text-xs font-semibold leading-relaxed tracking-[.18em] sm:tracking-widest text-[#E8B44B] uppercase"
+              className="inline-flex w-full min-w-0 max-w-full items-center justify-center gap-2.5 rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 px-4 py-2 text-center text-[10px] sm:w-auto sm:text-xs font-semibold leading-relaxed tracking-[.18em] sm:tracking-widest text-[#E8B44B] uppercase"
             >
               <span className="pulse-dot h-2 w-2 rounded-full bg-[#C4973F]" />
               <span className="min-w-0 sm:hidden">AI Automation · UK Clinics</span>
@@ -92,7 +84,7 @@ export default function Hero() {
 
             <motion.p
               variants={fadeUp}
-              className="mt-8 md:mt-10 text-base md:text-lg leading-relaxed mx-auto md:mx-0 max-w-[calc(100vw-3rem)] sm:max-w-[540px]"
+              className="mt-8 md:mt-10 text-base md:text-lg leading-relaxed mx-auto max-w-full sm:max-w-[540px] md:mx-0"
               style={{ color: 'rgba(255,253,248,0.62)' }}
             >
               While you&apos;re with a client, Lumio answers enquiries, books appointments,
@@ -102,7 +94,7 @@ export default function Hero() {
 
             <motion.div variants={fadeUp} className="mt-9 md:mt-11 flex flex-col gap-4 w-full md:w-auto">
               <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3.5 w-full sm:w-auto">
-                <div className="mobile-safe-shell mx-auto sm:mx-0 sm:w-auto sm:max-w-none [&>a]:w-full [&>a]:justify-center [&>a]:px-5 sm:[&>a]:w-auto sm:[&>a]:px-9">
+                <div className="mx-auto w-full max-w-full sm:mx-0 sm:w-auto sm:max-w-none [&>a]:w-full [&>a]:justify-center [&>a]:px-5 sm:[&>a]:w-auto sm:[&>a]:px-9">
                   <GoldButton href="/audit" large>Get my free Revenue Reveal</GoldButton>
                 </div>
                 <a href="#services" className="text-sm text-white/50 hover:text-white/80 transition-colors">

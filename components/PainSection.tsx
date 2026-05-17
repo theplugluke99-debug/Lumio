@@ -102,7 +102,7 @@ export default function PainSection() {
           >
             The clinic running fine
             <br />
-            <em style={{ color: '#C4973F' }}>on the outside.</em>
+            <span style={{ color: '#C4973F' }}>on the outside.</span>
           </motion.h2>
 
           <motion.div
@@ -130,7 +130,6 @@ export default function PainSection() {
                 fontFamily: 'var(--font-sans, Inter, sans-serif)',
                 fontWeight: 400,
                 fontSize: '18px',
-                fontStyle: 'italic',
                 color: 'rgba(250,247,242,0.28)',
                 lineHeight: 1.9,
                 marginTop: '0.5rem',

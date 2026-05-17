@@ -55,7 +55,7 @@ function ProofStat({ number, label }: { number: string; label: string }) {
 
 function GoldDivider() {
   return (
-    <div style={{
+    <div aria-hidden="true" style={{
       width: '100%', height: '1px',
       background: 'rgba(196,151,63,0.1)',
     }} />
@@ -283,7 +283,7 @@ export default function PainSolution() {
             }}>
               Someone messaged at 9pm.<br />
               By morning they&apos;d booked<br />
-              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>somewhere else.</em>
+              <span style={{ color: '#C4973F' }}>somewhere else.</span>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{
@@ -327,7 +327,7 @@ export default function PainSolution() {
             }}>
               Four no-shows last week.<br />
               Nearly a thousand pounds.<br />
-              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>Just gone.</em>
+              <span style={{ color: '#C4973F' }}>Just gone.</span>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{
@@ -371,7 +371,7 @@ export default function PainSolution() {
             }}>
               Past clients are your<br />
               best leads. You know it.<br />
-              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>You just never find the time.</em>
+              <span style={{ color: '#C4973F' }}>You just never find the time.</span>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{
