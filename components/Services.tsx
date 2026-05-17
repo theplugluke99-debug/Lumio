@@ -24,7 +24,7 @@ export default function Services() {
   const cardsInView = useInView(cardsRef, { once: true, margin: '-100px' });
 
   return (
-    <section id="services" className="py-24 px-4" style={{ background: 'linear-gradient(180deg, #FFFDF8 0%, #F0EDF8 50%, #FFFDF8 100%)' }}>
+    <section id="services" className="py-20 px-6 md:py-24 md:px-4" style={{ background: 'linear-gradient(180deg, #FFFDF8 0%, #F0EDF8 50%, #FFFDF8 100%)' }}>
       <div className="mx-auto max-w-6xl">
         <motion.div
           ref={headingRef}

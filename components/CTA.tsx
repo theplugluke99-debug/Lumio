@@ -25,7 +25,7 @@ export default function CTA() {
   return (
     <section
       id="audit"
-      className="relative bg-[#1A1814] py-28 px-4 overflow-hidden text-center"
+      className="relative bg-[#1A1814] py-22 px-6 md:py-28 md:px-4 overflow-hidden text-center"
     >
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[130px] opacity-10"

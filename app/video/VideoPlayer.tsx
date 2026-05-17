@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import LumiLens from '@/components/LumiLens'
+import Logo from '@/components/ui/Logo'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -73,31 +74,27 @@ function TypingDots() {
   )
 }
 
-function Arc({ size }: { size: number }) {
-  return (
-    <svg viewBox="0 0 200 120" width={size} height={size * 0.6}>
-      <path d="M20 95 Q100 15 180 95" stroke={GOLD} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 // ─── Scene 0 — Opening ────────────────────────────────────────────────────────
 
 function Scene0({ isMobile }: SceneProps) {
   return (
     <motion.div variants={sceneV} initial="initial" animate="animate" exit="exit"
       style={{ ...fill, flexDirection: 'column' }}>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 2, delay: 0.3 }}>
-        <Arc size={isMobile ? 140 : 200} />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.3 }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}
+      >
+        <Logo light width={isMobile ? 112 : 148} />
+        <LumiLens size={isMobile ? 42 : 52} variant="light" animated />
       </motion.div>
       <motion.p
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.8 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1.4 }}
         style={{
-          fontFamily: 'var(--font-display), serif', fontWeight: 700, fontStyle: 'italic',
-          fontSize: isMobile ? '42px' : '56px', color: CREAM,
-          letterSpacing: '0.02em', margin: 0, lineHeight: 1,
+          fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500,
+          fontSize: isMobile ? '13px' : '14px', color: 'rgba(250,247,242,0.42)',
+          letterSpacing: '0.18em', textTransform: 'uppercase', margin: '1.75rem 0 0', lineHeight: 1.6,
         }}>
-        Lumio
+        Revenue clarity for busy clinics
       </motion.p>
     </motion.div>
   )
@@ -117,7 +114,9 @@ function Scene1({ isMobile }: SceneProps) {
           fontSize: isMobile ? '32px' : 'clamp(32px, 5vw, 64px)',
           color: 'rgba(250,247,242,0.9)', textAlign: 'center', margin: 0, maxWidth: '90vw',
         }}>
-        You&rsquo;re with a client.
+        It is 11pm.
+        <br />
+        The clinic owner is asleep.
       </motion.p>
     </motion.div>
   )
@@ -126,10 +125,10 @@ function Scene1({ isMobile }: SceneProps) {
 // ─── Scene 2 — Notifications ──────────────────────────────────────────────────
 
 const PILLS = [
-  { text: 'Instagram · New enquiry', gold: false },
-  { text: 'Instagram · New enquiry', gold: false },
-  { text: 'Missed call · Unknown', gold: false },
-  { text: '3 enquiries. No response yet.', gold: true },
+  { text: 'Instagram · Lip filler enquiry', gold: false },
+  { text: 'Website · Consultation request', gold: false },
+  { text: 'WhatsApp · Price question', gold: false },
+  { text: 'Lumi responds before morning.', gold: true },
 ]
 
 function Scene2({ isMobile }: SceneProps) {
@@ -181,7 +180,7 @@ function Scene3({ isMobile }: SceneProps) {
           fontSize: isMobile ? '18px' : 'clamp(20px, 3vw, 36px)',
           color: 'rgba(250,247,242,0.4)', textAlign: 'center', margin: '0 0 0.5rem', maxWidth: '90vw',
         }}>
-        While you were with your client...
+        Dashboard shown on every screen.
       </motion.p>
       <motion.p
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -191,7 +190,7 @@ function Scene3({ isMobile }: SceneProps) {
           fontSize: isMobile ? '22px' : 'clamp(24px, 3.5vw, 44px)',
           color: CREAM, textAlign: 'center', margin: '0 0 1.5rem', maxWidth: '90vw',
         }}>
-        Lumio was working.
+        Desktop view. Mobile-ready.
       </motion.p>
       <motion.div
         initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
@@ -419,7 +418,7 @@ function Scene4({ isMobile }: SceneProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        {msg(lStyle, 'Hi! Lip filler starts from £180. We have Thursday 2pm and Friday 11am available. Which works for you? ✦', 3)}
+        {msg(lStyle, 'Hi. Lip filler starts from £180. We have Thursday 2pm and Friday 11am available. Which works for you?', 3)}
         {msg(rStyle, 'Friday 11am perfect!', 4)}
         <AnimatePresence>
           {step === 5 && (
@@ -429,7 +428,7 @@ function Scene4({ isMobile }: SceneProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        {msg(lStyle, 'Booked! Confirmation sent. See you Friday ✦', 6)}
+        {msg(lStyle, 'Booked. Confirmation sent. See you Friday.', 6)}
         {step >= 7 && (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
             style={{
@@ -488,7 +487,11 @@ function Scene5({ isMobile }: SceneProps) {
 
   return (
     <motion.div variants={sceneV} initial="initial" animate="animate" exit="exit"
-      style={{ ...fill, padding: '0 1.5rem' }}>
+      style={{ ...fill, flexDirection: 'column', padding: '0 1.5rem' }}>
+      <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
+        style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: isMobile ? 13 : 14, color: 'rgba(250,247,242,0.42)', margin: '0 0 1.5rem', textAlign: 'center' }}>
+        No-show prevented through the reminder sequence.
+      </motion.p>
       <div style={{
         display: 'flex', flexDirection: isMobile ? 'column' : 'row',
         alignItems: 'center', justifyContent: 'center',
@@ -580,7 +583,7 @@ function Scene5a({ isMobile }: SceneProps) {
               LUMI · YOUR VOICE
             </p>
             <p style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 13, color: CREAM, lineHeight: 1.6, margin: 0 }}>
-              &ldquo;Hey lovely! 💛 So excited you&apos;re thinking about lip filler — I&apos;d love to chat through what you&apos;re after. Thursday 2pm or Friday 11am free. Which works? x&rdquo;
+              &ldquo;Hey lovely. So excited you&apos;re thinking about lip filler — I&apos;d love to chat through what you&apos;re after. Thursday 2pm or Friday 11am free. Which works? x&rdquo;
             </p>
           </motion.div>
         </motion.div>

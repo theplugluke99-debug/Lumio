@@ -1,6 +1,8 @@
 'use client';
 
 import GoldButton from '@/components/ui/GoldButton';
+import LumiLens from '@/components/LumiLens';
+import Logo from '@/components/ui/Logo';
 
 /* ─── Laptop dashboard UI ────────────────────────────────────────────── */
 function DashboardUI() {
@@ -28,14 +30,14 @@ function DashboardUI() {
     <div style={{ display: 'flex', height: '100%', background: '#0F0E0B', fontFamily: 'Inter, system-ui, sans-serif', overflow: 'hidden' }}>
       {/* Sidebar */}
       <div style={{ width: 160, background: '#0A0907', borderRight: '1px solid rgba(255,253,248,0.06)', display: 'flex', flexDirection: 'column', padding: '18px 10px', flexShrink: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 900, color: '#C4973F', letterSpacing: '-0.02em', marginBottom: 20 }}>lumio</div>
+        <div style={{ marginBottom: 20 }}><Logo light width={58} /></div>
         {['Overview','Live activity','Conversations','Clients','My Style','Integrations'].map((label, i) => (
           <div key={label} style={{ padding: '6px 9px', borderRadius: 7, marginBottom: 2, background: i === 0 ? 'rgba(196,151,63,0.14)' : 'transparent', fontSize: 10, fontWeight: i === 0 ? 700 : 500, color: i === 0 ? '#C4973F' : 'rgba(255,253,248,0.35)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 4, height: 4, borderRadius: '50%', background: i === 0 ? '#C4973F' : 'rgba(255,253,248,0.12)', flexShrink: 0 }} />
             {label}
           </div>
         ))}
-        <div style={{ marginTop: 'auto', padding: '8px', background: 'rgba(196,151,63,0.1)', borderRadius: 8, border: '1px solid rgba(196,151,63,0.18)', fontSize: 10, fontWeight: 700, color: '#C4973F', textAlign: 'center' }}>Ask Lumi ✦</div>
+        <div style={{ marginTop: 'auto', padding: '8px', background: 'rgba(196,151,63,0.1)', borderRadius: 8, border: '1px solid rgba(196,151,63,0.18)', fontSize: 10, fontWeight: 700, color: '#C4973F', textAlign: 'center' }}>Ask Lumi</div>
       </div>
 
       {/* Main */}
@@ -137,9 +139,9 @@ function PhoneUI() {
         ))}
       </div>
       <div style={{ background: 'rgba(255,253,248,0.95)', borderTop: '1px solid rgba(26,24,20,0.07)', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', padding: '6px 0 8px', flexShrink: 0 }}>
-        {['Home','Activity','✦','Chats','More'].map((label, i) => (
+        {['Home','Activity','lens','Chats','More'].map((label, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, fontSize: i === 2 ? 12 : 7, fontWeight: i === 2 ? 900 : 700, color: i === 0 ? '#C4973F' : 'rgba(26,24,20,0.3)' }}>
-            {label}
+            {label === 'lens' ? <LumiLens size={18} variant="dark" /> : label}
           </div>
         ))}
       </div>
@@ -209,7 +211,7 @@ function Phone() {
 export default function DemoDevices() {
   return (
     <section style={{ background: '#111009', paddingTop: 'clamp(5rem,8vw,8rem)', paddingBottom: 'clamp(6rem,10vw,10rem)' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 clamp(1rem,4vw,2.5rem)' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 clamp(1.5rem,4vw,2.5rem)' }}>
 
         {/* Headline */}
         <div style={{ textAlign: 'center', marginBottom: 'clamp(3rem,5vw,5rem)' }}>

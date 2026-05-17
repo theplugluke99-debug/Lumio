@@ -82,10 +82,14 @@ function ConversationMock({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div style={cardBase}>
-      <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '11px', color: 'rgba(250,247,242,0.3)', marginBottom: '1rem', margin: '0 0 1rem' }}>
-        Instagram · 11:42pm
-      </p>
+    <div style={{ ...cardBase, background: 'linear-gradient(180deg,#1A1814 0%,#14120F 100%)', padding: '1.25rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: '1rem' }}>
+        <div>
+          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', color: '#FFFDF8', margin: 0 }}>Instagram DM</p>
+          <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '11px', color: 'rgba(250,247,242,0.35)', margin: '2px 0 0' }}>11:42pm · New enquiry</p>
+        </div>
+        <span style={{ border: '1px solid rgba(196,151,63,.2)', borderRadius: 999, padding: '5px 8px', fontSize: 9, fontWeight: 700, letterSpacing: '.12em', color: '#C4973F' }}>LIVE</span>
+      </div>
 
       {/* Client bubble */}
       <div style={{
@@ -132,14 +136,14 @@ function ConversationMock({ active }: { active: boolean }) {
               color: '#FFFDF8', lineHeight: 1.55, maxWidth: '90%',
             }}
           >
-            Hey lovely! 💛 Lip filler from £180. Thursday 2pm or Friday 11am free — which works for you? x
+            Hey lovely. Lip filler starts from £180. Thursday 2pm or Friday 11am is free — which works for you?
           </motion.div>
         )}
       </div>
 
       <p style={{
-        fontFamily: sans, fontStyle: 'italic', fontWeight: 400, fontSize: '12px',
-        color: 'rgba(250,247,242,0.25)', marginTop: '1.25rem', textAlign: 'center',
+        fontFamily: sans, fontWeight: 500, fontSize: '12px',
+        color: 'rgba(250,247,242,0.35)', marginTop: '1.25rem', textAlign: 'center',
       }}>
         Sent while the owner slept.
       </p>
@@ -150,14 +154,14 @@ function ConversationMock({ active }: { active: boolean }) {
 // ─── Pair 2 visual: reminder sequence ────────────────────────────────────────
 
 const REMINDERS = [
-  { color: '#5B8A68', label: '48 hrs before', text: 'Hey Emma! Just a reminder about your appointment tomorrow at 2pm ✨', status: 'Delivered ✓', statusColor: '#5B8A68' },
-  { color: '#5B8A68', label: '24 hrs before', text: 'See you tomorrow lovely! Reply YES to confirm 💛', status: 'Confirmed ✓', statusColor: '#5B8A68' },
-  { color: '#C4973F', label: 'Day of · 9am', text: 'Morning! Excited to see you at 2pm today 🌟', status: 'Scheduled', statusColor: '#C4973F' },
+  { color: '#5B8A68', label: '48 hrs before', text: 'Hi Emma. Just a reminder about your appointment tomorrow at 2pm.', status: 'Delivered', statusColor: '#5B8A68' },
+  { color: '#5B8A68', label: '24 hrs before', text: 'See you tomorrow. Reply YES to confirm or RESCHEDULE if you need to move it.', status: 'Confirmed', statusColor: '#5B8A68' },
+  { color: '#C4973F', label: 'Day of · 9am', text: 'Morning. Your appointment is today at 2pm. We will see you soon.', status: 'Scheduled', statusColor: '#C4973F' },
 ];
 
 function ReminderSequence() {
   return (
-    <div style={cardBase}>
+    <div style={{ ...cardBase, padding: '1.25rem' }}>
       <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '12px', color: '#C4973F', marginBottom: '1.25rem' }}>
         Reminder sequence · Active
       </p>
@@ -193,7 +197,7 @@ function ClientRetention() {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   return (
-    <div style={cardBase}>
+    <div style={{ ...cardBase, padding: '1.25rem' }}>
       <p style={{ fontFamily: sans, fontWeight: 500, fontSize: '12px', color: '#C4973F', marginBottom: '1.25rem' }}>
         Client retention · Live
       </p>
@@ -237,8 +241,8 @@ function ClientRetention() {
         ))}
       </div>
       <p style={{
-        fontFamily: sans, fontStyle: 'italic', fontWeight: 400, fontSize: '12px',
-        color: 'rgba(250,247,242,0.25)', marginTop: '1.25rem', textAlign: 'center',
+        fontFamily: sans, fontWeight: 500, fontSize: '12px',
+        color: 'rgba(250,247,242,0.35)', marginTop: '1.25rem', textAlign: 'center',
         paddingTop: '1rem', borderTop: '1px solid rgba(196,151,63,0.1)',
       }}>
         Lumi predicts 68% chance of recovering 2+ clients with a message tonight.
@@ -272,14 +276,14 @@ export default function PainSolution() {
             animate={pair1InView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease }}
           >
-            <PainLabel>The problem</PainLabel>
+            <PainLabel>Missed response window</PainLabel>
             <h2 className="font-display" style={{
-              fontSize: 'clamp(24px, 3.5vw, 42px)', fontWeight: 700, fontStyle: 'italic',
-              color: '#FFFDF8', lineHeight: 1.2, margin: '1rem 0 0',
+              fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 600,
+              color: '#FFFDF8', lineHeight: 1.12, letterSpacing: '-0.02em', margin: '1rem 0 0',
             }}>
               Someone messaged at 9pm.<br />
               By morning they&apos;d booked<br />
-              somewhere else.
+              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>somewhere else.</em>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{
@@ -316,14 +320,14 @@ export default function PainSolution() {
             animate={pair2InView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease }}
           >
-            <PainLabel>The problem</PainLabel>
+            <PainLabel>No-show leak</PainLabel>
             <h2 className="font-display" style={{
-              fontSize: 'clamp(24px, 3.5vw, 42px)', fontWeight: 700, fontStyle: 'italic',
-              color: '#FFFDF8', lineHeight: 1.2, margin: '1rem 0 0',
+              fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 600,
+              color: '#FFFDF8', lineHeight: 1.12, letterSpacing: '-0.02em', margin: '1rem 0 0',
             }}>
               Four no-shows last week.<br />
               Nearly a thousand pounds.<br />
-              Just gone.
+              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>Just gone.</em>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{
@@ -360,14 +364,14 @@ export default function PainSolution() {
             animate={pair3InView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease }}
           >
-            <PainLabel>The problem</PainLabel>
+            <PainLabel>Rebooking gap</PainLabel>
             <h2 className="font-display" style={{
-              fontSize: 'clamp(24px, 3.5vw, 42px)', fontWeight: 700, fontStyle: 'italic',
-              color: '#FFFDF8', lineHeight: 1.2, margin: '1rem 0 0',
+              fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 600,
+              color: '#FFFDF8', lineHeight: 1.12, letterSpacing: '-0.02em', margin: '1rem 0 0',
             }}>
               Past clients are your<br />
               best leads. You know it.<br />
-              You just never find the time.
+              <em style={{ color: '#C4973F', fontStyle: 'italic' }}>You just never find the time.</em>
             </h2>
             <SolutionLabel>What Lumio does</SolutionLabel>
             <p style={{

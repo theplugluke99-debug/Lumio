@@ -6,16 +6,13 @@ import {
   CalendlyLogo, TreatwellLogo, FacesLogo, GmailLogo, FacebookLogo, TrustpilotLogo,
 } from '@/components/logos/IntegrationLogos'
 
-const ROW1 = [
+const INTEGRATIONS = [
   { Logo: InstagramLogo, name: 'Instagram' },
   { Logo: WhatsAppLogo, name: 'WhatsApp' },
   { Logo: GoogleLogo, name: 'Google' },
   { Logo: PhorestLogo, name: 'Phorest' },
   { Logo: FreshaLogo, name: 'Fresha' },
   { Logo: StripeLogo, name: 'Stripe' },
-]
-
-const ROW2 = [
   { Logo: CalendlyLogo, name: 'Calendly' },
   { Logo: TreatwellLogo, name: 'Treatwell' },
   { Logo: FacesLogo, name: 'Faces' },
@@ -34,7 +31,7 @@ export default function Integrations() {
   })
 
   return (
-    <section style={{ backgroundColor: '#111009', padding: '5rem 2rem', textAlign: 'center' }}>
+    <section style={{ backgroundColor: '#111009', padding: '6rem 1.5rem', textAlign: 'center' }}>
       <p style={{
         fontFamily: 'var(--font-inter), Inter, sans-serif',
         fontWeight: 600, fontSize: 10, letterSpacing: '0.2em',
@@ -55,63 +52,57 @@ export default function Integrations() {
         fontFamily: 'var(--font-inter), Inter, sans-serif',
         fontWeight: 400, fontSize: 17, lineHeight: 1.8,
         color: 'rgba(250,247,242,0.45)',
-        maxWidth: 480, margin: '1rem auto 3rem',
+        maxWidth: 540, margin: '1rem auto 3.5rem',
       }}>
         Lumio connects to the tools you already use. Instagram, WhatsApp, your booking system, your
         payment processor. Everything works together from day one.
       </p>
 
-      <div style={{ maxWidth: 700, margin: '0 auto' }}>
-        {/* Row 1 */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem 3rem', marginBottom: '2rem' }}>
-          {ROW1.map(({ Logo, name }, i) => (
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {INTEGRATIONS.map(({ Logo, name }, i) => (
             <motion.div
               key={name}
               variants={itemVariant(i)}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+              className="group"
+              style={{
+                minHeight: 104,
+                borderRadius: '1.25rem',
+                border: '1px solid rgba(196,151,63,0.12)',
+                background: 'rgba(255,253,248,0.035)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                boxShadow: '0 18px 60px rgba(0,0,0,0.08)',
+              }}
             >
               <motion.div
-                whileHover={{ scale: 1.08, opacity: 1 }}
-                style={{ opacity: 0.65, transition: 'opacity 200ms', cursor: 'default' }}
+                whileHover={{ scale: 1.04, opacity: 1 }}
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 16,
+                  border: '1px solid rgba(250,247,242,0.08)',
+                  background: 'rgba(250,247,242,0.05)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  opacity: 0.86,
+                  transition: 'opacity 200ms',
+                  cursor: 'default',
+                  filter: 'grayscale(1) saturate(0.2)',
+                }}
               >
-                <Logo size={40} />
+                <Logo size={24} />
               </motion.div>
               <span style={{
                 fontFamily: 'var(--font-inter), Inter, sans-serif',
-                fontWeight: 500, fontSize: 11,
-                color: 'rgba(250,247,242,0.3)',
-                transition: 'color 200ms',
-              }}>
-                {name}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Row 2 */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem 3rem' }}>
-          {ROW2.map(({ Logo, name }, i) => (
-            <motion.div
-              key={name}
-              variants={itemVariant(i + ROW1.length)}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
-            >
-              <motion.div
-                whileHover={{ scale: 1.08, opacity: 1 }}
-                style={{ opacity: 0.55, transition: 'opacity 200ms', cursor: 'default' }}
-              >
-                <Logo size={32} />
-              </motion.div>
-              <span style={{
-                fontFamily: 'var(--font-inter), Inter, sans-serif',
-                fontWeight: 500, fontSize: 11,
-                color: 'rgba(250,247,242,0.3)',
+                fontWeight: 600, fontSize: 11,
+                color: 'rgba(250,247,242,0.48)',
               }}>
                 {name}
               </span>
@@ -122,13 +113,13 @@ export default function Integrations() {
 
       <div style={{
         width: 60, height: 1, background: 'rgba(250,247,242,0.1)',
-        margin: '3rem auto 1.5rem',
+        margin: '3.5rem auto 1.5rem',
       }} />
 
       <p style={{
         fontFamily: 'var(--font-inter), Inter, sans-serif',
         fontWeight: 400, fontSize: 14,
-        color: 'rgba(250,247,242,0.3)', fontStyle: 'italic',
+        color: 'rgba(250,247,242,0.34)',
       }}>
         Don&apos;t see your tool? We connect to 50+ platforms.{' '}
         <a

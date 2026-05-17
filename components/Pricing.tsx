@@ -5,7 +5,7 @@ import { PLANS } from '@/lib/data';
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 px-4" style={{ background: 'linear-gradient(180deg, #F9EDE8 0%, #F0EDF8 50%, #FFFDF8 100%)' }}>
+    <section id="pricing" className="py-20 px-6 md:py-24 md:px-4" style={{ background: 'linear-gradient(180deg, #F9EDE8 0%, #F0EDF8 50%, #FFFDF8 100%)' }}>
       <div className="mx-auto max-w-6xl">
         <div className="text-center mb-14">
           <span className="text-xs font-bold uppercase tracking-[.2em] text-[#C4973F]">Investment</span>

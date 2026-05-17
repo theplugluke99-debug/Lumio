@@ -9,6 +9,10 @@ export default function CursorGlow() {
   const ring = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (window.matchMedia('(max-width: 767px)').matches || window.matchMedia('(pointer: coarse)').matches) {
+      return;
+    }
+
     const onMove = (e: MouseEvent) => {
       mouse.current = { x: e.clientX, y: e.clientY };
       if (dotRef.current) {

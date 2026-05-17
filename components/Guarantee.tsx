@@ -20,7 +20,7 @@ export default function Guarantee() {
   const inView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section className="relative bg-[#0F0D0B] py-20 px-4 text-center overflow-hidden">
+    <section className="relative bg-[#0F0D0B] py-20 px-6 text-center overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full blur-[120px] opacity-[0.08]"
         style={{ background: '#C4973F' }} />
       <motion.div

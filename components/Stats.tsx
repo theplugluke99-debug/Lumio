@@ -38,18 +38,18 @@ function StatCard({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group h-full min-h-[360px] rounded-[2rem] border border-[#1A1814]/8 bg-white/65 shadow-sm p-7 flex flex-col gap-3 transition-all duration-300 hover:-translate-y-1"
+      className="group h-full min-h-0 rounded-[1.5rem] md:min-h-[300px] md:rounded-[1.75rem] border border-[#1A1814]/8 bg-white/70 shadow-sm p-5 md:p-6 flex flex-col gap-3 transition-all duration-300 md:hover:-translate-y-1"
       style={{ boxShadow: hovered ? '0 0 0 2px #C4973F, 0 20px 60px rgba(196,151,63,.1)' : undefined }}
     >
-      <div className="font-display font-black text-5xl md:text-6xl tracking-[-0.04em] gold-text">
+      <div className="font-display font-black text-4xl md:text-5xl tracking-[-0.04em] gold-text">
         {display()}
       </div>
-      <p className="text-sm text-[#2E2B26] leading-relaxed">{label}</p>
+      <p className="text-[13px] md:text-sm text-[#2E2B26] leading-relaxed">{label}</p>
       <div
-        className="mt-auto min-h-[8.25rem] overflow-hidden transition-all duration-500"
-        style={{ opacity: hovered ? 1 : 0, transform: hovered ? 'translateY(0)' : 'translateY(8px)' }}
+        className="mt-2 md:mt-auto md:min-h-[7.25rem] overflow-hidden transition-all duration-500"
+        style={{ opacity: hovered ? 1 : undefined, transform: hovered ? 'translateY(0)' : undefined }}
       >
-        <p className="text-sm text-[#1A1814] font-semibold pt-2 border-t border-[#C4973F]/20">{insight}</p>
+        <p className="text-xs md:text-[13px] text-[#1A1814] font-semibold pt-2 border-t border-[#C4973F]/20">{insight}</p>
         <p className="text-xs text-[#8A8278] mt-1">Source: {source}</p>
       </div>
     </div>
@@ -79,13 +79,13 @@ export default function Stats() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-[#FFFDF8] py-20 px-4">
+    <section ref={sectionRef} className="bg-[#FFFDF8] py-18 px-6 md:py-20 md:px-4">
       <motion.div
         ref={motionRef}
         variants={stagger}
         initial="hidden"
         animate={inView ? 'visible' : 'hidden'}
-        className="mx-auto max-w-6xl grid sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch"
+        className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch"
       >
         {STATS.map((s, i) => (
           <motion.div key={s.value + s.source} variants={fadeUp} className="h-full">

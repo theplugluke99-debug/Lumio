@@ -24,7 +24,7 @@ export default function Process() {
   const stepsInView = useInView(stepsRef, { once: true, margin: '-100px' });
 
   return (
-    <section id="process" className="relative bg-[#1A1814] py-24 px-4 overflow-hidden">
+    <section id="process" className="relative bg-[#1A1814] py-20 px-6 md:py-24 md:px-4 overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-10" style={{ background: '#C4973F' }} />
       <div className="relative mx-auto max-w-6xl">
         <motion.div

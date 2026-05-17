@@ -67,7 +67,7 @@ export default function TalkToLumio() {
   };
 
   return (
-    <section id="talk-to-lumio" ref={sectionRef} className="relative bg-[#1A1814] py-24 px-4 overflow-hidden">
+    <section id="talk-to-lumio" ref={sectionRef} className="relative bg-[#1A1814] py-20 px-6 md:py-24 md:px-4 overflow-hidden">
       <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full blur-[180px] opacity-[0.07]" style={{ background: '#C4973F' }} />
 
       <motion.div
