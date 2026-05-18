@@ -15,6 +15,7 @@ import Guarantee from '@/components/Guarantee';
 import Testimonial from '@/components/Testimonial';
 import CTA from '@/components/CTA';
 import TalkToLumio from '@/components/TalkToLumio';
+import WhySection from '@/components/WhySection';
 import Footer from '@/components/Footer';
 
 export default function Page() {
@@ -37,6 +38,7 @@ export default function Page() {
       <Testimonial />
       <CTA />
       <TalkToLumio />
+      <WhySection />
       <Footer />
     </main>
   );
