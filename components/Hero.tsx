@@ -19,13 +19,13 @@ const stagger = {
 
 function HeroVideoFrame() {
   return (
-    <div className="relative mx-auto w-full max-w-[520px]">
+    <div className="relative mx-auto w-full max-w-[620px]">
       <div
         className="absolute inset-0 -z-10 rounded-[2rem] md:rounded-[3rem] blur-[48px] opacity-30"
         style={{ background: 'radial-gradient(ellipse, rgba(196,151,63,.55) 0%, transparent 70%)' }}
       />
       <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#211E19]/88 p-2.5 shadow-[0_34px_100px_rgba(0,0,0,.42)] backdrop-blur-2xl">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/20 bg-[#0A0907]">
+        <div className="relative aspect-[16/13] overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/20 bg-[#0A0907]">
           <LumioProductFilm />
         </div>
       </div>
