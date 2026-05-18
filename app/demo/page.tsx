@@ -216,10 +216,11 @@ export default function DemoPage() {
   const [clientFilter, setClientFilter] = useState('All');
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifsRead, setNotifsRead] = useState(false);
+  const [isMobileWidth, setIsMobileWidth] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const bh = bannerDismissed ? 0 : 52;
+  const bh = bannerDismissed ? 0 : (isMobileWidth ? 122 : 52);
   const dm = dashMode === 'dark';
   const dBg = dm ? '#141210' : '#FFFDF8';
   const dSidebarBg = dm ? 'rgba(20,18,16,0.98)' : 'rgba(249,237,232,0.96)';
@@ -249,6 +250,14 @@ export default function DemoPage() {
   useEffect(() => {
     const saved = localStorage.getItem('lumio-theme');
     if (saved === 'light' || saved === 'dark') setDashMode(saved);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 639px)');
+    const update = () => setIsMobileWidth(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
   }, []);
 
   useEffect(() => {
@@ -362,27 +371,30 @@ export default function DemoPage() {
       {/* Demo banner */}
       {!bannerDismissed && (
         <div className="fixed top-0 inset-x-0 z-[100] border-b border-[#C4973F]/20" style={{ backgroundColor: '#1A1814' }}>
-          <div className="mx-auto max-w-6xl px-4 py-2.5 flex flex-col sm:flex-row items-center gap-3 justify-between">
-            <div className="flex items-center gap-2.5">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2.5 px-3 py-2.5 sm:flex-row sm:gap-3 sm:px-4">
+            <div className="flex w-full min-w-0 items-center justify-center gap-2.5 text-center sm:w-auto sm:justify-start sm:text-left">
               <LiveDot />
-              <span className="text-sm text-[#FFFDF8]/75">
-                Interactive demo — <span className="text-[#E8B44B] font-semibold">personalise it with your clinic name</span>
+              <span className="min-w-0 text-xs leading-snug text-[#FFFDF8]/75 sm:text-sm">
+                Interactive demo <span className="hidden sm:inline">— </span><span className="text-[#E8B44B] font-semibold"><span className="sm:hidden">personalise</span><span className="hidden sm:inline">personalise your clinic</span></span>
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
               <input
                 type="text" placeholder="Your clinic name" value={bannerInput}
                 onChange={e => setBannerInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && saveClinicName()}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-[#FFFDF8] placeholder:text-[#FFFDF8]/35 outline-none focus:border-[#C4973F]/60 w-44 transition-colors"
+                className="w-full min-w-0 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-[#FFFDF8] placeholder:text-[#FFFDF8]/35 outline-none focus:border-[#C4973F]/60 transition-colors sm:w-44 sm:flex-none"
               />
-              <MicButton onResult={setBannerInput} />
-              <button onClick={saveClinicName} className="rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
-                Personalise →
-              </button>
-              <button onClick={() => setBannerDismissed(true)} className="text-[#FFFDF8]/40 hover:text-[#FFFDF8]/80 transition-colors p-1">
-                <Icon name="x" className="h-4 w-4" />
-              </button>
+              <div className="flex items-center justify-center gap-2">
+                <span className="hidden sm:inline-flex"><MicButton onResult={setBannerInput} /></span>
+                <button onClick={saveClinicName} className="shrink-0 rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
+                  <span className="sm:hidden">Personalise →</span>
+                  <span className="hidden sm:inline">Personalise →</span>
+                </button>
+                <button onClick={() => setBannerDismissed(true)} className="text-[#FFFDF8]/40 hover:text-[#FFFDF8]/80 transition-colors p-1">
+                  <Icon name="x" className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1566,63 +1578,75 @@ export default function DemoPage() {
       <div
         className={`fixed z-[51] flex flex-col overflow-hidden transition-all duration-200
           inset-0 rounded-none
-          sm:inset-auto sm:top-1/2 sm:left-1/2 sm:w-[min(520px,92vw)] sm:max-h-[80vh] sm:rounded-[2rem]
+          sm:inset-auto sm:top-1/2 sm:left-1/2 sm:w-[min(560px,92vw)] sm:max-h-[84vh] sm:rounded-[2rem]
           ${lumiOpen
             ? 'opacity-100 scale-100 sm:-translate-x-1/2 sm:-translate-y-1/2'
             : 'opacity-0 scale-95 pointer-events-none sm:-translate-x-1/2 sm:-translate-y-1/2'}`}
         style={{
           background: dm
-            ? 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.15) 0%, #1A1814 55%)'
-            : 'radial-gradient(ellipse at 30% 0%, rgba(196,151,63,0.1) 0%, #FFFDF8 55%)',
-          border: `1px solid ${dm ? 'rgba(196,151,63,0.3)' : 'rgba(196,151,63,0.15)'}`,
-          boxShadow: '0 40px 120px rgba(26,24,20,0.4)',
+            ? 'radial-gradient(ellipse at 50% -10%, rgba(196,151,63,0.18), transparent 46%), linear-gradient(145deg, rgba(24,22,18,0.98), rgba(10,9,7,0.98))'
+            : 'radial-gradient(ellipse at 50% -10%, rgba(232,180,75,0.22), transparent 45%), linear-gradient(145deg, rgba(255,253,248,0.98), rgba(249,237,232,0.96))',
+          border: `1px solid ${dm ? 'rgba(196,151,63,0.26)' : 'rgba(196,151,63,0.18)'}`,
+          boxShadow: dm ? '0 40px 130px rgba(0,0,0,0.58)' : '0 40px 130px rgba(80,58,28,0.24)',
+          fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Blob decorations */}
-        <div className="pointer-events-none absolute top-0 left-0 w-48 h-48 rounded-full blur-[80px] opacity-20 -translate-x-1/3 -translate-y-1/3" style={{ background: '#C4973F' }} />
-        <div className="pointer-events-none absolute bottom-0 right-0 w-40 h-40 rounded-full blur-[60px] opacity-10 translate-x-1/3 translate-y-1/3" style={{ background: '#C4973F' }} />
+        <div className="pointer-events-none absolute inset-0 opacity-50">
+          <svg className="absolute inset-x-[-18%] top-16 h-24 w-[136%]" viewBox="0 0 700 120" preserveAspectRatio="none" fill="none">
+            <path d="M0 75 C90 25 152 112 240 58 C322 8 390 92 486 44 C570 2 624 58 700 28" stroke="#C4973F" strokeOpacity="0.18" strokeWidth="1.1" />
+            <path d="M0 92 C116 58 166 104 260 72 C356 40 430 102 520 68 C602 38 650 70 700 58" stroke="#E8B44B" strokeOpacity="0.13" strokeWidth="0.8" />
+          </svg>
+        </div>
+        <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-72 -translate-x-1/2 rounded-full blur-[72px]" style={{ background: dm ? 'rgba(196,151,63,0.16)' : 'rgba(232,180,75,0.2)' }} />
 
-        {/* Top bar — close button only, no internal theme toggle */}
-        <div className="relative z-10 flex items-center justify-end px-5 pt-5 shrink-0">
+        {/* Header */}
+        <div className="relative z-10 flex items-center justify-between gap-4 border-b px-5 py-4 shrink-0"
+          style={{ borderColor: dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.07)' }}>
+          <div className="flex min-w-0 items-center gap-3">
+            <LumiLens size={34} variant={dm ? 'light' : 'dark'} />
+            <div className="min-w-0">
+              <div className="text-[15px] font-black tracking-[-0.02em]" style={{ color: dm ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
+              <div className="text-[11px] font-semibold" style={{ color: dm ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>Clinic automation assistant</div>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setLumiOpen(false)}
-            className="grid h-9 w-9 place-items-center rounded-xl transition-colors"
-            style={{ color: dm ? 'rgba(255,253,248,0.45)' : '#8A8278' }}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors"
+            style={{ color: dm ? 'rgba(255,253,248,0.5)' : '#8A8278', background: dm ? 'rgba(255,255,255,0.05)' : 'rgba(26,24,20,0.04)' }}
           >
             <Icon name="x" className="h-5 w-5" />
           </button>
-        </div>
-
-        {/* Identity */}
-        <div className="relative z-10 flex flex-col items-center pt-3 pb-4 px-6 shrink-0">
-          <div className="relative flex items-center justify-center mb-4" style={{ width: 130, height: 130 }}>
-            <div className="absolute inset-4 rounded-full border border-[#C4973F]/20" />
-            <div className="absolute inset-8 rounded-full border border-[#C4973F]/15" />
-            <LumiLens size={74} variant={dm ? 'light' : 'dark'} animated />
-          </div>
-          <div className="lumi-identity-name text-2xl font-black tracking-[-0.02em]" style={{ color: dm ? '#FFFDF8' : '#1A1814' }}>Lumi</div>
-          <div className="text-[10px] font-bold uppercase tracking-[.18em] mt-1" style={{ color: dm ? 'rgba(250,247,242,0.45)' : '#8A8278' }}>
-            Your clinic automation assistant
-          </div>
         </div>
 
         {/* Scrollable body */}
         <div className="relative z-10 flex-1 overflow-y-auto min-h-0">
           {showPills ? (
             <>
+              <div className="px-5 pb-3 pt-5">
+                <div className="rounded-[1.6rem] border p-4"
+                  style={{
+                    background: dm ? 'rgba(255,253,248,0.045)' : 'rgba(255,255,255,0.58)',
+                    borderColor: dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.07)',
+                    boxShadow: dm ? 'inset 0 1px 0 rgba(255,255,255,0.04)' : '0 18px 55px rgba(80,58,28,0.08)',
+                  }}>
+                  <p className="text-sm font-semibold leading-6" style={{ color: dm ? 'rgba(255,253,248,0.78)' : '#4A4037' }}>
+                    Ask me what your clinic is losing, which clients need attention, or how Lumio would automate your day.
+                  </p>
+                </div>
+              </div>
               {/* Action buttons 2×2 grid */}
-              <div className="grid grid-cols-2 gap-2.5 px-4 pb-3">
+              <div className="grid grid-cols-1 gap-2.5 px-5 pb-3 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => { setShowPills(false); sendToLumi('What am I losing this month?'); }}
-                  className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  className="flex items-start gap-3 p-4 text-left transition-all"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
-                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'rgba(255,255,255,0.72)',
                     border: `1px solid ${dm ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
-                    boxShadow: dm ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    boxShadow: dm ? 'none' : '0 14px 38px rgba(80,58,28,0.08)',
                     color: dm ? '#FFFDF8' : '#1A1814',
                   }}
                 >
@@ -1634,12 +1658,12 @@ export default function DemoPage() {
                 <button
                   type="button"
                   onClick={() => { setShowPills(false); sendToLumi('Which clients need attention?'); }}
-                  className="flex items-start gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  className="flex items-start gap-3 p-4 text-left transition-all"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
-                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                    backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'rgba(255,255,255,0.72)',
                     border: `1px solid ${dm ? 'rgba(196,151,63,0.2)' : 'rgba(26,24,20,0.08)'}`,
-                    boxShadow: dm ? 'none' : '0 2px 8px rgba(26,24,20,0.04)',
+                    boxShadow: dm ? 'none' : '0 14px 38px rgba(80,58,28,0.08)',
                     color: dm ? '#FFFDF8' : '#1A1814',
                   }}
                 >
@@ -1651,7 +1675,7 @@ export default function DemoPage() {
                 <button
                   type="button"
                   onClick={() => { setShowPills(false); sendToLumi('What can Lumi actually do?'); }}
-                  className="col-span-2 flex items-center gap-3 p-4 text-left transition-all hover:-translate-y-0.5"
+                  className="flex items-center gap-3 p-4 text-left transition-all sm:col-span-2"
                   style={{
                     minHeight: 74, borderRadius: '1.45rem',
                     backgroundColor: dm ? 'rgba(196,151,63,0.1)' : 'rgba(196,151,63,0.06)',
@@ -1667,7 +1691,7 @@ export default function DemoPage() {
               </div>
 
               {/* Stats card */}
-              <div className="relative mx-4 mb-4 rounded-[1.45rem] p-4 overflow-hidden" style={{
+              <div className="relative mx-5 mb-5 overflow-hidden rounded-[1.45rem] p-4" style={{
                 background: dm ? 'rgba(196,151,63,0.07)' : 'rgba(196,151,63,0.05)',
                 border: '1px solid rgba(196,151,63,0.12)',
               }}>
@@ -1700,7 +1724,7 @@ export default function DemoPage() {
           ) : (
             <div
               ref={lumiScrollRef}
-              className="px-4 py-3 space-y-4"
+              className="px-5 py-4 space-y-4"
             >
               {lumiMsgs.map((msg, i) => (
                 <div key={i} className={`flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
@@ -1710,9 +1734,9 @@ export default function DemoPage() {
                     </span>
                   )}
                   <div
-                    className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm leading-6 ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
+                    className={`max-w-[86%] rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${msg.role === 'assistant' ? 'rounded-tl-sm' : 'rounded-tr-sm'}`}
                     style={msg.role === 'assistant'
-                      ? { backgroundColor: dm ? 'rgba(255,253,248,0.08)' : '#F9EDE8', color: dm ? '#FFFDF8' : '#1A1814' }
+                      ? { backgroundColor: dm ? 'rgba(255,253,248,0.075)' : 'rgba(255,255,255,0.78)', color: dm ? '#FFFDF8' : '#1A1814', border: `1px solid ${dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.06)'}` }
                       : { backgroundColor: dm ? '#C4973F' : '#1A1814', color: dm ? '#1A1814' : '#FFFDF8' }
                     }
                   >
@@ -1732,19 +1756,19 @@ export default function DemoPage() {
         {/* Input row */}
         <div
           className="relative z-10 shrink-0 p-4"
-          style={{ borderTop: `1px solid ${dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}` }}
+          style={{ borderTop: `1px solid ${dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.08)'}`, background: dm ? 'rgba(10,9,7,0.34)' : 'rgba(255,255,255,0.38)' }}
         >
-          <form onSubmit={e => { e.preventDefault(); setShowPills(false); sendToLumi(lumiInput); }} className="flex items-center gap-2">
+          <form onSubmit={e => { e.preventDefault(); setShowPills(false); sendToLumi(lumiInput); }} className="flex items-center gap-2 rounded-full border p-1.5"
+            style={{ background: dm ? 'rgba(255,253,248,0.055)' : 'rgba(255,255,255,0.76)', borderColor: dm ? 'rgba(255,253,248,0.1)' : 'rgba(26,24,20,0.08)', boxShadow: dm ? 'none' : '0 18px 50px rgba(80,58,28,0.1)' }}>
             <input
               value={lumiInput} onChange={e => setLumiInput(e.target.value)}
               placeholder="Ask Lumi anything about your clinic..."
               style={{
                 fontSize: '16px',
-                backgroundColor: dm ? 'rgba(255,253,248,0.06)' : 'white',
+                backgroundColor: 'transparent',
                 color: dm ? '#FFFDF8' : '#1A1814',
-                borderColor: dm ? 'rgba(255,253,248,0.12)' : 'rgba(26,24,20,0.12)',
               }}
-              className="flex-1 rounded-full border px-5 py-2.5 text-sm placeholder:text-[#8A8278]/60 focus:outline-none focus:border-[#C4973F]/50 transition-colors"
+              className="flex-1 rounded-full border-0 px-4 py-2.5 text-sm placeholder:text-[#8A8278]/60 focus:outline-none"
             />
             <MicButton onResult={setLumiInput} />
             <button

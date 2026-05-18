@@ -55,7 +55,7 @@ export default function Hero() {
           <motion.div
             className="flex w-full min-w-0 max-w-[620px] flex-col items-center text-center md:items-start md:text-left"
             variants={stagger}
-            initial="hidden"
+            initial={false}
             animate="visible"
           >
             <motion.div
@@ -114,7 +114,7 @@ export default function Hero() {
 
           <motion.div
             className="relative hidden md:block"
-            initial={{ opacity: 0, y: 40 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.4 }}
           >

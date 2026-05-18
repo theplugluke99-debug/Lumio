@@ -170,13 +170,30 @@ main {
   50% { opacity: 1; }
 }
 
-.lumi-lens {
+.lumi-lens,
+.lumi-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
   flex-shrink: 0;
   transform: translateZ(0);
+}
+
+.lumi-mark {
+  position: relative;
+  overflow: hidden;
+}
+
+.lumi-mark__arc {
+  position: absolute;
+  inset: 23%;
+  border-width: 1px;
+  border-style: solid;
+  border-left-color: transparent !important;
+  border-bottom-color: transparent !important;
+  border-radius: 9999px;
+  opacity: 0.85;
 }
 
 .lumi-lens--animated {
