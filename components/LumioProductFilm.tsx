@@ -77,22 +77,101 @@ const softIn = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.72, ease } },
 };
 
+function SceneAtmosphere({ index }: { index: number }) {
+  const glowPosition = [
+    '40% 20%',
+    '62% 46%',
+    '66% 34%',
+    '78% 52%',
+    '36% 72%',
+    '64% 48%',
+    '72% 40%',
+    '58% 68%',
+  ][index];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <motion.div
+        className="absolute inset-0 opacity-70"
+        style={{
+          background: `radial-gradient(circle at ${glowPosition}, rgba(196,151,63,0.22), transparent 34%), radial-gradient(circle at 18% 18%, rgba(255,253,248,0.06), transparent 28%)`,
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.72 }}
+        transition={{ duration: 1.1, ease }}
+      />
+      <div className="film-photo-blur absolute inset-0 opacity-70" />
+      <GoldRibbons className="absolute inset-x-[-28%] bottom-[7%] h-[38%] opacity-80" delay={index * 0.2} />
+      <GoldRibbons className="absolute inset-x-[-42%] bottom-[-9%] h-[34%] opacity-45 blur-[0.2px]" delay={index * 0.28 + 0.7} />
+    </div>
+  );
+}
+
+function GoldRibbons({ className = '', delay = 0 }: { className?: string; delay?: number }) {
+  const paths = [
+    'M0 92 C70 28 122 140 195 72 C272 0 330 100 420 48 C500 2 560 88 640 42',
+    'M0 112 C80 66 132 128 206 88 C292 42 356 122 438 78 C520 34 572 72 640 64',
+    'M0 76 C92 18 160 110 230 58 C304 4 358 82 430 44 C512 0 570 58 640 30',
+    'M0 136 C112 106 160 146 244 114 C322 84 396 136 462 104 C542 64 596 98 640 86',
+  ];
+
+  return (
+    <svg className={className} viewBox="0 0 640 170" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id={`ribbon-${delay}`} x1="0" x2="1">
+          <stop offset="0%" stopColor="#C4973F" stopOpacity="0" />
+          <stop offset="38%" stopColor="#E8B44B" stopOpacity="0.38" />
+          <stop offset="55%" stopColor="#F4D38A" stopOpacity="0.86" />
+          <stop offset="100%" stopColor="#C4973F" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {paths.map((path, i) => (
+        <motion.path
+          key={path}
+          d={path}
+          fill="none"
+          stroke={`url(#ribbon-${delay})`}
+          strokeWidth={i === 0 ? 1.5 : 0.75}
+          strokeLinecap="round"
+          initial={{ pathLength: 0.14, pathOffset: 0.18, opacity: 0 }}
+          animate={{ pathLength: 1, pathOffset: [0.12, 0], opacity: i === 0 ? 0.95 : 0.42 }}
+          transition={{ delay: 0.16 + delay + i * 0.06, duration: 2.8, ease }}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function HumanSilhouette({ align = 'right' }: { align?: 'left' | 'right' }) {
+  return (
+    <div
+      className={`absolute bottom-0 ${align === 'right' ? 'right-[-8%]' : 'left-[-10%]'} h-[58%] w-[48%] opacity-75`}
+      aria-hidden="true"
+    >
+      <div className="absolute bottom-[9%] left-[32%] h-[34%] w-[32%] rounded-full bg-[#D8B17A]/16 blur-[2px]" />
+      <div className="absolute bottom-0 left-[18%] h-[42%] w-[62%] rounded-t-full bg-[linear-gradient(140deg,rgba(255,253,248,0.13),rgba(196,151,63,0.09)_38%,transparent_78%)] blur-[1px]" />
+      <div className="absolute bottom-[31%] left-[35%] h-[28%] w-[34%] rounded-full bg-[radial-gradient(circle_at_45%_36%,rgba(255,228,183,0.2),rgba(99,65,34,0.13)_52%,transparent_72%)]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0F0E0B] via-transparent to-transparent" />
+    </div>
+  );
+}
+
 function FilmText({ index }: { index: number }) {
   const copy = sceneCopy[index];
 
   return (
     <motion.div
-      className="relative z-20 max-w-[310px] px-5 pt-5 sm:px-7 sm:pt-7"
+      className="relative z-20 max-w-[315px] px-5 pt-5 sm:px-7 sm:pt-7"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.65, ease, delay: 0.08 }}
     >
-      <div className="mb-3 flex items-center gap-2">
-        <Logo light width={62} />
-        <span className="h-1 w-1 rounded-full bg-[#C4973F]/70" />
-        <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#E8B44B]/75">
-          {copy.eyebrow}
+      <div className="mb-3 flex items-center gap-2.5">
+        <span className="font-ui text-xl font-semibold leading-none text-[#E8B44B] tabular-nums">
+          {String(index + 1).padStart(2, '0')}
         </span>
+        <span className="h-px w-7 bg-gradient-to-r from-[#E8B44B]/70 to-transparent" />
+        <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#E8B44B]/72">{copy.eyebrow}</span>
       </div>
       <h2 className="font-display text-[2rem] font-black leading-[0.96] tracking-[-0.035em] text-[#FFFDF8] sm:text-[2.45rem] md:text-[2.2rem] lg:text-[2.55rem]">
         {copy.title}
@@ -114,9 +193,14 @@ function Shell({ children, index }: { children: React.ReactNode; index: number }
       animate="animate"
       exit="exit"
     >
+      <SceneAtmosphere index={index} />
       <FilmText index={index} />
       <div className="absolute inset-x-4 bottom-4 top-[215px] z-10 sm:inset-x-7 sm:bottom-7 sm:top-[235px] md:top-[250px]">
         {children}
+      </div>
+      <div className="absolute bottom-4 left-5 z-40 hidden items-center gap-2 text-[#E8B44B] sm:flex">
+        <span className="h-px w-8 bg-[#E8B44B]/60" />
+        <span className="text-lg leading-none">→</span>
       </div>
     </motion.div>
   );
@@ -124,7 +208,7 @@ function Shell({ children, index }: { children: React.ReactNode; index: number }
 
 function GlassCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-[#C4973F]/18 bg-[#16130f]/78 shadow-[0_20px_80px_rgba(0,0,0,0.42)] backdrop-blur-xl ${className}`}>
+    <div className={`rounded-2xl border border-[#C4973F]/22 bg-[linear-gradient(145deg,rgba(32,27,20,0.84),rgba(12,11,9,0.76))] shadow-[0_22px_90px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,253,248,0.07)] backdrop-blur-xl ${className}`}>
       {children}
     </div>
   );
@@ -147,10 +231,16 @@ function SceneEnquiry() {
   return (
     <Shell index={0}>
       <div className="relative h-full">
-        <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_36%_38%,rgba(255,221,167,0.16),transparent_30%),linear-gradient(135deg,rgba(255,253,248,0.06),transparent_46%)]" />
-        <div className="absolute left-[12%] top-[18%] h-32 w-20 rounded-full bg-[#FFFDF8]/[0.055] blur-2xl" />
+        <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(circle_at_34%_30%,rgba(255,222,176,0.18),transparent_31%),linear-gradient(135deg,rgba(255,253,248,0.07),transparent_46%)]" />
+        <HumanSilhouette align="right" />
         <motion.div
-          className="absolute left-1/2 top-[46%] w-[86%] max-w-[330px] -translate-x-1/2"
+          className="absolute left-[15%] top-[9%] h-16 w-12 rounded-xl bg-[#E8B44B]/12 blur-[1px]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.75 }}
+          transition={{ delay: 0.35, duration: 1.1, ease }}
+        />
+        <motion.div
+          className="absolute left-1/2 top-[44%] w-[86%] max-w-[330px] -translate-x-1/2"
           initial={{ opacity: 0, y: 28, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.42, duration: 0.85, ease }}
@@ -176,12 +266,14 @@ function SceneEnquiry() {
 function SceneReply() {
   return (
     <Shell index={1}>
-      <div className="flex h-full flex-col justify-end gap-3 pb-2">
-        <motion.div className="max-w-[78%] rounded-2xl rounded-bl-md border border-white/8 bg-white/[0.07] p-3 text-sm text-[#FFFDF8]" {...softIn}>
+      <div className="relative flex h-full flex-col justify-end gap-3 pb-2">
+        <div className="absolute inset-x-[6%] bottom-[12%] top-[8%] rounded-[2rem] border border-[#C4973F]/10 bg-[#090806]/36" />
+        <motion.div className="relative max-w-[78%] rounded-2xl rounded-bl-md border border-white/10 bg-white/[0.08] p-3 text-sm text-[#FFFDF8]" {...softIn}>
+          <span className="mb-2 block text-[10px] font-bold text-[#FFFDF8]/42">Client · Instagram</span>
           Hi lovely, do you have lip filler availability this week?
         </motion.div>
         <motion.div
-          className="ml-auto flex w-20 items-center gap-1.5 rounded-2xl rounded-br-md border border-[#C4973F]/18 bg-[#211a10] p-3"
+          className="relative ml-auto flex w-20 items-center gap-1.5 rounded-2xl rounded-br-md border border-[#C4973F]/18 bg-[#211a10] p-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: [0, 1, 1, 0], y: 0 }}
           transition={{ delay: 0.45, duration: 1.25, ease }}
@@ -191,11 +283,15 @@ function SceneReply() {
           ))}
         </motion.div>
         <motion.div
-          className="ml-auto max-w-[86%] rounded-2xl rounded-br-md border border-[#C4973F]/25 bg-gradient-to-br from-[#302514] to-[#18120c] p-3.5 text-sm font-medium leading-relaxed text-[#FFFDF8] shadow-[0_0_44px_rgba(196,151,63,0.16)]"
+          className="relative ml-auto max-w-[86%] rounded-2xl rounded-br-md border border-[#C4973F]/25 bg-gradient-to-br from-[#302514] to-[#18120c] p-3.5 text-sm font-medium leading-relaxed text-[#FFFDF8] shadow-[0_0_44px_rgba(196,151,63,0.16)]"
           initial={{ opacity: 0, y: 18, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 1.35, duration: 0.72, ease }}
         >
+          <span className="mb-2 flex items-center gap-2 text-[10px] font-bold text-[#E8B44B]/78">
+            <LumiLens size={16} />
+            Lumi · 11:42pm
+          </span>
           Hey lovely - yes, I have Thursday 2pm or Friday 11am free. Would you like me to book you in?
         </motion.div>
       </div>
@@ -216,6 +312,10 @@ function SceneBooking() {
           transition={{ delay: 0.3, duration: 0.8, ease }}
         >
           <GlassCard className="p-5">
+            <div className="mb-4 flex items-center justify-between border-b border-white/8 pb-3">
+              <span className="text-sm font-black text-[#FFFDF8]">Booking confirmed</span>
+              <span className="rounded-full bg-[#C4973F]/14 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#E8B44B]">secured</span>
+            </div>
             <div className="mb-4 flex items-start justify-between">
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E8B44B]">Friday 11am</div>
@@ -320,10 +420,20 @@ function SceneNoShows() {
                   <motion.span className="h-4 w-4 rounded-full bg-[#C4973F]" initial={{ scale: 0.4 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + i * 0.42, duration: 0.35, ease }} />
                   {i < items.length - 1 && <span className="mt-1 h-7 w-px bg-[#C4973F]/25" />}
                 </div>
-                <span className="text-sm font-semibold text-[#FFFDF8]/82">{item}</span>
+                <div>
+                  <span className="block text-sm font-semibold text-[#FFFDF8]/82">{item}</span>
+                  <span className="text-[10px] font-medium text-[#FFFDF8]/35">{['Email', 'SMS', 'WhatsApp'][i]}</span>
+                </div>
               </motion.div>
             ))}
           </div>
+          <motion.div className="mt-4 flex items-center gap-3 rounded-xl border border-[#C4973F]/18 bg-[#C4973F]/10 p-3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.58, duration: 0.48, ease }}>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFFDF8]/12 text-xs font-black text-[#FFFDF8]">S</span>
+            <div>
+              <div className="text-xs font-black text-[#FFFDF8]">Client confirmed ✓</div>
+              <div className="text-[10px] text-[#FFFDF8]/42">11:02am</div>
+            </div>
+          </motion.div>
         </GlassCard>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.25, duration: 0.72, ease }}>
           <GlassCard className="p-5 text-center">
@@ -396,10 +506,10 @@ function SceneDashboard() {
   return (
     <Shell index={6}>
       <motion.div
-        className="h-full origin-bottom rounded-2xl border border-[#C4973F]/18 bg-[#0F0E0B] p-3 shadow-[0_22px_90px_rgba(0,0,0,0.52)]"
+        className="h-full origin-bottom rounded-2xl border border-[#C4973F]/22 bg-[#0F0E0B] p-3 shadow-[0_22px_90px_rgba(0,0,0,0.52),0_0_58px_rgba(196,151,63,0.08)]"
         initial={{ opacity: 0, scale: 0.94, y: 18 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ delay: 0.22, duration: 0.9, ease }}
+        animate={{ opacity: 1, scale: [0.94, 1, 1.018], y: 0 }}
+        transition={{ delay: 0.22, duration: 4.8, ease }}
       >
         <div className="flex h-full overflow-hidden rounded-xl border border-white/8 bg-[#111009]">
           <aside className="hidden w-[86px] shrink-0 border-r border-white/8 bg-black/18 p-3 sm:block">
@@ -412,14 +522,20 @@ function SceneDashboard() {
           </aside>
           <main className="min-w-0 flex-1 p-3">
             <div className="mb-3 flex items-center justify-between">
-              <div className="text-sm font-black text-[#FFFDF8]">Clinic command centre</div>
+              <div>
+                <div className="text-sm font-black text-[#FFFDF8]">Clinic command centre</div>
+                <div className="text-[9px] font-medium text-white/35">Real-time insights, one calm view.</div>
+              </div>
               <div className="rounded-full bg-[#C4973F]/14 px-2.5 py-1 text-[9px] font-bold text-[#E8B44B]">Live</div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {metrics.map(([value, label], i) => (
-                <motion.div key={label} className="rounded-xl bg-[#FFFDF8] p-3 text-[#111009]" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.12, duration: 0.42, ease }}>
+                <motion.div key={label} className="rounded-xl border border-white/8 bg-[linear-gradient(145deg,rgba(255,253,248,0.075),rgba(255,253,248,0.025))] p-3 text-[#FFFDF8] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.12, duration: 0.42, ease }}>
                   <div className="text-xl font-black leading-none tracking-[-0.04em]">{value}</div>
-                  <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.08em] text-[#6b6259]">{label}</div>
+                  <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.08em] text-[#FFFDF8]/38">{label}</div>
+                  <div className="mt-2 h-1 rounded-full bg-white/8">
+                    <motion.div className="h-full rounded-full bg-[#E8B44B]" initial={{ width: 0 }} animate={{ width: `${[82, 70, 28, 92][i]}%` }} transition={{ delay: 0.8 + i * 0.1, duration: 0.65, ease }} />
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -462,8 +578,9 @@ function SceneResults() {
 
   return (
     <Shell index={7}>
-      <div className="flex h-full items-center justify-center">
-        <GlassCard className="w-full max-w-[380px] p-5">
+      <div className="relative flex h-full items-center justify-center">
+        <HumanSilhouette align="right" />
+        <GlassCard className="relative w-full max-w-[380px] p-5">
           <motion.div className="text-center" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, duration: 0.7, ease }}>
             <div className="font-display text-6xl font-black leading-none tracking-[-0.07em] text-[#E8B44B]">£3,200</div>
             <div className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-[#FFFDF8]/55">Recovered this month</div>
@@ -478,6 +595,11 @@ function SceneResults() {
           </div>
           <motion.div className="mt-5 text-center font-display text-2xl font-black italic tracking-[-0.04em] text-[#FFFDF8]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.55, duration: 0.85, ease }}>
             Your clinic. Running itself.
+          </motion.div>
+          <motion.div className="mx-auto mt-4 flex w-fit items-center gap-3 rounded-full border border-[#C4973F]/20 bg-black/22 px-4 py-2" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.9, duration: 0.55, ease }}>
+            <Logo light width={58} />
+            <span className="h-5 w-px bg-[#C4973F]/22" />
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#E8B44B]/80">Aesthetic clinics</span>
           </motion.div>
         </GlassCard>
       </div>
@@ -505,6 +627,8 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
       aria-label="Lumio product film"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(196,151,63,0.22),transparent_36%),radial-gradient(circle_at_18%_75%,rgba(232,180,75,0.11),transparent_32%),linear-gradient(145deg,#111009,#0F0E0B_48%,#17130d)]" />
+      <div className="pointer-events-none absolute inset-[10px] rounded-[1.35rem] border border-[#C4973F]/10 sm:inset-[14px] sm:rounded-[2rem]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,253,248,0.035)_1px,transparent_1px),linear-gradient(0deg,rgba(255,253,248,0.025)_1px,transparent_1px)] bg-[size:54px_54px] opacity-35" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.055] [background-image:radial-gradient(rgba(255,253,248,0.55)_0.6px,transparent_0.7px)] [background-size:9px_9px]" />
       <div className="film-wave pointer-events-none absolute inset-x-[-20%] bottom-[-10%] h-[58%] opacity-50" />
       <AnimatePresence mode="wait" initial={false}>
@@ -517,11 +641,19 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
         ))}
       </div>
       <style jsx>{`
+        .film-photo-blur {
+          background:
+            linear-gradient(110deg, transparent 0%, rgba(255, 253, 248, 0.05) 42%, transparent 68%),
+            radial-gradient(ellipse at 80% 28%, rgba(232, 180, 75, 0.12), transparent 28%),
+            radial-gradient(ellipse at 28% 20%, rgba(255, 230, 190, 0.11), transparent 24%);
+          filter: saturate(1.05);
+        }
+
         .film-wave {
           background:
-            repeating-radial-gradient(ellipse at 50% 100%, transparent 0 22px, rgba(196, 151, 63, 0.18) 23px, transparent 25px),
-            radial-gradient(ellipse at 50% 100%, rgba(232, 180, 75, 0.18), transparent 62%);
-          animation: lumioFilmWave 15s ease-in-out infinite alternate;
+            repeating-radial-gradient(ellipse at 50% 100%, transparent 0 18px, rgba(196, 151, 63, 0.17) 19px, transparent 21px),
+            radial-gradient(ellipse at 50% 100%, rgba(232, 180, 75, 0.2), transparent 62%);
+          animation: lumioFilmWave 15s ease-in-out infinite alternate, lumioFilmDrift 23s linear infinite;
           transform: translate3d(0, 0, 0);
         }
 
@@ -531,6 +663,15 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
           }
           to {
             transform: translateY(-28px) scale(1.04);
+          }
+        }
+
+        @keyframes lumioFilmDrift {
+          from {
+            background-position: 0 0, 0 0;
+          }
+          to {
+            background-position: 180px 0, 0 0;
           }
         }
 
