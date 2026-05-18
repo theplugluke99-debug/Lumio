@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Nav from '@/components/Nav';
 import GoldButton from '@/components/ui/GoldButton';
+import LumioProductFilm from '@/components/LumioProductFilm';
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 
@@ -25,14 +26,7 @@ function HeroVideoFrame() {
       />
       <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#211E19]/88 p-2.5 shadow-[0_34px_100px_rgba(0,0,0,.42)] backdrop-blur-2xl">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[1.55rem] md:rounded-[2.35rem] border border-[#C4973F]/20 bg-[#0A0907]">
-          <iframe
-            src="/video?embed=hero"
-            title="Lumio product video"
-            className="h-full w-full border-0"
-            allow="autoplay; clipboard-write"
-            loading="eager"
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#0A0907]/70 to-transparent" />
+          <LumioProductFilm />
         </div>
       </div>
     </div>
