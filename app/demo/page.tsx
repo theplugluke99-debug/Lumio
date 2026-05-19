@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type ChangeEvent } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Logo from '@/components/ui/Logo';
 import { MD } from '@/lib/chat';
@@ -223,9 +223,12 @@ export default function DemoPage() {
   const [viewMode, setViewMode] = useState<'simple' | 'full'>('simple');
   const [showModeOverlay, setShowModeOverlay] = useState(false);
   const [modeTransitioning, setModeTransitioning] = useState(false);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const logoObjectUrlRef = useRef<string | null>(null);
   const bh = bannerDismissed ? 0 : (isMobileWidth ? 122 : 52);
   const dm = dashMode === 'dark';
   const dBg = dm ? '#141210' : '#FFFDF8';
@@ -306,6 +309,12 @@ export default function DemoPage() {
   }, [lumiMsgs]);
 
   useEffect(() => {
+    return () => {
+      if (logoObjectUrlRef.current) URL.revokeObjectURL(logoObjectUrlRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
     if (lumiOpen && lumiMsgs.length === 0) {
       setLumiMsgs([{ role: 'assistant', content: "Hi — I run the automations for this clinic.\n\n**This week I've handled:**\n- 31 new enquiries — all responded to within seconds\n- 19 bookings confirmed automatically\n- 9 no-shows prevented by reminders\n- £4,800 in pipeline protected\n\nAsk me anything." }]);
     }
@@ -344,6 +353,76 @@ export default function DemoPage() {
   };
 
   const clinicInitials = clinicName.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+
+  const openLogoPicker = () => logoInputRef.current?.click();
+
+  const handleLogoUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const nextUrl = URL.createObjectURL(file);
+    if (logoObjectUrlRef.current) URL.revokeObjectURL(logoObjectUrlRef.current);
+    logoObjectUrlRef.current = nextUrl;
+    setLogoPreviewUrl(nextUrl);
+    event.target.value = '';
+  };
+
+  const resetLogo = () => {
+    if (logoObjectUrlRef.current) URL.revokeObjectURL(logoObjectUrlRef.current);
+    logoObjectUrlRef.current = null;
+    setLogoPreviewUrl(null);
+  };
+
+  const clinicMark = (size = 44, radius = 16) => (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius,
+        background: logoPreviewUrl ? (dm ? 'rgba(255,253,248,0.06)' : '#FFFDF8') : '#1A1814',
+        border: logoPreviewUrl ? `1px solid ${dCardBorder}` : 'none',
+        display: 'grid',
+        placeItems: 'center',
+        overflow: 'hidden',
+        flexShrink: 0,
+        boxShadow: dm ? '0 14px 40px rgba(0,0,0,.18)' : '0 14px 40px rgba(26,24,20,.12)',
+      }}
+    >
+      {logoPreviewUrl ? (
+        <img
+          src={logoPreviewUrl}
+          alt={`${clinicName} logo`}
+          style={{ display: 'block', maxWidth: '82%', maxHeight: '72%', width: 'auto', height: 'auto', objectFit: 'contain' }}
+        />
+      ) : (
+        <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 900, fontSize: Math.max(12, size * 0.38), color: '#E8B44B', lineHeight: 1 }}>
+          {clinicInitials}
+        </span>
+      )}
+    </div>
+  );
+
+  const logoUploadButton = (compact = false) => (
+    <div className="flex shrink-0 items-center gap-1.5">
+      <button
+        type="button"
+        onClick={openLogoPicker}
+        className={`${compact ? 'h-10 min-w-11 px-2 text-[10px]' : 'h-10 px-3.5 text-[11px]'} rounded-full border border-[#C4973F]/30 bg-[#C4973F]/10 font-bold text-[#E8B44B] transition-colors hover:border-[#C4973F]/55 hover:bg-[#C4973F]/15 whitespace-nowrap`}
+      >
+        {compact ? 'Logo' : logoPreviewUrl ? 'Change logo' : 'Upload logo'}
+      </button>
+      {logoPreviewUrl && !compact && (
+        <button
+          type="button"
+          onClick={resetLogo}
+          aria-label="Remove uploaded logo"
+          className={`${compact ? 'h-11 w-11' : 'h-10 w-10'} grid place-items-center rounded-full border border-white/10 bg-white/[0.04] text-[#FFFDF8]/55 transition-colors hover:text-[#E8B44B]`}
+        >
+          <Icon name="x" className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  );
 
   const openLumi = useCallback((prefill?: string) => {
     setLumiOpen(true);
@@ -394,6 +473,7 @@ export default function DemoPage() {
 
   return (
     <div className="demo-wrapper antialiased overflow-x-hidden" style={{ backgroundColor: dBg, color: dText, minHeight: '100dvh' }}>
+      <input ref={logoInputRef} type="file" accept="image/*" className="sr-only" onChange={handleLogoUpload} />
       {isClient && <PWASetup />}
 
       {/* Demo banner */}
@@ -415,6 +495,7 @@ export default function DemoPage() {
               />
               <div className="flex items-center justify-center gap-2">
                 <span className="hidden sm:inline-flex"><MicButton onResult={setBannerInput} /></span>
+                {logoUploadButton(false)}
                 <button onClick={saveClinicName} className="shrink-0 rounded-full bg-[#C4973F] px-4 py-1.5 text-xs font-bold text-[#1A1814] hover:bg-[#E8B44B] transition-colors whitespace-nowrap">
                   <span className="sm:hidden">Personalise →</span>
                   <span className="hidden sm:inline">Personalise →</span>
@@ -503,11 +584,13 @@ export default function DemoPage() {
       <div className="md:hidden" style={{ minHeight: '100dvh', background: dBg, position: 'relative' }}>
 
         {/* Mobile fixed top bar */}
-        <header style={{ position: 'fixed', top: bh, left: 0, right: 0, zIndex: 40, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', background: dTopbarBg, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${dCardBorder}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5B8A68', flexShrink: 0, display: 'inline-block' }} />
-            <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 16, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{clinicName}</span>
+        <header style={{ position: 'fixed', top: bh, left: 0, right: 0, zIndex: 40, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 10px', background: dTopbarBg, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${dCardBorder}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, flex: 1 }}>
+            {logoPreviewUrl ? clinicMark(34, 12) : <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5B8A68', flexShrink: 0, display: 'inline-block' }} />}
+            <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 15, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'calc(100vw - 176px)' }}>{clinicName}</span>
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+            {logoUploadButton(true)}
           <div style={{ position: 'relative' }} ref={notifRef}>
             <button type="button" onClick={() => setShowNotifs(v => !v)} style={{ width: 40, height: 40, borderRadius: '50%', background: dm ? 'rgba(255,253,248,0.08)' : '#F0EDF8', border: 'none', cursor: 'pointer', display: 'grid', placeItems: 'center', color: dText, position: 'relative' }}>
               <Icon name="bell" className="h-4 w-4" />
@@ -536,6 +619,7 @@ export default function DemoPage() {
                 ))}
               </div>
             )}
+          </div>
           </div>
         </header>
 
@@ -850,9 +934,7 @@ export default function DemoPage() {
           style={{ top: bh, backgroundColor: dTopbarBg, borderColor: dCardBorder }}>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#1A1814] text-lg font-black text-[#E8B44B] shadow-[0_14px_40px_rgba(26,24,20,.12)] shrink-0">
-                {clinicInitials}
-              </div>
+              {clinicMark(44, 16)}
               <div className="min-w-0">
                 <h1 className="text-lg font-black tracking-[-0.03em] truncate" style={{ color: dText }}>{clinicName}</h1>
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-[#5B8A68]">
@@ -861,6 +943,7 @@ export default function DemoPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {logoUploadButton(false)}
               {/* Mode toggle pill */}
               <ModeToggle mode={viewMode} onSwitch={switchMode} dm={dm} />
               {/* Dashboard light/dark toggle */}
@@ -1010,6 +1093,18 @@ export default function DemoPage() {
                     ? 'Everything in Foundation plus AI-handled conversations across all channels.'
                     : 'Full clinic automation including consent forms, invoicing, and monthly reports.'}
                 </p>
+                {tier === 'foundation' && (
+                  <a href="https://buy.stripe.com/3cI14fgTV22F0yN5LWd3i00" target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-semibold text-[#C4973F] hover:text-[#E8B44B] transition-colors">
+                    Get started — £1,500 setup →
+                  </a>
+                )}
+                {tier === 'fullsystem' && (
+                  <a href="https://buy.stripe.com/5kQ14f1Z14aN0yNb6gd3i02" target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-semibold text-[#C4973F] hover:text-[#E8B44B] transition-colors">
+                    Get started — £2,500 setup →
+                  </a>
+                )}
               </div>
             )}
 
@@ -1053,8 +1148,8 @@ export default function DemoPage() {
                         <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
                           From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
                         </div>
-                        <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                          Upgrade to Full Operations →
+                        <a href="mailto:hello@lumio.london" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                          Book a call →
                         </a>
                       </div>
                     </div>
@@ -1613,8 +1708,8 @@ export default function DemoPage() {
                         <div className="mt-5 rounded-2xl border border-white/10 bg-white/[.05] px-5 py-3 text-sm font-semibold text-[#FFFDF8]/72">
                           From <span className="text-[#E8B44B]">£4,000 setup</span> · <span className="text-[#E8B44B]">£1,400/month</span>
                         </div>
-                        <a href="/#pricing" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
-                          Upgrade to Full Operations →
+                        <a href="mailto:hello@lumio.london" className="mt-5 block rounded-2xl bg-[#C4973F] px-7 py-4 text-[10px] font-extrabold uppercase tracking-[.18em] text-[#1A1814] hover:bg-[#E8B44B] transition-colors">
+                          Book a call →
                         </a>
                       </div>
                     </div>

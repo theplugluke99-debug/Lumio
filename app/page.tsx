@@ -1,4 +1,5 @@
 import CursorGlow from '@/components/ui/CursorGlow';
+import FloatingCTABar from '@/components/FloatingCTABar';
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
 import PainSolution from '@/components/PainSolution';
@@ -22,6 +23,7 @@ export default function Page() {
   return (
     <main className="overflow-x-hidden">
       <CursorGlow />
+      <FloatingCTABar />
       <Hero />
       <Marquee />
       <PainSolution />

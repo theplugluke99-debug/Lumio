@@ -1,7 +1,13 @@
 'use client';
 
-import GoldButton from '@/components/ui/GoldButton';
 import { PLANS } from '@/lib/data';
+
+const STRIPE_LINKS: Record<string, string> = {
+  Foundation: 'https://buy.stripe.com/3cI14fgTV22F0yN5LWd3i00',
+  'Full System': 'https://buy.stripe.com/5kQ14f1Z14aN0yNb6gd3i02',
+};
+
+const CALENDLY_URL = '#'; // TODO: Replace with Calendly booking link
 
 export default function Pricing() {
   return (
@@ -49,12 +55,42 @@ export default function Pricing() {
                 ))}
               </ul>
               <div className="flex flex-col gap-2">
-                {p.featured
-                  ? <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio Revenue Reveal and I'd like to get started with the ${p.name} plan. My clinic is:`}>Get started</GoldButton>
-                  : <GoldButton href={`mailto:hello@lumio.london?subject=I'd like to get started with Lumio&body=Hi — I've just completed the Lumio Revenue Reveal and I'd like to get started with the ${p.name} plan. My clinic is:`} dark>Get started</GoldButton>}
-                <p className={`text-[11px] text-center ${p.featured ? 'text-white/35' : 'text-[#8A8278]'}`}>
-                  Or call us — we&apos;ll get you set up today
-                </p>
+                {p.name !== 'Full Operations' ? (
+                  <>
+                    <a
+                      href={STRIPE_LINKS[p.name]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`group inline-flex items-center justify-center gap-2 w-full rounded-full text-sm font-semibold px-7 py-3.5 transition-all duration-200 hover:-translate-y-1 shadow-[0_20px_60px_rgba(196,151,63,.2)] ${p.featured ? 'bg-[#C4973F] text-[#1A1814] hover:bg-[#E8B44B]' : 'bg-[#1A1814] text-[#FFFDF8] hover:bg-[#2E2B26]'}`}
+                    >
+                      Get started <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                    </a>
+                    <a
+                      href={CALENDLY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-center text-[11px] font-medium transition-colors hover:text-[#C4973F] ${p.featured ? 'text-white/40' : 'text-[#8A8278]'}`}
+                    >
+                      Or book a call first →
+                    </a>
+                  </>
+                ) : (
+                  <a
+                    href="mailto:hello@lumio.london"
+                    className="group inline-flex items-center justify-center gap-2 w-full rounded-full bg-[#1A1814] text-[#FFFDF8] text-sm font-semibold px-7 py-3.5 hover:bg-[#2E2B26] transition-all duration-200 hover:-translate-y-1 shadow-[0_20px_60px_rgba(196,151,63,.2)]"
+                  >
+                    Book a call <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                  </a>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center', marginTop: 8 }}>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span className={`text-[11px] ${p.featured ? 'text-white/30' : 'text-[#8A8278]/60'}`}>
+                    Secure payment via Stripe
+                  </span>
+                </div>
               </div>
             </div>
           ))}
