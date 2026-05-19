@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import LumiLens from '@/components/LumiLens';
 import Logo from '@/components/ui/Logo';
 
@@ -9,620 +9,714 @@ type LumioProductFilmProps = {
   humanAssets?: boolean;
 };
 
-const SCENE_MS = 5750;
+const SCENE_MS = 5000;
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const sceneMeta = [
-  ['01', 'New enquiry', 'While you sleep', 'Every after-hours DM is captured, understood, and ready for Lumi.'],
-  ['02', 'Lumi replies', 'In your voice', "Warm replies that sound like your clinic, not a fake chatbot."],
-  ['03', 'Booking secured', 'No back-and-forth', 'Availability, prep notes, and confirmation handled in one flow.'],
-  ['04', 'Connected tools', 'No rip and replace', 'Lumio connects the systems your clinic already depends on.'],
-  ['05', 'No-shows reduced', 'Revenue protected', 'Reminders, confirmations, and reschedules happen before the slot is lost.'],
-  ['06', 'Voice profile', 'Always on-brand', 'Lumi learns your tone, boundaries, and clinic language.'],
-  ['07', 'Live dashboard', 'Everything visible', 'A calm command centre for leads, bookings, automations, and revenue.'],
-  ['08', 'Results', 'Recovered revenue', 'The work Lumi handles turns into measurable clinic growth.'],
+const scenes = [
+  {
+    number: '01',
+    title: 'New enquiry',
+    support: 'After-hours Instagram DMs are captured the moment they arrive.',
+  },
+  {
+    number: '02',
+    title: 'Lumi replies',
+    support: 'Natural replies in your clinic voice, without sounding automated.',
+  },
+  {
+    number: '03',
+    title: 'Booking confirmed',
+    support: 'Availability, prep notes, and calendar updates handled in one flow.',
+  },
+  {
+    number: '04',
+    title: 'Everything connected',
+    support: 'Lumio plugs into the tools your clinic already uses.',
+  },
+  {
+    number: '05',
+    title: 'No-shows prevented',
+    support: 'Smart reminders protect revenue before a slot is lost.',
+  },
+  {
+    number: '06',
+    title: 'Your voice',
+    support: 'Lumi learns tone, boundaries, phrasing, and clinic style.',
+  },
+  {
+    number: '07',
+    title: 'Live dashboard',
+    support: 'Every lead, booking, automation, and recovery visible in one place.',
+  },
+  {
+    number: '08',
+    title: 'Results',
+    support: 'Recovered revenue becomes measurable clinic growth.',
+  },
 ] as const;
 
-const scenes = [
-  SceneEnquiry,
-  SceneReply,
-  SceneBooking,
-  SceneIntegrations,
-  SceneNoShows,
-  SceneVoice,
-  SceneDashboard,
-  SceneResults,
-];
+const layerTransition = { duration: 0.82, ease };
 
-const sceneVariants = {
-  initial: { opacity: 0, y: 14, scale: 0.992, filter: 'blur(8px)' },
-  animate: { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', transition: { duration: 0.82, ease } },
-  exit: { opacity: 0, y: -12, scale: 1.008, filter: 'blur(8px)', transition: { duration: 0.78, ease } },
-};
+export default function LumioProductFilm({ humanAssets = false }: LumioProductFilmProps) {
+  const [sceneIndex, setSceneIndex] = useState(0);
+  const reducedMotion = useReducedMotion();
 
-function SceneShell({
-  index,
-  children,
-  full = false,
-}: {
-  index: number;
-  children: React.ReactNode;
-  full?: boolean;
-}) {
-  const [number, label, title, support] = sceneMeta[index];
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSceneIndex((current) => (current + 1) % scenes.length);
+    }, SCENE_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [sceneIndex]);
 
   return (
-    <motion.div
-      key={index}
-      className="absolute inset-0"
-      variants={sceneVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
+    <div
+      className="relative h-full w-full overflow-hidden bg-[#0F0E0B] text-[#FFFDF8] [font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]"
+      aria-label="Lumio automated product film"
     >
-      <Atmosphere index={index} />
-      <div className="relative z-10 flex h-full flex-col gap-3 p-4 sm:p-5">
-        {full ? (
-          <>
-            <SceneHeader number={number} label={label} title={title} support={support} compact />
-            <div className="min-h-0 flex-1">{children}</div>
-          </>
-        ) : (
-          <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-[0.62fr_1.38fr] sm:items-center">
-            <SceneHeader number={number} label={label} title={title} support={support} />
-            <div className="min-h-0">{children}</div>
+      <PersistentBackdrop sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} humanAssets={humanAssets} />
+
+      <motion.div
+        className="absolute inset-0 z-10"
+        animate={
+          reducedMotion
+            ? { scale: 1, x: 0, y: 0 }
+            : {
+                scale: sceneIndex === 6 ? 1.025 : sceneIndex === 7 ? 1.01 : 1,
+                x: sceneIndex === 3 ? -4 : sceneIndex === 6 ? 3 : 0,
+                y: sceneIndex === 4 ? -2 : 0,
+              }
+        }
+        transition={{ duration: 1.2, ease }}
+      >
+        <div className="relative h-full w-full p-3 sm:p-5">
+          <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] border border-[#C4973F]/12 bg-black/[0.08] sm:rounded-[1.75rem]">
+            <SceneCaption sceneIndex={sceneIndex} />
+            <div className="absolute inset-x-3 bottom-3 top-[86px] sm:inset-x-5 sm:bottom-5 sm:top-[92px]">
+              <div className="relative h-full w-full">
+                <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={sceneIndex}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0, y: 12, scale: 0.985, filter: 'blur(8px)' }}
+                    animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -10, scale: 1.008, filter: 'blur(8px)' }}
+                    transition={layerTransition}
+                  >
+                    <SceneContent sceneIndex={sceneIndex} />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+            <ProgressDots sceneIndex={sceneIndex} />
           </div>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-function SceneHeader({
-  number,
-  label,
-  title,
-  support,
-  compact = false,
-}: {
-  number: string;
-  label: string;
-  title: string;
-  support: string;
-  compact?: boolean;
-}) {
-  return (
-    <motion.div
-      className={compact ? 'flex items-start justify-between gap-4' : 'relative z-20'}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.62, ease, delay: 0.06 }}
-    >
-      <div className={compact ? 'min-w-0' : ''}>
-        <div className="mb-3 flex items-center gap-2">
-          <span className="text-[18px] font-semibold leading-none text-[#E8B44B] tabular-nums">{number}</span>
-          <span className="h-px w-7 bg-gradient-to-r from-[#E8B44B]/80 to-transparent" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#E8B44B]/72">{label}</span>
         </div>
-        <h2 className="max-w-[230px] text-[23px] font-black leading-[1.04] tracking-[-0.035em] text-[#FFFDF8] sm:text-[28px]">
-          {title}
-        </h2>
-        {!compact && (
-          <p className="mt-3 max-w-[230px] text-[12px] font-medium leading-relaxed text-[#faf7f2]/55 sm:text-[13px]">
-            {support}
-          </p>
-        )}
-      </div>
-      {compact && <p className="hidden max-w-[260px] text-right text-[12px] font-medium leading-relaxed text-[#faf7f2]/52 sm:block">{support}</p>}
-    </motion.div>
-  );
-}
-
-function Atmosphere({ index }: { index: number }) {
-  const glow = ['75% 32%', '62% 52%', '70% 38%', '76% 52%', '64% 70%', '70% 42%', '62% 48%', '68% 65%'][index];
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(circle at ${glow}, rgba(196,151,63,0.22), transparent 34%), radial-gradient(circle at 18% 14%, rgba(255,253,248,0.055), transparent 28%), linear-gradient(145deg, #111009, #0F0E0B 52%, #15110c)`,
-        }}
-      />
-      <div className="absolute inset-[10px] rounded-[1.35rem] border border-[#C4973F]/10 sm:inset-[14px] sm:rounded-[1.85rem]" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,253,248,0.028)_1px,transparent_1px),linear-gradient(0deg,rgba(255,253,248,0.02)_1px,transparent_1px)] bg-[size:48px_48px] opacity-45" />
-      <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(rgba(255,253,248,0.5)_0.6px,transparent_0.7px)] [background-size:9px_9px]" />
-      <GoldWaves className="absolute inset-x-[-28%] bottom-[4%] h-[36%] opacity-80" delay={index * 0.16} />
-      <GoldWaves className="absolute inset-x-[-38%] bottom-[-14%] h-[34%] opacity-45" delay={index * 0.22 + 0.5} />
+      </motion.div>
     </div>
   );
 }
 
-function GoldWaves({ className = '', delay = 0 }: { className?: string; delay?: number }) {
+function PersistentBackdrop({
+  sceneIndex,
+  reducedMotion,
+  humanAssets,
+}: {
+  sceneIndex: number;
+  reducedMotion: boolean;
+  humanAssets: boolean;
+}) {
+  const glowPositions = ['70% 28%', '72% 46%', '68% 34%', '76% 50%', '62% 66%', '70% 42%', '60% 45%', '66% 62%'];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <motion.div
+        className="absolute inset-0"
+        animate={{ opacity: 1 }}
+        style={{
+          background: `radial-gradient(circle at ${glowPositions[sceneIndex]}, rgba(232,180,75,0.22), transparent 34%), radial-gradient(circle at 18% 12%, rgba(255,253,248,0.06), transparent 28%), linear-gradient(145deg, #12100b, #0F0E0B 48%, #17120c)`,
+        }}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,253,248,0.026)_1px,transparent_1px),linear-gradient(0deg,rgba(255,253,248,0.018)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
+      <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(rgba(255,253,248,0.56)_0.55px,transparent_0.7px)] [background-size:9px_9px]" />
+      <div
+        className={`absolute left-[-10%] top-[2%] h-[62%] w-[52%] rounded-full blur-3xl transition-opacity duration-700 ${
+          sceneIndex === 0 || sceneIndex === 1 ? 'opacity-45' : 'opacity-18'
+        }`}
+        style={{
+          background: humanAssets
+            ? 'radial-gradient(circle at 48% 38%, rgba(232,180,75,0.2), rgba(84,58,34,0.16) 38%, transparent 68%)'
+            : 'radial-gradient(circle at 52% 42%, rgba(255,220,162,0.18), rgba(108,70,38,0.18) 42%, transparent 70%)',
+        }}
+      />
+      <div className="absolute left-[4%] top-[13%] hidden h-[38%] w-[25%] rounded-[45%] bg-[#F3D7AA]/[0.045] blur-2xl sm:block" />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-80" />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] h-[30%] opacity-45" secondary />
+    </div>
+  );
+}
+
+function GoldWaves({
+  className = '',
+  reducedMotion,
+  secondary = false,
+}: {
+  className?: string;
+  reducedMotion: boolean;
+  secondary?: boolean;
+}) {
   const paths = [
-    'M0 95 C80 26 132 142 210 70 C292 -5 354 104 446 46 C518 2 574 78 660 36',
-    'M0 118 C86 72 138 130 218 88 C302 42 370 120 454 78 C534 36 600 84 660 62',
-    'M0 72 C96 18 168 108 240 54 C318 0 372 84 452 42 C530 0 600 52 660 28',
-    'M0 142 C116 106 168 150 258 114 C340 80 408 136 480 102 C552 66 610 98 660 86',
+    'M0 106 C80 24 142 142 224 72 C306 2 372 112 458 46 C536 -10 604 78 690 30',
+    'M0 132 C92 74 150 144 242 94 C330 46 402 128 488 82 C574 36 630 88 690 58',
+    'M0 78 C108 20 170 112 260 58 C350 4 410 86 500 44 C574 8 628 52 690 24',
+    'M0 152 C126 104 188 154 278 118 C364 82 430 138 512 102 C590 68 640 98 690 84',
   ];
 
   return (
-    <svg className={className} viewBox="0 0 660 170" preserveAspectRatio="none" aria-hidden="true">
+    <svg className={className} viewBox="0 0 690 176" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id={`film-wave-${delay}`} x1="0" x2="1">
+        <linearGradient id={secondary ? 'film-wave-secondary' : 'film-wave-primary'} x1="0" x2="1">
           <stop offset="0%" stopColor="#C4973F" stopOpacity="0" />
-          <stop offset="40%" stopColor="#E8B44B" stopOpacity="0.32" />
-          <stop offset="54%" stopColor="#F4D38A" stopOpacity="0.86" />
+          <stop offset="40%" stopColor="#E8B44B" stopOpacity={secondary ? '0.2' : '0.34'} />
+          <stop offset="55%" stopColor="#F6D88C" stopOpacity={secondary ? '0.62' : '0.92'} />
           <stop offset="100%" stopColor="#C4973F" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {paths.map((path, i) => (
+      {paths.map((path, index) => (
         <motion.path
           key={path}
           d={path}
           fill="none"
-          stroke={`url(#film-wave-${delay})`}
+          stroke={`url(#${secondary ? 'film-wave-secondary' : 'film-wave-primary'})`}
           strokeLinecap="round"
-          strokeWidth={i === 0 ? 1.6 : 0.75}
-          initial={{ pathLength: 0.16, pathOffset: 0.2, opacity: 0 }}
-          animate={{ pathLength: 1, pathOffset: [0.1, 0], opacity: i === 0 ? 0.95 : 0.42 }}
-          transition={{ delay: 0.12 + delay + i * 0.05, duration: 2.8, ease }}
+          strokeWidth={index === 0 ? 1.55 : 0.75}
+          initial={false}
+          animate={
+            reducedMotion
+              ? { pathLength: 1, pathOffset: 0, opacity: index === 0 ? 0.75 : 0.35 }
+              : { pathLength: 1, pathOffset: [0.06, -0.06], opacity: index === 0 ? 0.92 : 0.4 }
+          }
+          transition={{ duration: secondary ? 8 : 6.5, repeat: reducedMotion ? 0 : Infinity, repeatType: 'mirror', ease: 'easeInOut', delay: index * 0.15 }}
         />
       ))}
     </svg>
   );
 }
 
-function GlassPanel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
+  const scene = scenes[sceneIndex];
+
   return (
-    <div className={`rounded-2xl border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.86),rgba(10,9,7,0.76))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}>
+    <div className="absolute left-4 right-4 top-4 z-30 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.div
+          key={scene.number}
+          className="min-w-0"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.55, ease }}
+        >
+          <div className="mb-1 flex items-center gap-2">
+            <span className="text-[13px] font-bold leading-none text-[#E8B44B] tabular-nums sm:text-[15px]">{scene.number}</span>
+            <span className="h-px w-7 bg-gradient-to-r from-[#E8B44B]/80 to-transparent" />
+            <span className="truncate text-[8px] font-bold uppercase tracking-[0.18em] text-[#E8B44B]/65 sm:text-[9px]">Lumio workflow</span>
+          </div>
+          <h2 className="text-[20px] font-black leading-[1.02] tracking-[-0.03em] text-[#FFFDF8] sm:text-[26px]">{scene.title}</h2>
+        </motion.div>
+      </AnimatePresence>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.p
+          key={scene.support}
+          className="hidden max-w-[250px] pt-1 text-right text-[11px] font-medium leading-relaxed text-[#faf7f2]/50 sm:block"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.55, ease, delay: 0.04 }}
+        >
+          {scene.support}
+        </motion.p>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function PersistentRails({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
+  return (
+    <>
+      <motion.div
+        className="absolute left-[8%] top-[42%] hidden h-px w-[84%] bg-gradient-to-r from-transparent via-[#E8B44B]/20 to-transparent sm:block"
+        animate={reducedMotion ? { opacity: 0.28 } : { opacity: [0.2, 0.42, 0.2], x: sceneIndex % 2 ? 8 : -8 }}
+        transition={{ duration: 4.5, repeat: reducedMotion ? 0 : Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
+      />
+      <div className="absolute inset-x-[7%] bottom-[15%] h-px bg-gradient-to-r from-transparent via-[#E8B44B]/16 to-transparent" />
+    </>
+  );
+}
+
+function ProgressDots({ sceneIndex }: { sceneIndex: number }) {
+  return (
+    <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/8 bg-black/25 px-2.5 py-1.5 backdrop-blur-md sm:bottom-4">
+      {scenes.map((scene, index) => (
+        <span
+          key={scene.number}
+          className={`h-1.5 rounded-full transition-all duration-500 ${index === sceneIndex ? 'w-6 bg-[#E8B44B]' : 'w-1.5 bg-white/22'}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SceneContent({ sceneIndex }: { sceneIndex: number }) {
+  if (sceneIndex === 0) return <ConversationScene mode="enquiry" />;
+  if (sceneIndex === 1) return <ConversationScene mode="reply" />;
+  if (sceneIndex === 2) return <BookingScene />;
+  if (sceneIndex === 3) return <IntegrationsScene />;
+  if (sceneIndex === 4) return <NoShowScene />;
+  if (sceneIndex === 5) return <VoiceScene />;
+  if (sceneIndex === 6) return <DashboardScene />;
+  return <ResultsScene />;
+}
+
+function FilmLayout({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
+  return (
+    <div className="grid h-full min-h-0 items-center gap-3 sm:grid-cols-[0.42fr_1.58fr] sm:gap-4">
+      <div className="hidden min-w-0 sm:block">{aside}</div>
+      <div className="min-h-0 min-w-0">{children}</div>
+    </div>
+  );
+}
+
+function MiniBenefit({ children }: { children: ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-[#C4973F]/14 bg-[#0b0a08]/42 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+      <div className="mb-2 flex items-center gap-2">
+        <LumiLens size={24} />
+        <span className="text-[8px] font-black uppercase tracking-[0.16em] text-[#E8B44B]/72">live</span>
+      </div>
+      <p className="text-[10px] font-semibold leading-relaxed text-[#FFFDF8]/58">{children}</p>
+    </div>
+  );
+}
+
+function GlassPanel({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={`rounded-[1.35rem] border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.88),rgba(10,9,7,0.78))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}>
       {children}
     </div>
   );
 }
 
-function MiniAvatar({ label = 'S' }: { label?: string }) {
+function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
   return (
-    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[radial-gradient(circle_at_35%_28%,rgba(255,221,172,0.4),rgba(196,151,63,0.2)_42%,rgba(255,255,255,0.07))] text-[11px] font-black text-[#FFFDF8]">
-      {label}
-    </span>
-  );
-}
-
-function ChannelPill({ children }: { children: React.ReactNode }) {
-  return <span className="rounded-full border border-white/8 bg-white/[0.045] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#FFFDF8]/48">{children}</span>;
-}
-
-function Tick({ delay = 0 }: { delay?: number }) {
-  return (
-    <motion.span
-      className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E8B44B] text-[10px] font-black text-[#111009]"
-      initial={{ opacity: 0, scale: 0.35 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.34, ease }}
-    >
-      ✓
-    </motion.span>
-  );
-}
-
-function SceneEnquiry() {
-  return (
-    <SceneShell index={0}>
-      <div className="relative mx-auto w-full max-w-[390px]">
-        <div className="absolute -inset-7 rounded-full bg-[#E8B44B]/12 blur-3xl" />
-        <motion.div
-          className="relative overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#0b0a08]/82 p-3 shadow-[0_22px_80px_rgba(0,0,0,0.55)]"
-          initial={{ opacity: 0, y: 18, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.28, duration: 0.76, ease }}
-        >
-          <div className="absolute right-[-10%] top-[-10%] h-36 w-36 rounded-full bg-[#D8B17A]/10 blur-2xl" />
+    <FilmLayout aside={<MiniBenefit>{mode === 'enquiry' ? 'A late enquiry becomes structured lead data before the clinic opens.' : 'Lumi checks availability and answers with the warmth of your front desk.'}</MiniBenefit>}>
+      <div className="relative mx-auto w-full max-w-[430px]">
+        <div className="absolute -inset-5 rounded-full bg-[#E8B44B]/12 blur-3xl" />
+        <GlassPanel className="relative overflow-hidden p-3 sm:p-4">
           <div className="mb-3 flex items-center justify-between border-b border-white/7 pb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#833AB4,#E1306C,#FCAF45)] text-[15px] font-black text-white">◎</div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#833AB4,#E1306C,#FCAF45)] text-[13px] font-black text-white">IG</div>
               <div>
-                <div className="text-[12px] font-black text-[#FFFDF8]">Instagram DM</div>
+                <div className="text-[12px] font-black text-[#FFFDF8]">Instagram</div>
                 <div className="text-[10px] font-medium text-[#FFFDF8]/38">Glow Aesthetics · 11:42pm</div>
               </div>
             </div>
             <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8B44B] opacity-40" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8B44B] opacity-35" />
               <span className="relative inline-flex h-3 w-3 rounded-full bg-[#E8B44B]" />
             </span>
           </div>
           <div className="space-y-3">
-            <div className="max-w-[86%] rounded-2xl rounded-tl-md border border-white/8 bg-white/[0.065] p-3">
-              <p className="text-[14px] font-semibold leading-snug text-[#FFFDF8]">Hi lovely, do you have lip filler availability this week?</p>
-              <div className="mt-2 text-[10px] font-medium text-[#FFFDF8]/35">11:42pm</div>
-            </div>
-            <motion.div
-              className="flex items-center gap-2 rounded-xl border border-[#C4973F]/20 bg-[#C4973F]/10 px-3 py-2"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.45, ease }}
-            >
-              <LumiLens size={20} />
-              <div>
-                <div className="text-[11px] font-black text-[#E8B44B]">Lead captured</div>
-                <div className="text-[10px] text-[#FFFDF8]/42">Treatment intent: Lip filler · Priority: High</div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-    </SceneShell>
-  );
-}
-
-function SceneReply() {
-  return (
-    <SceneShell index={1}>
-      <GlassPanel className="mx-auto w-full max-w-[420px] p-3">
-        <div className="mb-3 flex items-center justify-between border-b border-white/7 pb-3">
-          <div className="flex items-center gap-2">
-            <MiniAvatar label="S" />
-            <div>
-              <div className="text-[12px] font-black text-[#FFFDF8]">Sophie M.</div>
-              <div className="text-[10px] text-[#FFFDF8]/38">Instagram · New enquiry</div>
-            </div>
-          </div>
-          <ChannelPill>Auto reply on</ChannelPill>
-        </div>
-        <div className="space-y-2.5">
-          <motion.div className="max-w-[78%] rounded-2xl rounded-bl-md bg-white/[0.075] p-3 text-[13px] font-medium leading-snug text-[#FFFDF8]/88" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.28, duration: 0.48, ease }}>
-            Do you have lip filler availability this week?
-          </motion.div>
-          <motion.div
-            className="ml-auto flex w-16 items-center justify-center gap-1 rounded-2xl rounded-br-md border border-[#C4973F]/18 bg-[#211a10] py-2.5"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: [0, 1, 1, 0], y: 0 }}
-            transition={{ delay: 0.72, duration: 1.15, ease }}
-          >
-            {[0, 1, 2].map((dot) => (
-              <span key={dot} className="typing-dot h-1.5 w-1.5 rounded-full bg-[#E8B44B]" style={{ animationDelay: `${dot * 0.14}s` }} />
-            ))}
-          </motion.div>
-          <motion.div
-            className="ml-auto max-w-[86%] rounded-2xl rounded-br-md border border-[#C4973F]/24 bg-[linear-gradient(145deg,rgba(61,45,22,0.9),rgba(25,18,10,0.9))] p-3 text-[13px] font-semibold leading-relaxed text-[#FFFDF8] shadow-[0_0_40px_rgba(196,151,63,0.13)]"
-            initial={{ opacity: 0, y: 14, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 1.28, duration: 0.58, ease }}
-          >
-            <span className="mb-2 flex items-center gap-2 text-[10px] font-black text-[#E8B44B]/82">
-              <LumiLens size={16} />
-              Lumi · trained tone
-            </span>
-            Hey lovely - yes, I have Thursday 2pm or Friday 11am free. Would you like me to book you in?
-          </motion.div>
-          <motion.div className="ml-auto flex max-w-[86%] gap-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.4, ease }}>
-            {['Thursday 2pm', 'Friday 11am'].map((slot) => (
-              <span key={slot} className="rounded-full border border-[#C4973F]/20 bg-[#C4973F]/10 px-3 py-1.5 text-[10px] font-black text-[#E8B44B]">{slot}</span>
-            ))}
-          </motion.div>
-        </div>
-      </GlassPanel>
-    </SceneShell>
-  );
-}
-
-function SceneBooking() {
-  const checklist = ['Confirmation sent', 'Prep notes sent', 'Calendar updated'];
-
-  return (
-    <SceneShell index={2}>
-      <GlassPanel className="mx-auto w-full max-w-[430px] overflow-hidden">
-        <div className="flex items-center justify-between border-b border-white/8 px-4 py-3">
-          <div>
-            <div className="text-[12px] font-black text-[#FFFDF8]">Booking confirmed</div>
-            <div className="text-[10px] text-[#FFFDF8]/38">Generated from Instagram enquiry</div>
-          </div>
-          <span className="rounded-full bg-[#C4973F]/14 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#E8B44B]">secured</span>
-        </div>
-        <div className="grid gap-3 p-4 sm:grid-cols-[0.82fr_1fr]">
-          <motion.div
-            className="rounded-2xl border border-[#C4973F]/18 bg-[#C4973F]/10 p-3"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.32, duration: 0.5, ease }}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#E8B44B]">Friday</div>
-              <svg viewBox="0 0 24 24" className="h-5 w-5 text-[#E8B44B]" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M7 3v3M17 3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
-              </svg>
-            </div>
-            <div className="text-[30px] font-black leading-none tracking-[-0.05em] text-[#FFFDF8]">11:00</div>
-            <div className="mt-2 text-[12px] font-bold text-[#FFFDF8]/62">Lip Filler · 45 mins</div>
-            <div className="mt-3 rounded-xl bg-black/18 p-2 text-[10px] font-medium text-[#FFFDF8]/45">Client: Sophie M. · £180 deposit link ready</div>
-          </motion.div>
-          <div className="space-y-2">
-            {checklist.map((item, i) => (
+            <MessageBubble align="left">Hi lovely, do you have lip filler availability this week?</MessageBubble>
+            {mode === 'reply' ? (
+              <>
+                <TypingDots />
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.48, duration: 0.5, ease }}>
+                  <MessageBubble align="right">
+                    Hey lovely — yes, I have Thursday 2pm or Friday 11am free. Would you like me to book you in?
+                  </MessageBubble>
+                </motion.div>
+              </>
+            ) : (
               <motion.div
-                key={item}
-                className="flex items-center gap-3 rounded-xl border border-white/7 bg-white/[0.045] px-3 py-2.5 text-[12px] font-bold text-[#FFFDF8]/82"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.68 + i * 0.2, duration: 0.4, ease }}
+                className="flex items-center gap-2 rounded-xl border border-[#C4973F]/20 bg-[#C4973F]/10 px-3 py-2"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.58, duration: 0.45, ease }}
               >
-                <Tick delay={0.78 + i * 0.2} />
-                {item}
+                <LumiLens size={20} />
+                <div>
+                  <div className="text-[11px] font-black text-[#E8B44B]">Lead captured</div>
+                  <div className="text-[10px] text-[#FFFDF8]/42">Treatment intent: Lip filler · Priority: High</div>
+                </div>
               </motion.div>
-            ))}
-            <motion.div className="rounded-xl border border-[#C4973F]/16 bg-[#C4973F]/8 px-3 py-2.5 text-[11px] font-semibold text-[#E8B44B]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.35, duration: 0.42, ease }}>
-              No missed opportunity. No manual chasing.
-            </motion.div>
+            )}
           </div>
-        </div>
-      </GlassPanel>
-    </SceneShell>
-  );
-}
-
-function SceneIntegrations() {
-  const nodes = ['Instagram', 'WhatsApp', 'Google', 'Fresha', 'Phorest', 'Stripe', 'Calendly', 'Gmail', 'Trustpilot'];
-
-  return (
-    <SceneShell index={3}>
-      <div className="relative mx-auto h-[295px] w-full max-w-[430px] sm:h-[330px]">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 430 330" preserveAspectRatio="none" aria-hidden="true">
-          {nodes.map((_, i) => {
-            const angle = (Math.PI * 2 * i) / nodes.length - Math.PI / 2;
-            const x = 215 + Math.cos(angle) * 168;
-            const y = 165 + Math.sin(angle) * 112;
-            return (
-              <motion.line
-                key={i}
-                x1="215"
-                y1="165"
-                x2={x}
-                y2={y}
-                stroke="#C4973F"
-                strokeWidth="1"
-                strokeOpacity="0.34"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: [0.12, 0.42, 0.2] }}
-                transition={{ delay: 0.22 + i * 0.05, duration: 1.75, repeat: Infinity, repeatType: 'mirror' }}
-              />
-            );
-          })}
-        </svg>
-        <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-          <div className="rounded-full border border-[#C4973F]/28 bg-[#0F0E0B]/94 p-4 shadow-[0_0_70px_rgba(196,151,63,0.24)]">
-            <LumiLens size={62} animated />
-          </div>
-          <span className="mt-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#E8B44B]">Lumio</span>
-        </div>
-        {nodes.map((node, i) => {
-          const angle = (Math.PI * 2 * i) / nodes.length - Math.PI / 2;
-          const left = 50 + Math.cos(angle) * 38;
-          const top = 50 + Math.sin(angle) * 35;
-          return (
-            <motion.div
-              key={node}
-              className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-2xl border border-white/10 bg-[#18140f]/88 px-3 py-2 text-[10px] font-black text-[#FFFDF8]/78 shadow-[0_14px_38px_rgba(0,0,0,0.34)] backdrop-blur"
-              style={{ left: `${left}%`, top: `${top}%` }}
-              initial={{ opacity: 0, scale: 0.78 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.24 + i * 0.07, duration: 0.42, ease }}
-            >
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.06] text-[#E8B44B]">{node[0]}</span>
-              <span className="hidden sm:inline">{node}</span>
-            </motion.div>
-          );
-        })}
+        </GlassPanel>
       </div>
-    </SceneShell>
+    </FilmLayout>
   );
 }
 
-function SceneNoShows() {
-  const items = [
-    ['48h reminder sent', 'Email', 'Delivered 09:30'],
-    ['24h reminder confirmed', 'SMS', 'Client replied yes'],
-    ['Morning reminder scheduled', 'WhatsApp', 'Queued 08:00'],
-  ];
-
+function MessageBubble({ children, align }: { children: ReactNode; align: 'left' | 'right' }) {
   return (
-    <SceneShell index={4}>
-      <GlassPanel className="mx-auto grid w-full max-w-[430px] gap-3 p-4 sm:grid-cols-[1fr_0.72fr]">
-        <div className="space-y-3">
-          {items.map(([title, channel, detail], i) => (
-            <motion.div key={title} className="relative flex gap-3" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.28 + i * 0.28, duration: 0.42, ease }}>
-              <div className="flex flex-col items-center">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#C4973F]/25 bg-[#C4973F]/12 text-[11px] font-black text-[#E8B44B]">{i + 1}</span>
-                {i < items.length - 1 && <span className="mt-1 h-8 w-px bg-[#C4973F]/24" />}
-              </div>
-              <div className="min-w-0 rounded-xl border border-white/7 bg-white/[0.045] px-3 py-2">
-                <div className="text-[12px] font-black text-[#FFFDF8]">{title}</div>
-                <div className="mt-1 flex gap-2 text-[10px] text-[#FFFDF8]/38"><span>{channel}</span><span>·</span><span>{detail}</span></div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="flex flex-col justify-between gap-3">
-          <motion.div className="rounded-2xl border border-[#C4973F]/18 bg-[#C4973F]/10 p-4 text-center" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.9, duration: 0.5, ease }}>
-            <div className="text-[34px] font-black leading-none tracking-[-0.05em] text-[#E8B44B]">67%</div>
-            <div className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#FFFDF8]/50">fewer no-shows</div>
-          </motion.div>
-          <motion.div className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.055] p-3" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.42, ease }}>
-            <MiniAvatar label="S" />
-            <div>
-              <div className="text-[12px] font-black text-[#FFFDF8]">Client confirmed</div>
-              <div className="text-[10px] text-[#FFFDF8]/38">11:02am · slot protected</div>
-            </div>
-          </motion.div>
-        </div>
-      </GlassPanel>
-    </SceneShell>
+    <div className={`flex ${align === 'right' ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`max-w-[86%] rounded-2xl p-3 text-[12px] font-semibold leading-snug sm:text-[13px] ${
+          align === 'right'
+            ? 'rounded-tr-md border border-[#E8B44B]/25 bg-[#C4973F]/18 text-[#FFFDF8]'
+            : 'rounded-tl-md border border-white/8 bg-white/[0.065] text-[#FFFDF8]/88'
+        }`}
+      >
+        {children}
+        <div className="mt-2 text-[9px] font-medium text-[#FFFDF8]/34">{align === 'right' ? 'Lumi · 11:43pm' : '11:42pm'}</div>
+      </div>
+    </div>
   );
 }
 
-function SceneVoice() {
-  const rows = [
-    ['Greeting style', 'Warm', 90],
-    ['Tone', 'Friendly, reassuring', 85],
-    ['Clinic style', 'Luxury, trust, results', 80],
-  ] as const;
-  const avoid = ['cheap', 'discount', 'pushy'];
-  const phrases = ['Hey lovely', 'Of course', 'You are in safe hands'];
-
-  return (
-    <SceneShell index={5}>
-      <GlassPanel className="mx-auto w-full max-w-[430px] p-4">
-        <div className="mb-4 flex items-center justify-between border-b border-white/7 pb-3">
-          <div className="flex items-center gap-3">
-            <LumiLens size={36} animated />
-            <div>
-              <div className="text-[13px] font-black text-[#FFFDF8]">Clinic voice profile</div>
-              <div className="text-[10px] text-[#FFFDF8]/38">Training source: 248 past replies</div>
-            </div>
-          </div>
-          <ChannelPill>Active</ChannelPill>
-        </div>
-        <div className="space-y-3">
-          {rows.map(([label, value, width], i) => (
-            <div key={label}>
-              <div className="mb-1.5 flex justify-between gap-3 text-[11px]">
-                <span className="font-bold text-[#FFFDF8]/48">{label}</span>
-                <span className="font-black text-[#FFFDF8]/84">{value}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-white/8">
-                <motion.div className="h-full rounded-full bg-gradient-to-r from-[#C4973F] to-[#E8B44B]" initial={{ width: 0 }} animate={{ width: `${width}%` }} transition={{ delay: 0.38 + i * 0.16, duration: 0.85, ease }} />
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div>
-            <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#E8B44B]/80">Approved phrases</div>
-            <div className="flex flex-wrap gap-2">
-              {phrases.map((phrase, i) => (
-                <motion.span key={phrase} className="rounded-full border border-[#C4973F]/16 bg-[#C4973F]/8 px-2.5 py-1.5 text-[10px] font-bold text-[#FFFDF8]/72" initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95 + i * 0.08, duration: 0.34, ease }}>
-                  {phrase}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#E8B44B]/80">Words to avoid</div>
-            <div className="flex flex-wrap gap-2">
-              {avoid.map((word, i) => (
-                <motion.span key={word} className="rounded-full border border-white/10 bg-white/[0.045] px-2.5 py-1.5 text-[10px] font-bold text-[#FFFDF8]/62" initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1 + i * 0.08, duration: 0.34, ease }}>
-                  {word}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </GlassPanel>
-    </SceneShell>
-  );
-}
-
-function DashboardPanel() {
-  const metrics = [
-    ['31', 'Leads captured', '+22% vs last 7 days'],
-    ['19', 'Bookings', '+18% vs last 7 days'],
-    ['2', 'No-shows prevented', '+21% vs last 7 days'],
-    ['£4,800', 'Pipeline', 'Live tracked value'],
-  ];
-  const feed = [
-    ['DM answered', 'Instagram · 11:42pm'],
-    ['Appointment booked', 'Friday 11:00am'],
-    ['No-show prevented', 'SMS confirmed'],
-    ['Review request sent', 'Yesterday'],
-  ];
-  const bars = [
-    ['Lead response', 98],
-    ['Reminder delivery', 100],
-    ['Rebooking rate', 74],
-  ] as const;
-
+function TypingDots() {
   return (
     <motion.div
-      className="h-full overflow-hidden rounded-2xl border border-[#C4973F]/20 bg-[#0F0E0B] shadow-[0_24px_90px_rgba(0,0,0,0.56),0_0_55px_rgba(196,151,63,0.08)]"
-      initial={{ opacity: 0, y: 16, scale: 0.975 }}
-      animate={{ opacity: 1, y: 0, scale: [0.975, 1, 1.012] }}
-      transition={{ delay: 0.16, duration: 4.8, ease }}
+      className="ml-auto flex w-fit items-center gap-1 rounded-2xl rounded-tr-md border border-[#E8B44B]/18 bg-[#C4973F]/12 px-3 py-2"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease }}
     >
-      <div className="flex h-full min-h-0">
-        <aside className="hidden w-[92px] shrink-0 border-r border-white/8 bg-black/20 p-3 sm:block">
-          <Logo light width={54} />
-          <div className="mt-5 space-y-1.5">
-            {['Overview', 'Conversations', 'Bookings', 'Clients', 'Voice', 'Integrations'].map((item, i) => (
-              <div key={item} className={`rounded-lg px-2 py-1.5 text-[8px] font-black ${i === 0 ? 'bg-[#C4973F]/14 text-[#E8B44B]' : 'text-white/28'}`}>{item}</div>
-            ))}
-          </div>
-        </aside>
-        <main className="min-w-0 flex-1 p-3">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <div className="text-[14px] font-black text-[#FFFDF8]">Overview</div>
-              <div className="text-[9px] font-medium text-white/34">Glow Aesthetics · This week</div>
-            </div>
-            <span className="rounded-full bg-[#C4973F]/14 px-2.5 py-1 text-[9px] font-black text-[#E8B44B]">Live</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {metrics.map(([value, label, trend], i) => (
-              <motion.div key={label} className="rounded-xl border border-white/8 bg-white/[0.045] p-2.5" initial={{ opacity: 0, y: 9 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.42 + i * 0.09, duration: 0.36, ease }}>
-                <div className="text-[18px] font-black leading-none tracking-[-0.04em] text-[#FFFDF8]">{value}</div>
-                <div className="mt-1 text-[8px] font-black uppercase tracking-[0.08em] text-[#FFFDF8]/38">{label}</div>
-                <div className="mt-1.5 text-[8px] font-bold text-[#E8B44B]/75">{trend}</div>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[1fr_0.9fr]">
-            <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-[10px] font-black text-[#FFFDF8]">Recent activity</span>
-                <span className="text-[8px] font-bold text-[#E8B44B]/75">Auto-handled</span>
-              </div>
-              {feed.map(([title, detail], i) => (
-                <motion.div key={title} className="flex items-center gap-2 border-t border-white/6 py-1.5 first:border-t-0" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.78 + i * 0.11, duration: 0.34, ease }}>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#E8B44B]" />
-                  <div>
-                    <div className="text-[9px] font-black text-[#FFFDF8]/78">{title}</div>
-                    <div className="text-[8px] text-white/32">{detail}</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-[10px] font-black text-[#FFFDF8]">Revenue recovered</span>
-                <span className="text-[9px] font-black text-[#E8B44B]">£3,200</span>
-              </div>
-              <svg viewBox="0 0 150 62" className="mb-2 h-14 w-full overflow-visible">
-                <path d="M4 56H146" stroke="rgba(255,253,248,0.08)" />
-                <path d="M4 38H146" stroke="rgba(255,253,248,0.06)" />
-                <motion.path d="M5 54 C24 44 31 48 43 36 C58 19 70 42 86 31 C104 19 111 30 125 12 C133 3 140 8 146 7" fill="none" stroke="#E8B44B" strokeWidth="3" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.64, duration: 1.35, ease }} />
-              </svg>
-              {bars.map(([label, width], i) => (
-                <div key={label} className="mb-1.5">
-                  <div className="mb-1 flex justify-between text-[8px] font-bold text-white/38"><span>{label}</span><span>{width}%</span></div>
-                  <div className="h-1.5 rounded-full bg-white/8">
-                    <motion.div className="h-full rounded-full bg-[#C4973F]" initial={{ width: 0 }} animate={{ width: `${width}%` }} transition={{ delay: 1 + i * 0.12, duration: 0.58, ease }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-      </div>
+      {[0, 1, 2].map((dot) => (
+        <motion.span
+          key={dot}
+          className="h-1.5 w-1.5 rounded-full bg-[#E8B44B]"
+          animate={{ opacity: [0.35, 1, 0.35], y: [0, -2, 0] }}
+          transition={{ duration: 0.8, repeat: 2, delay: dot * 0.12 }}
+        />
+      ))}
     </motion.div>
   );
 }
 
-function SceneDashboard() {
+function BookingScene() {
+  const items = ['Confirmation sent', 'Prep notes sent', 'Calendar updated'];
+
   return (
-    <SceneShell index={6} full>
-      <DashboardPanel />
-    </SceneShell>
+    <FilmLayout aside={<MiniBenefit>The conversation resolves into a real appointment, with client care handled automatically.</MiniBenefit>}>
+      <div className="relative mx-auto w-full max-w-[440px]">
+        <div className="absolute -inset-4 rounded-full bg-[#E8B44B]/12 blur-3xl" />
+        <GlassPanel className="relative overflow-hidden p-4">
+          <div className="mb-4 flex items-start justify-between">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/70">booking confirmed</div>
+              <h3 className="mt-2 text-[24px] font-black tracking-[-0.03em] text-[#FFFDF8]">Friday 11am</h3>
+              <p className="mt-1 text-[12px] font-semibold text-[#FFFDF8]/54">Lip Filler · Sarah M.</p>
+            </div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#E8B44B]/22 bg-[#C4973F]/12 text-[18px] font-black text-[#E8B44B]">11</div>
+          </div>
+          <div className="space-y-2.5">
+            {items.map((item, index) => (
+              <motion.div
+                key={item}
+                className="flex items-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.045] px-3 py-2"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + index * 0.17, duration: 0.45, ease }}
+              >
+                <Tick delay={0.28 + index * 0.16} />
+                <span className="text-[12px] font-bold text-[#FFFDF8]/74">{item}</span>
+              </motion.div>
+            ))}
+          </div>
+        </GlassPanel>
+      </div>
+    </FilmLayout>
   );
 }
 
-function SceneResults() {
+function IntegrationsScene() {
+  const nodes = ['Instagram', 'WhatsApp', 'Google', 'Fresha', 'Phorest', 'Stripe', 'Calendly', 'Gmail', 'Trustpilot'];
+
+  return (
+    <div className="relative mx-auto h-full w-full max-w-[620px]">
+      <div className="absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E8B44B]/10 blur-3xl" />
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 620 330" aria-hidden="true">
+        {nodes.map((_, index) => {
+          const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2;
+          const x = 310 + Math.cos(angle) * 210;
+          const y = 165 + Math.sin(angle) * 112;
+          return (
+            <motion.line
+              key={index}
+              x1={310}
+              y1={165}
+              x2={x}
+              y2={y}
+              stroke="#E8B44B"
+              strokeOpacity="0.22"
+              strokeDasharray="3 7"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ delay: 0.08 * index, duration: 0.65, ease }}
+            />
+          );
+        })}
+      </svg>
+      <div className="absolute left-1/2 top-1/2 z-10 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border border-[#E8B44B]/25 bg-[#111009]/82 shadow-[0_0_70px_rgba(232,180,75,0.22)] backdrop-blur-xl">
+        <div className="text-center">
+          <LumiLens size={34} className="mx-auto" />
+          <div className="mt-2 text-[12px] font-black text-[#FFFDF8]">Lumio</div>
+        </div>
+      </div>
+      {nodes.map((node, index) => {
+        const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2;
+        const x = 50 + Math.cos(angle) * 34;
+        const y = 50 + Math.sin(angle) * 34;
+        return (
+          <motion.div
+            key={node}
+            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#15120d]/86 px-3 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.42)] backdrop-blur-xl"
+            style={{ left: `${x}%`, top: `${y}%` }}
+            initial={{ opacity: 0, scale: 0.86 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.12 + index * 0.06, duration: 0.45, ease }}
+          >
+            <div className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 text-[10px] font-black text-[#E8B44B]">
+              {node.slice(0, 1)}
+            </div>
+            <div className="text-[10px] font-bold text-[#FFFDF8]/72">{node}</div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+function NoShowScene() {
+  const rows = [
+    ['48h', 'Reminder sent', 'Email'],
+    ['24h', 'Reminder confirmed', 'SMS'],
+    ['AM', 'Morning reminder scheduled', 'WhatsApp'],
+    ['✓', 'Client confirmed', '11:02am'],
+  ];
+
+  return (
+    <FilmLayout aside={<MetricCallout value="67%" label="fewer no-shows" />}>
+      <GlassPanel className="mx-auto w-full max-w-[430px] p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/70">reminder timeline</div>
+            <div className="mt-1 text-[13px] font-bold text-[#FFFDF8]/58">Friday 11am · Lip Filler</div>
+          </div>
+          <span className="rounded-full border border-[#E8B44B]/24 bg-[#C4973F]/12 px-3 py-1 text-[10px] font-black text-[#E8B44B]">protected</span>
+        </div>
+        <div className="relative space-y-3">
+          <div className="absolute bottom-5 left-[17px] top-5 w-px bg-[#E8B44B]/18" />
+          {rows.map(([time, title, channel], index) => (
+            <motion.div
+              key={title}
+              className="relative flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2.5"
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.15, duration: 0.45, ease }}
+            >
+              <span className="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#E8B44B]/28 bg-[#15120d] text-[10px] font-black text-[#E8B44B]">{time}</span>
+              <div className="min-w-0">
+                <div className="truncate text-[12px] font-black text-[#FFFDF8]/82">{title}</div>
+                <div className="text-[10px] font-medium text-[#FFFDF8]/38">{channel}</div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </GlassPanel>
+    </FilmLayout>
+  );
+}
+
+function MetricCallout({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-[1.5rem] border border-[#E8B44B]/18 bg-[#C4973F]/10 p-5 shadow-[0_22px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+      <motion.div
+        className="text-[42px] font-black leading-none tracking-[-0.05em] text-[#E8B44B]"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease }}
+      >
+        {value}
+      </motion.div>
+      <div className="mt-2 text-[12px] font-bold uppercase tracking-[0.16em] text-[#FFFDF8]/48">{label}</div>
+    </div>
+  );
+}
+
+function VoiceScene() {
+  const sliders = [
+    ['Greeting style', 'Warm', '88%'],
+    ['Tone', 'Friendly, reassuring', '82%'],
+    ['Clinic style', 'Luxury, trust, results', '78%'],
+  ];
+  const avoids = ['Cheap', 'Discount', 'Pushy'];
+
+  return (
+    <FilmLayout aside={<MiniBenefit>Lumi is trained on how your clinic actually speaks, including what never to say.</MiniBenefit>}>
+      <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/70">voice profile</div>
+            <div className="mt-1 text-[14px] font-black text-[#FFFDF8]">Glow Aesthetics</div>
+          </div>
+          <LumiLens size={30} />
+        </div>
+        <div className="space-y-3">
+          {sliders.map(([label, value, width], index) => (
+            <div key={label} className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <span className="text-[10px] font-bold text-[#FFFDF8]/42">{label}</span>
+                <span className="text-[11px] font-black text-[#FFFDF8]/80">{value}</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-[#C4973F] to-[#F1CC74]"
+                  initial={{ width: 0 }}
+                  animate={{ width }}
+                  transition={{ delay: 0.15 + index * 0.12, duration: 0.65, ease }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4">
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#FFFDF8]/38">avoids</div>
+          <div className="flex flex-wrap gap-2">
+            {avoids.map((word, index) => (
+              <motion.span
+                key={word}
+                className="rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 px-3 py-1.5 text-[10px] font-bold text-[#E8B44B]/78"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 + index * 0.08, duration: 0.35, ease }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </GlassPanel>
+    </FilmLayout>
+  );
+}
+
+function DashboardScene() {
+  const metrics = [
+    ['31', 'leads', '+22%'],
+    ['19', 'bookings', '+18%'],
+    ['2', 'no-shows', '-24%'],
+    ['£4,800', 'pipeline', '+31%'],
+  ];
+  const bars = [
+    ['Instagram reply', '96%'],
+    ['Reminder flow', '89%'],
+    ['Review request', '76%'],
+  ];
+
+  return (
+    <div className="relative mx-auto h-full w-full max-w-[660px]">
+      <GlassPanel className="h-full overflow-hidden">
+        <div className="flex h-full">
+          <aside className="hidden w-[112px] shrink-0 border-r border-white/8 bg-black/18 p-3 sm:block">
+            <div className="mb-5">
+              <Logo light width={64} />
+            </div>
+            {['Overview', 'Conversations', 'Bookings', 'Clients', 'Automation', 'Reports'].map((item, index) => (
+              <div key={item} className={`mb-1.5 rounded-lg px-2 py-1.5 text-[9px] font-bold ${index === 0 ? 'bg-[#C4973F]/14 text-[#E8B44B]' : 'text-[#FFFDF8]/38'}`}>
+                {item}
+              </div>
+            ))}
+          </aside>
+          <main className="min-w-0 flex-1 p-3 sm:p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <div className="text-[15px] font-black text-[#FFFDF8]">Overview</div>
+                <div className="text-[10px] font-medium text-[#FFFDF8]/36">Today · automated performance</div>
+              </div>
+              <span className="rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 px-2.5 py-1 text-[9px] font-black text-[#E8B44B]">live</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {metrics.map(([value, label, delta], index) => (
+                <motion.div
+                  key={label}
+                  className="rounded-xl border border-white/8 bg-white/[0.045] p-2.5"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08, duration: 0.4, ease }}
+                >
+                  <div className="text-[16px] font-black tracking-[-0.03em] text-[#FFFDF8] sm:text-[18px]">{value}</div>
+                  <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#FFFDF8]/36">{label}</div>
+                  <div className="mt-1 text-[9px] font-black text-[#E8B44B]/80">{delta}</div>
+                </motion.div>
+              ))}
+            </div>
+            <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[1.05fr_0.95fr]">
+              <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
+                <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">recent activity</div>
+                {['New Instagram enquiry', 'Appointment booked', 'No-show prevented', 'Review request sent'].map((item, index) => (
+                  <motion.div
+                    key={item}
+                    className="mb-2 flex items-center justify-between rounded-lg bg-black/16 px-2 py-1.5 last:mb-0"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.35 + index * 0.08, duration: 0.32, ease }}
+                  >
+                    <span className="text-[10px] font-bold text-[#FFFDF8]/66">{item}</span>
+                    <span className="text-[9px] text-[#FFFDF8]/30">{index === 0 ? '11:42pm' : index === 1 ? '11:43pm' : '09:10am'}</span>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="grid gap-2">
+                <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
+                  <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">automation health</div>
+                  {bars.map(([label, width], index) => (
+                    <div key={label} className="mb-2 last:mb-0">
+                      <div className="mb-1 flex justify-between text-[9px] font-bold text-[#FFFDF8]/46">
+                        <span>{label}</span>
+                        <span>{width}</span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
+                        <motion.div className="h-full rounded-full bg-[#E8B44B]" initial={{ width: 0 }} animate={{ width }} transition={{ delay: 0.25 + index * 0.1, duration: 0.65, ease }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hidden rounded-xl border border-white/8 bg-white/[0.04] p-3 sm:block">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">revenue recovered</span>
+                    <span className="text-[10px] font-black text-[#E8B44B]">£3,200</span>
+                  </div>
+                  <RevenueChart />
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+function RevenueChart() {
+  return (
+    <svg viewBox="0 0 180 58" className="h-[58px] w-full overflow-visible" aria-hidden="true">
+      <path d="M4 50 C26 34 42 46 58 30 C76 12 92 40 110 28 C132 14 136 22 154 8 C164 2 172 8 176 5" fill="none" stroke="#E8B44B" strokeWidth="2" strokeLinecap="round" />
+      <path d="M4 50 C26 34 42 46 58 30 C76 12 92 40 110 28 C132 14 136 22 154 8 C164 2 172 8 176 5 L176 58 L4 58 Z" fill="url(#chartFill)" opacity="0.25" />
+      <defs>
+        <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+          <stop stopColor="#E8B44B" />
+          <stop offset="1" stopColor="#E8B44B" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+function ResultsScene() {
   const rows = [
     ['Leads captured', '+127'],
     ['No-shows prevented', '+23'],
@@ -631,65 +725,55 @@ function SceneResults() {
   ];
 
   return (
-    <SceneShell index={7}>
-      <GlassPanel className="mx-auto w-full max-w-[430px] p-4">
-        <div className="mb-4 flex items-center justify-between border-b border-white/7 pb-3">
-          <div>
-            <div className="text-[12px] font-black text-[#FFFDF8]">Revenue recovery</div>
-            <div className="text-[10px] text-[#FFFDF8]/38">This month · auto-attributed</div>
-          </div>
-          <ChannelPill>May</ChannelPill>
+    <FilmLayout aside={<MiniBenefit>Your clinic keeps moving while the team focuses on clients, care, and outcomes.</MiniBenefit>}>
+      <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
+        <div className="mb-4 rounded-2xl border border-[#E8B44B]/20 bg-[#C4973F]/10 p-4">
+          <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/72">recovered this month</div>
+          <motion.div
+            className="mt-2 text-[42px] font-black leading-none tracking-[-0.055em] text-[#E8B44B] sm:text-[52px]"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+          >
+            £3,200
+          </motion.div>
         </div>
-        <motion.div className="rounded-2xl border border-[#C4973F]/18 bg-[#C4973F]/10 p-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26, duration: 0.5, ease }}>
-          <div className="text-[48px] font-black leading-none tracking-[-0.07em] text-[#E8B44B]">£3,200</div>
-          <div className="mt-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#FFFDF8]/52">Recovered this month</div>
-          <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-[#E8B44B]/78"><span className="h-1.5 w-1.5 rounded-full bg-[#E8B44B]" /> +26% vs last month</div>
-        </motion.div>
-        <div className="mt-3 space-y-2">
-          {rows.map(([label, value], i) => (
-            <motion.div key={label} className="flex items-center justify-between rounded-xl border border-white/7 bg-white/[0.045] px-3 py-2.5 text-[12px] font-bold text-[#FFFDF8]/76" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.74 + i * 0.1, duration: 0.34, ease }}>
-              <span>{label}</span>
-              <span className="font-black text-[#E8B44B]">{value}</span>
+        <div className="space-y-2">
+          {rows.map(([label, value], index) => (
+            <motion.div
+              key={label}
+              className="flex items-center justify-between rounded-xl border border-white/8 bg-white/[0.045] px-3 py-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.18 + index * 0.09, duration: 0.4, ease }}
+            >
+              <span className="text-[12px] font-bold text-[#FFFDF8]/64">{label}</span>
+              <span className="text-[12px] font-black text-[#E8B44B]">{value}</span>
             </motion.div>
           ))}
         </div>
-        <motion.div className="mt-4 flex items-center justify-between rounded-xl border border-[#C4973F]/16 bg-black/22 px-3 py-2.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.45, duration: 0.5, ease }}>
-          <span className="text-[12px] font-black text-[#FFFDF8]">Your clinic. Running itself.</span>
-          <LumiLens size={24} animated />
+        <motion.div
+          className="mt-4 text-center text-[18px] font-black tracking-[-0.03em] text-[#FFFDF8] sm:text-[22px]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.72, duration: 0.5, ease }}
+        >
+          Your clinic. Running itself.
         </motion.div>
       </GlassPanel>
-    </SceneShell>
+    </FilmLayout>
   );
 }
 
-export default function LumioProductFilm({ humanAssets = false }: LumioProductFilmProps) {
-  const [sceneIndex, setSceneIndex] = useState(0);
-  const reducedMotion = useReducedMotion();
-  const Scene = scenes[sceneIndex];
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setSceneIndex((current) => (current + 1) % scenes.length);
-    }, reducedMotion ? 7000 : SCENE_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [sceneIndex, reducedMotion]);
-
+function Tick({ delay = 0 }: { delay?: number }) {
   return (
-    <div
-      className="relative h-full w-full overflow-hidden bg-[#0F0E0B] text-[#FFFDF8] [font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]"
-      data-human-assets={humanAssets ? 'available' : 'abstract'}
-      aria-label="Lumio product film"
+    <motion.span
+      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8B44B] text-[10px] font-black text-[#111009]"
+      initial={{ opacity: 0, scale: 0.35 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.34, ease }}
     >
-      <AnimatePresence mode="wait" initial={false}>
-        <Scene key={sceneIndex} />
-      </AnimatePresence>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-16 bg-gradient-to-t from-[#0F0E0B]/90 to-transparent" />
-      <div className="absolute bottom-3 left-4 z-40 flex gap-1.5 sm:bottom-4 sm:left-5">
-        {scenes.map((_, i) => (
-          <span key={i} className={`h-1 rounded-full transition-all duration-700 ${i === sceneIndex ? 'w-7 bg-[#E8B44B]' : 'w-1.5 bg-white/20'}`} />
-        ))}
-      </div>
-    </div>
+      ✓
+    </motion.span>
   );
 }
