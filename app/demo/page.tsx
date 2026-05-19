@@ -13,6 +13,9 @@ import MicButton from '@/components/MicButton';
 import { PWASetup } from '@/components/PWASetup';
 import LumiLens from '@/components/LumiLens';
 import Tooltip from '@/components/demo/Tooltip';
+import SimpleModeOverlay from '@/components/demo/SimpleModeOverlay';
+import SimpleModeView from '@/components/demo/SimpleModeView';
+import ModeToggle from '@/components/demo/ModeToggle';
 
 type Tab = 'overview' | 'activity' | 'conversations' | 'clients' | 'voice' | 'admin' | 'integrations';
 type Tier = 'foundation' | 'fullsystem' | 'fullops';
@@ -217,6 +220,9 @@ export default function DemoPage() {
   const [showNotifs, setShowNotifs] = useState(false);
   const [notifsRead, setNotifsRead] = useState(false);
   const [isMobileWidth, setIsMobileWidth] = useState(false);
+  const [viewMode, setViewMode] = useState<'simple' | 'full'>('simple');
+  const [showModeOverlay, setShowModeOverlay] = useState(false);
+  const [modeTransitioning, setModeTransitioning] = useState(false);
   const feedIdx = useRef(0);
   const lumiScrollRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -276,6 +282,12 @@ export default function DemoPage() {
       setOnboardingDismissed(false);
       localStorage.setItem('lumio-demo-visited', '1');
     }
+    if (!preview && !localStorage.getItem('lumio-mode-chosen')) {
+      setShowModeOverlay(true);
+    } else {
+      const savedMode = localStorage.getItem('lumio-mode');
+      if (savedMode === 'full' || savedMode === 'simple') setViewMode(savedMode as 'simple' | 'full');
+    }
   }, []);
 
   useEffect(() => {
@@ -313,6 +325,22 @@ export default function DemoPage() {
     setClinicName(name);
     if (typeof window !== 'undefined') localStorage.setItem('lumio_demo_clinic', name);
     setBannerDismissed(true);
+  };
+
+  const switchMode = (mode: 'simple' | 'full') => {
+    setModeTransitioning(true);
+    setTimeout(() => {
+      setViewMode(mode);
+      localStorage.setItem('lumio-mode', mode);
+      setModeTransitioning(false);
+    }, 150);
+  };
+
+  const chooseModeFromOverlay = (mode: 'simple' | 'full') => {
+    localStorage.setItem('lumio-mode-chosen', 'true');
+    localStorage.setItem('lumio-mode', mode);
+    setViewMode(mode);
+    setShowModeOverlay(false);
   };
 
   const clinicInitials = clinicName.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
@@ -400,13 +428,18 @@ export default function DemoPage() {
         </div>
       )}
 
+      {/* Mode onboarding overlay */}
+      {showModeOverlay && (
+        <SimpleModeOverlay onChoose={chooseModeFromOverlay} dm={dm} />
+      )}
+
       {/* Sidebar — fixed at all times */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       <aside
-        className="hidden lg:flex fixed top-0 left-0 z-50 w-[280px] shrink-0 border-r flex-col p-6 overflow-y-auto"
+        className={`${viewMode === 'simple' ? '' : 'lg:flex'} hidden fixed top-0 left-0 z-50 w-[280px] shrink-0 border-r flex-col p-6 overflow-y-auto`}
         style={{ backgroundColor: dSidebarBg, backdropFilter: 'blur(20px)', top: bh, height: `calc(100dvh - ${bh}px)`, borderColor: dCardBorder }}
       >
         <div className="mb-8 pt-2 shrink-0">
@@ -509,8 +542,15 @@ export default function DemoPage() {
         {/* Scrollable content */}
         <div style={{ paddingTop: bh + 56, paddingBottom: 76 }}>
 
-          {/* HOME */}
-          {mobileTab === 'home' && (
+          {/* SIMPLE MODE — shown when not on More tab */}
+          {viewMode === 'simple' && mobileTab !== 'more' && (
+            <div style={{ opacity: modeTransitioning ? 0 : 1, transition: 'opacity 200ms ease' }}>
+              <SimpleModeView dm={dm} onSwitchToFull={() => switchMode('full')} onOpenLumi={() => openLumi()} isMobile />
+            </div>
+          )}
+
+          {/* HOME — full mode only */}
+          {viewMode === 'full' && mobileTab === 'home' && (
             <div style={{ padding: '16px 14px 0' }}>
               {/* Hero card */}
               <div style={{ background: '#1A1814', borderRadius: '1.5rem', padding: '20px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
@@ -566,7 +606,7 @@ export default function DemoPage() {
           )}
 
           {/* ACTIVITY */}
-          {mobileTab === 'activity' && (
+          {viewMode === 'full' && mobileTab === 'activity' && (
             <div style={{ padding: '16px 14px' }}>
               <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 14px' }}>Activity</h2>
               <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 12, marginBottom: 12, msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
@@ -592,7 +632,7 @@ export default function DemoPage() {
           )}
 
           {/* CHATS */}
-          {mobileTab === 'chats' && (
+          {viewMode === 'full' && mobileTab === 'chats' && (
             <div style={{ padding: '16px 14px' }}>
               {mobileConvoFull && currentConvo ? (
                 <div>
@@ -640,7 +680,7 @@ export default function DemoPage() {
           )}
 
           {/* CLIENTS */}
-          {mobileTab === 'clients' && (() => {
+          {viewMode === 'full' && mobileTab === 'clients' && (() => {
             const AG: Record<string, string> = {
               '1': 'linear-gradient(135deg,#C4973F,#E8B44B)', '2': 'linear-gradient(135deg,#7C6B9A,#9B8CB8)',
               '3': 'linear-gradient(135deg,#5B8A68,#7BAA88)', '4': 'linear-gradient(135deg,#B35A4C,#D07A6C)',
@@ -694,6 +734,15 @@ export default function DemoPage() {
           {mobileTab === 'more' && (
             <div style={{ padding: '16px 14px' }}>
               <h2 style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 800, fontSize: 22, color: dText, margin: '0 0 20px' }}>More</h2>
+              {viewMode === 'simple' && (
+                <button
+                  type="button"
+                  onClick={() => switchMode('full')}
+                  style={{ display: 'block', width: '100%', textAlign: 'left', fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 600, fontSize: 14, color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 16px' }}
+                >
+                  Switch to full dashboard →
+                </button>
+              )}
               <div style={{ background: dCardBg, border: `1px solid ${dCardBorder}`, borderRadius: '1.25rem', overflow: 'hidden' }}>
                 <button type="button" onClick={() => openLumi()} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, padding: '16px', background: 'transparent', border: 'none', borderBottom: `1px solid ${dBorderSoft}`, cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ width: 40, height: 40, borderRadius: '0.75rem', background: '#1A1814', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
@@ -770,24 +819,31 @@ export default function DemoPage() {
         )}
 
         {/* Mobile bottom tab bar */}
-        <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, height: 60, background: dTopbarBg, backdropFilter: 'blur(20px)', borderTop: `1px solid ${dCardBorder}`, paddingBottom: 'env(safe-area-inset-bottom)', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
-          {([
-            { id: 'home' as const, icon: 'overview', label: 'Home' },
-            { id: 'activity' as const, icon: 'activity', label: 'Activity' },
-            { id: 'chats' as const, icon: 'conversations', label: 'Chats' },
-            { id: 'clients' as const, icon: 'clients', label: 'Clients' },
-            { id: 'more' as const, icon: 'menu', label: 'More' },
-          ] as { id: 'home' | 'activity' | 'chats' | 'clients' | 'more'; icon: string; label: string }[]).map(({ id, icon, label }) => (
-            <button key={id} type="button" onClick={() => { setMobileTab(id); setMobileSubView(''); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: mobileTab === id ? '#C4973F' : (dm ? 'rgba(255,253,248,0.4)' : '#8A8278'), transition: 'color 150ms' }}>
-              <Icon name={icon} className="h-5 w-5" />
-              <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em' }}>{label}</span>
+        <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, height: 60, background: dTopbarBg, backdropFilter: 'blur(20px)', borderTop: `1px solid ${dCardBorder}`, paddingBottom: 'env(safe-area-inset-bottom)', display: 'grid', gridTemplateColumns: viewMode === 'simple' ? '1fr' : 'repeat(5, 1fr)' }}>
+          {viewMode === 'simple' ? (
+            <button type="button" onClick={() => { setMobileTab('more'); setMobileSubView(''); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: mobileTab === 'more' ? '#C4973F' : (dm ? 'rgba(255,253,248,0.4)' : '#8A8278'), transition: 'color 150ms' }}>
+              <Icon name="menu" className="h-5 w-5" />
+              <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em' }}>More</span>
             </button>
-          ))}
+          ) : (
+            ([
+              { id: 'home' as const, icon: 'overview', label: 'Home' },
+              { id: 'activity' as const, icon: 'activity', label: 'Activity' },
+              { id: 'chats' as const, icon: 'conversations', label: 'Chats' },
+              { id: 'clients' as const, icon: 'clients', label: 'Clients' },
+              { id: 'more' as const, icon: 'menu', label: 'More' },
+            ] as { id: 'home' | 'activity' | 'chats' | 'clients' | 'more'; icon: string; label: string }[]).map(({ id, icon, label }) => (
+              <button key={id} type="button" onClick={() => { setMobileTab(id); setMobileSubView(''); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, height: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: mobileTab === id ? '#C4973F' : (dm ? 'rgba(255,253,248,0.4)' : '#8A8278'), transition: 'color 150ms' }}>
+                <Icon name={icon} className="h-5 w-5" />
+                <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontSize: 9, fontWeight: 700, letterSpacing: '0.04em' }}>{label}</span>
+              </button>
+            ))
+          )}
         </nav>
       </div>
 
       {/* Main column — offset by sidebar width on desktop */}
-      <div className="hidden md:flex flex-col lg:ml-[280px] min-h-screen" style={{ paddingTop: bh }}>
+      <div className={`hidden md:flex flex-col ${viewMode === 'simple' ? '' : 'lg:ml-[280px]'} min-h-screen`} style={{ paddingTop: bh }}>
 
         {/* Topbar */}
         <header className="sticky z-30 border-b px-5 py-4 backdrop-blur-2xl shrink-0"
@@ -805,6 +861,8 @@ export default function DemoPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {/* Mode toggle pill */}
+              <ModeToggle mode={viewMode} onSwitch={switchMode} dm={dm} />
               {/* Dashboard light/dark toggle */}
               <button
                 type="button"
@@ -903,7 +961,14 @@ export default function DemoPage() {
 
         {/* Scrollable content */}
         <main className="flex-1 overflow-y-auto px-4 py-8 lg:px-8 pb-28 lg:pb-16" style={{ backgroundColor: dBg }}>
-          <div className="mx-auto max-w-[1280px]">
+          {/* Simple mode */}
+          {viewMode === 'simple' && (
+            <div style={{ opacity: modeTransitioning ? 0 : 1, transition: 'opacity 200ms ease' }}>
+              <SimpleModeView dm={dm} onSwitchToFull={() => switchMode('full')} onOpenLumi={() => openLumi()} />
+            </div>
+          )}
+          {/* Full mode */}
+          <div className="mx-auto max-w-[1280px]" style={{ opacity: modeTransitioning ? 0 : 1, transition: 'opacity 200ms ease', display: viewMode === 'full' ? 'block' : 'none' }}>
 
             {/* Tier selector — overview only */}
             {tab === 'overview' && (
@@ -1564,7 +1629,7 @@ export default function DemoPage() {
             {/* ── Integrations ─────────────────────────────────── */}
             {tab === 'integrations' && <IntegrationsTab darkMode={dm} />}
 
-          </div>
+          </div>{/* end max-w full mode */}
         </main>
       </div>
 
