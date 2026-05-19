@@ -95,7 +95,7 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
             <div className="absolute inset-x-3 bottom-3 top-[86px] sm:inset-x-5 sm:bottom-5 sm:top-[92px]">
               <div className="relative h-full w-full">
                 <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
-                <AnimatePresence initial={false}>
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={sceneIndex}
                     className="absolute inset-0"
@@ -159,6 +159,16 @@ function PersistentBackdrop({
           sceneIndex === 0 ? 'opacity-65' : 'opacity-0'
         }`}
       />
+      <div
+        className={`absolute left-[7%] top-[18%] hidden h-[1px] w-[23%] rotate-[-16deg] bg-gradient-to-r from-transparent via-[#F2D49B]/28 to-transparent transition-opacity duration-700 sm:block ${
+          sceneIndex === 0 ? 'opacity-90' : 'opacity-0'
+        }`}
+      />
+      <div
+        className={`absolute left-[9%] top-[33%] hidden h-20 w-44 rounded-full bg-[#0b0907]/60 blur-xl transition-opacity duration-700 sm:block ${
+          sceneIndex === 0 ? 'opacity-80' : 'opacity-0'
+        }`}
+      />
       <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-90" />
       <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] h-[30%] opacity-52" secondary />
       <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[#0F0E0B] via-[#0F0E0B]/42 to-transparent" />
@@ -218,7 +228,7 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
 
   return (
     <div className="absolute left-4 right-4 top-4 z-30 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={scene.number}
           className="min-w-0"
@@ -235,7 +245,7 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
           <h2 className="text-[19px] font-black leading-[1.02] tracking-[-0.03em] text-[#FFFDF8] sm:text-[23px]">{scene.title}</h2>
         </motion.div>
       </AnimatePresence>
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.p
           key={scene.support}
           className="hidden max-w-[235px] pt-1 text-right text-[10px] font-medium leading-relaxed text-[#faf7f2]/50 sm:block"
@@ -324,6 +334,12 @@ function GlassPanel({ children, className = '' }: { children: ReactNode; classNa
 }
 
 function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
+  const replyInsights = [
+    ['Availability', '2 slots found'],
+    ['Tone', 'Warm'],
+    ['Intent', 'Ready to book'],
+  ];
+
   return (
     <FilmLayout
       aside={
@@ -362,6 +378,20 @@ function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
                     Hey lovely — yes, I have Thursday 2pm or Friday 11am free. Would you like me to book you in?
                   </MessageBubble>
                 </motion.div>
+                <div className="grid grid-cols-3 gap-2">
+                  {replyInsights.map(([label, value], index) => (
+                    <motion.div
+                      key={label}
+                      className="rounded-xl border border-white/8 bg-white/[0.045] px-2.5 py-2"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.74 + index * 0.08, duration: 0.36, ease }}
+                    >
+                      <div className="text-[8px] font-black uppercase tracking-[0.12em] text-[#FFFDF8]/34">{label}</div>
+                      <div className="mt-1 truncate text-[10px] font-black text-[#E8B44B]/86">{value}</div>
+                    </motion.div>
+                  ))}
+                </div>
               </>
             ) : (
               <div className="grid gap-2 sm:grid-cols-2">
@@ -437,6 +467,11 @@ function TypingDots() {
 
 function BookingScene() {
   const items = ['Confirmation sent', 'Prep notes sent', 'Calendar updated'];
+  const clientRows = [
+    ['Client', 'Sarah M.'],
+    ['Channel', 'Instagram'],
+    ['Deposit', 'Ready'],
+  ];
 
   return (
     <FilmLayout aside={<StoryAside eyebrow="calendar" title="Slot secured.">The conversation resolves into a real appointment, with client care handled automatically.</StoryAside>}>
@@ -450,6 +485,20 @@ function BookingScene() {
               <p className="mt-1 text-[12px] font-semibold text-[#FFFDF8]/54">Lip Filler · Sarah M.</p>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#E8B44B]/22 bg-[#C4973F]/12 text-[18px] font-black text-[#E8B44B]">11</div>
+          </div>
+          <div className="mb-3 grid grid-cols-3 gap-2">
+            {clientRows.map(([label, value], index) => (
+              <motion.div
+                key={label}
+                className="rounded-xl border border-white/8 bg-white/[0.04] px-2.5 py-2"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.08 + index * 0.08, duration: 0.36, ease }}
+              >
+                <div className="text-[8px] font-black uppercase tracking-[0.12em] text-[#FFFDF8]/32">{label}</div>
+                <div className="mt-1 truncate text-[10px] font-black text-[#FFFDF8]/72">{value}</div>
+              </motion.div>
+            ))}
           </div>
           <div className="space-y-2.5">
             {items.map((item, index) => (
@@ -479,11 +528,23 @@ function BookingScene() {
 }
 
 function IntegrationsScene() {
-  const nodes = ['Instagram', 'WhatsApp', 'Google', 'Fresha', 'Phorest', 'Stripe', 'Calendly', 'Gmail', 'Trustpilot'];
+  const nodes = [
+    ['Instagram', 'IG'],
+    ['WhatsApp', 'WA'],
+    ['Google', 'G'],
+    ['Fresha', 'F'],
+    ['Phorest', 'P'],
+    ['Stripe', 'S'],
+    ['Calendly', 'C'],
+    ['Gmail', 'M'],
+    ['Trustpilot', '★'],
+  ];
 
   return (
     <div className="relative mx-auto h-full w-full max-w-[620px]">
       <div className="absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E8B44B]/10 blur-3xl" />
+      <div className="absolute left-1/2 top-1/2 h-[168px] w-[168px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/10" />
+      <div className="absolute left-1/2 top-1/2 h-[238px] w-[238px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/[0.055]" />
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 620 330" aria-hidden="true">
         {nodes.map((_, index) => {
           const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2;
@@ -497,7 +558,7 @@ function IntegrationsScene() {
               x2={x}
               y2={y}
               stroke="#E8B44B"
-              strokeOpacity="0.22"
+              strokeOpacity="0.28"
               strokeDasharray="3 7"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}
@@ -518,17 +579,17 @@ function IntegrationsScene() {
         const y = 50 + Math.sin(angle) * 34;
         return (
           <motion.div
-            key={node}
-            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#15120d]/86 px-3 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.42)] backdrop-blur-xl"
+            key={node[0]}
+            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#15120d]/90 px-3 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.42)] backdrop-blur-xl"
             style={{ left: `${x}%`, top: `${y}%` }}
             initial={{ opacity: 0, scale: 0.86 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.12 + index * 0.06, duration: 0.45, ease }}
           >
             <div className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 text-[10px] font-black text-[#E8B44B]">
-              {node.slice(0, 1)}
+              {node[1]}
             </div>
-            <div className="text-[10px] font-bold text-[#FFFDF8]/72">{node}</div>
+            <div className="text-[10px] font-bold text-[#FFFDF8]/72">{node[0]}</div>
           </motion.div>
         );
       })}
@@ -572,6 +633,16 @@ function NoShowScene() {
             </motion.div>
           ))}
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-[#E8B44B]/18 bg-[#C4973F]/10 px-3 py-2">
+            <div className="text-[8px] font-black uppercase tracking-[0.14em] text-[#E8B44B]/70">slot status</div>
+            <div className="mt-1 text-[11px] font-black text-[#FFFDF8]/80">Confirmed</div>
+          </div>
+          <div className="rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2">
+            <div className="text-[8px] font-black uppercase tracking-[0.14em] text-[#FFFDF8]/34">fallback</div>
+            <div className="mt-1 text-[11px] font-black text-[#FFFDF8]/70">Waitlist ready</div>
+          </div>
+        </div>
       </GlassPanel>
     </FilmLayout>
   );
@@ -600,6 +671,7 @@ function VoiceScene() {
     ['Clinic style', 'Luxury, trust, results', '78%'],
   ];
   const avoids = ['Cheap', 'Discount', 'Pushy'];
+  const approved = ['Hey lovely', 'Of course', 'You are in safe hands'];
 
   return (
     <FilmLayout aside={<StoryAside eyebrow="training" title="Always on-brand.">Lumi is trained on how your clinic actually speaks, including what never to say.</StoryAside>}>
@@ -645,6 +717,16 @@ function VoiceScene() {
             ))}
           </div>
         </div>
+        <div className="mt-3 hidden rounded-xl border border-white/8 bg-white/[0.04] p-3 sm:block">
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#FFFDF8]/38">approved language</div>
+          <div className="flex flex-wrap gap-2">
+            {approved.map((phrase) => (
+              <span key={phrase} className="rounded-full border border-white/8 bg-black/18 px-2.5 py-1 text-[9px] font-bold text-[#FFFDF8]/54">
+                {phrase}
+              </span>
+            ))}
+          </div>
+        </div>
       </GlassPanel>
     </FilmLayout>
   );
@@ -662,6 +744,7 @@ function DashboardScene() {
     ['Reminder flow', '89%'],
     ['Review request', '76%'],
   ];
+  const tasks = ['Lead triaged', 'Deposit prompt queued', 'Review flow armed'];
 
   return (
     <div className="relative mx-auto h-full w-full max-w-[690px]">
@@ -741,6 +824,20 @@ function DashboardScene() {
                 </div>
               </div>
             </div>
+            <div className="mt-2 hidden grid-cols-3 gap-2 sm:grid">
+              {tasks.map((task, index) => (
+                <motion.div
+                  key={task}
+                  className="rounded-xl border border-[#E8B44B]/12 bg-[#C4973F]/[0.07] px-2.5 py-2"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.62 + index * 0.08, duration: 0.32, ease }}
+                >
+                  <div className="text-[8px] font-black uppercase tracking-[0.13em] text-[#E8B44B]/64">auto</div>
+                  <div className="mt-1 truncate text-[9px] font-bold text-[#FFFDF8]/64">{task}</div>
+                </motion.div>
+              ))}
+            </div>
           </main>
         </div>
       </GlassPanel>
@@ -774,7 +871,7 @@ function ResultsScene() {
   return (
     <FilmLayout aside={<StoryAside eyebrow="payoff" title="Running itself.">Your clinic keeps moving while the team focuses on clients, care, and outcomes.</StoryAside>}>
       <GlassPanel className="mx-auto w-full max-w-[450px] p-4">
-        <div className="mb-4 rounded-2xl border border-[#E8B44B]/20 bg-[#C4973F]/10 p-4">
+        <div className="mb-4 rounded-2xl border border-[#E8B44B]/20 bg-[radial-gradient(circle_at_80%_20%,rgba(232,180,75,0.18),transparent_36%),rgba(196,151,63,0.1)] p-4">
           <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/72">recovered this month</div>
           <motion.div
             className="mt-2 text-[42px] font-black leading-none tracking-[-0.055em] text-[#E8B44B] sm:text-[52px]"
@@ -784,6 +881,13 @@ function ResultsScene() {
           >
             £3,200
           </motion.div>
+        </div>
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2">
+          <div>
+            <div className="text-[10px] font-black text-[#FFFDF8]/72">Trustpilot request flow</div>
+            <div className="mt-0.5 text-[9px] font-medium text-[#FFFDF8]/34">12 reviews generated</div>
+          </div>
+          <div className="text-[12px] tracking-[0.08em] text-[#E8B44B]">★★★★★</div>
         </div>
         <div className="space-y-2">
           {rows.map(([label, value], index) => (
