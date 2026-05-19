@@ -10,12 +10,31 @@ interface Props {
   isMobile?: boolean;
 }
 
+type Suggestion = {
+  id: string;
+  title: string;
+  sub: string;
+  buttonLabel: string;
+  toastMsg: string;
+};
+
+const ALL_SUGGESTIONS: Suggestion[] = [
+  { id: '1', title: 'Sophie Carter needs a rebooking nudge', sub: '7 weeks since last visit', buttonLabel: 'Send message →', toastMsg: 'Lumi sent Sophie a rebooking message ✦' },
+  { id: '2', title: "Emma Wilson hasn't left a review", sub: 'Treated 3 days ago', buttonLabel: 'Request review →', toastMsg: 'Review request sent to Emma ✦' },
+  { id: '3', title: "Charlotte Reed's consent form pending", sub: 'Appointment tomorrow', buttonLabel: 'Chase form →', toastMsg: 'Consent form reminder sent to Charlotte ✦' },
+];
+
+const MAX_VISIBLE = 3;
+
 export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobile }: Props) {
   const [cardState, setCardState] = useState<'good' | 'action'>('good');
   const [toast, setToast] = useState('');
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState(false);
 
   const dCardBg = dm ? 'rgba(255,253,248,0.04)' : '#FFFFFF';
   const dCardBorder = dm ? 'rgba(255,253,248,0.08)' : 'rgba(26,24,20,0.07)';
+  const dDivider = dm ? 'rgba(255,253,248,0.07)' : 'rgba(26,24,20,0.07)';
   const dText = dm ? '#FFFDF8' : '#1A1814';
   const dMuted = dm ? 'rgba(255,253,248,0.45)' : 'rgba(26,24,20,0.45)';
 
@@ -24,10 +43,25 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
     return () => clearInterval(t);
   }, []);
 
-  const sendMessage = () => {
-    setCardState('good');
-    setToast('Lumi sent Sophie a rebooking message ✦');
+  useEffect(() => {
+    if (cardState === 'good') { setDismissedIds([]); setExpanded(false); }
+  }, [cardState]);
+
+  const visibleSuggestions = ALL_SUGGESTIONS.filter(s => !dismissedIds.includes(s.id)).slice(0, MAX_VISIBLE);
+  const primary = visibleSuggestions[0];
+  const secondary = visibleSuggestions.slice(1);
+  const overflow = ALL_SUGGESTIONS.length > MAX_VISIBLE;
+
+  const handleAction = (id: string, msg: string) => {
+    setToast(msg);
     setTimeout(() => setToast(''), 3000);
+    const remaining = visibleSuggestions.filter(s => s.id !== id);
+    if (remaining.length === 0) {
+      setCardState('good');
+    } else {
+      setDismissedIds(prev => [...prev, id]);
+      if (remaining.length <= 1) setExpanded(false);
+    }
   };
 
   const circleSize = isMobile ? 64 : 80;
@@ -142,15 +176,15 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
             </div>
           </div>
 
-          {/* Card 3: Action needed — two states */}
+          {/* Card 3: Action needed */}
           <div style={{
             background: dCardBg, border: `1px solid ${dCardBorder}`,
             borderRadius: '1.25rem', padding: '1.5rem 1.75rem',
-            display: 'flex', alignItems: cardState === 'action' ? 'flex-start' : 'center', gap: '1.25rem',
             transition: 'all 300ms',
           }}>
-            {cardState === 'good' ? (
-              <>
+            {cardState === 'good' || !primary ? (
+              /* ── All good state ─────────────────────────── */
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                 <div style={{
                   width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
                   background: 'rgba(91,138,104,0.12)', border: '1px solid rgba(91,138,104,0.25)',
@@ -168,39 +202,107 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
                     Lumi has everything covered. Enjoy your day.
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <div style={{
-                  width: 44, height: 44, borderRadius: '50%', flexShrink: 0, marginTop: 2,
-                  background: 'rgba(196,151,63,0.12)', border: '1px solid rgba(196,151,63,0.25)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
-                  </svg>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 700, fontSize: 14, color: dText }}>
-                    Sophie Carter needs a rebooking nudge
+              /* ── Action state ───────────────────────────── */
+              <div>
+                {/* Primary suggestion */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem' }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '50%', flexShrink: 0, marginTop: 2,
+                    background: 'rgba(196,151,63,0.12)', border: '1px solid rgba(196,151,63,0.25)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#C4973F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+                    </svg>
                   </div>
-                  <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400, fontSize: 12, color: dMuted, marginTop: 2 }}>
-                    7 weeks since last visit
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 700, fontSize: 14, color: dText }}>
+                      {primary.title}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400, fontSize: 12, color: dMuted, marginTop: 2 }}>
+                      {primary.sub}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleAction(primary.id, primary.toastMsg)}
+                      style={{
+                        marginTop: 10, background: '#C4973F', color: '#0F0E0B',
+                        border: 'none', borderRadius: 99, padding: '8px 18px',
+                        fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 700, fontSize: 12,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {primary.buttonLabel}
+                    </button>
+
+                    {/* "+ N more" toggle */}
+                    {secondary.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setExpanded(e => !e)}
+                        style={{
+                          display: 'block', marginTop: 8,
+                          fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400, fontSize: 12,
+                          color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                        }}
+                      >
+                        {expanded
+                          ? '− hide suggestions'
+                          : `+ ${secondary.length} more suggestion${secondary.length > 1 ? 's' : ''}`}
+                      </button>
+                    )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={sendMessage}
-                    style={{
-                      marginTop: 10, background: '#C4973F', color: '#0F0E0B',
-                      border: 'none', borderRadius: 99, padding: '8px 18px',
-                      fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 700, fontSize: 12,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Send message →
-                  </button>
                 </div>
-              </>
+
+                {/* Secondary suggestions — expanded */}
+                {expanded && secondary.map((s, i) => (
+                  <div key={s.id}>
+                    <div style={{ height: 1, background: dDivider, margin: '1rem 0' }} />
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(196,151,63,0.5)', flexShrink: 0, marginTop: 5 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 600, fontSize: 13, color: dText }}>
+                          {s.title}
+                        </div>
+                        <div style={{ fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400, fontSize: 12, color: dMuted, marginTop: 2 }}>
+                          {s.sub}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleAction(s.id, s.toastMsg)}
+                          style={{
+                            marginTop: 8, background: '#C4973F', color: '#0F0E0B',
+                            border: 'none', borderRadius: 99, padding: '7px 16px',
+                            fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 700, fontSize: 12,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {s.buttonLabel}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Overflow link */}
+                {overflow && (
+                  <>
+                    <div style={{ height: 1, background: dDivider, margin: '1rem 0' }} />
+                    <button
+                      type="button"
+                      onClick={onSwitchToFull}
+                      style={{
+                        fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400, fontSize: 12,
+                        color: '#C4973F', background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                      }}
+                    >
+                      View all in full dashboard →
+                    </button>
+                  </>
+                )}
+              </div>
             )}
           </div>
         </div>
