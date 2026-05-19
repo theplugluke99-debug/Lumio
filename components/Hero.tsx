@@ -42,8 +42,18 @@ export default function Hero() {
         <div className="absolute top-[-80px] left-[-120px] w-[500px] h-[500px] rounded-full blur-[120px] opacity-10" style={{ background: '#C4973F' }} />
         <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full blur-[100px] opacity-10" style={{ background: '#E8B44B' }} />
         <div className="absolute inset-0 flex items-center justify-center select-none overflow-hidden">
-          <span className="font-display text-[22vw] font-black italic text-white select-none"
-            style={{ opacity: 0.025, letterSpacing: '-0.04em', whiteSpace: 'nowrap' }}>Lumio</span>
+          <img
+            src="/lumio-logo.png"
+            alt=""
+            aria-hidden="true"
+            className="w-[min(92vw,980px)] select-none object-contain"
+            style={{
+              opacity: 0.035,
+              filter: 'brightness(0) invert(1)',
+              mixBlendMode: 'soft-light',
+              transform: 'scale(1.18)',
+            }}
+          />
         </div>
       </div>
 

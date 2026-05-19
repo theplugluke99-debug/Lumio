@@ -82,7 +82,18 @@ function ConversationMock({ active }: { active: boolean }) {
   }, [active]);
 
   return (
-    <div style={{ ...cardBase, background: 'linear-gradient(180deg,#1A1814 0%,#14120F 100%)', padding: '1.25rem' }}>
+    <div style={{
+      ...cardBase,
+      aspectRatio: '4 / 5',
+      minHeight: 420,
+      maxHeight: 460,
+      overflow: 'hidden',
+      background: 'linear-gradient(180deg,#1A1814 0%,#14120F 100%)',
+      padding: '1.25rem',
+      display: 'flex',
+      flexDirection: 'column',
+      contain: 'layout paint',
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: '1rem' }}>
         <div>
           <p style={{ fontFamily: sans, fontWeight: 700, fontSize: '12px', color: '#FFFDF8', margin: 0 }}>Instagram DM</p>
@@ -102,8 +113,8 @@ function ConversationMock({ active }: { active: boolean }) {
         Hi, how much is lip filler? Do you have anything this week?
       </div>
 
-      {/* Dynamic response area — min-height reserves space to prevent layout shift */}
-      <div style={{ minHeight: '54px', marginTop: '0.75rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start' }}>
+      {/* Fixed response bay keeps the mobile showcase height stable during playback */}
+      <div style={{ height: 122, marginTop: '0.75rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-start', overflow: 'hidden', flexShrink: 0 }}>
         {phase === 1 && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -143,7 +154,7 @@ function ConversationMock({ active }: { active: boolean }) {
 
       <p style={{
         fontFamily: sans, fontWeight: 500, fontSize: '12px',
-        color: 'rgba(250,247,242,0.35)', marginTop: '1.25rem', textAlign: 'center',
+        color: 'rgba(250,247,242,0.35)', marginTop: 'auto', textAlign: 'center',
       }}>
         Sent while the owner slept.
       </p>
@@ -267,13 +278,13 @@ export default function PainSolution() {
     <section style={{ backgroundColor: '#111009' }}>
 
       {/* ── PAIR 1 — MISSED ENQUIRIES ─────────────────────────────────────── */}
-      <div ref={pair1Ref} className="px-6 py-16 md:px-16 md:py-24" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+      <div id="pain-point-video" ref={pair1Ref} className="scroll-mt-6 px-6 py-16 md:px-16 md:py-24" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
 
           {/* Text left */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={pair1InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease }}
           >
             <PainLabel>Missed response window</PainLabel>
@@ -298,8 +309,8 @@ export default function PainSolution() {
 
           {/* Visual right */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={pair1InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.15 }}
           >
             <ConversationMock active={pair1InView} />
@@ -316,8 +327,8 @@ export default function PainSolution() {
           {/* Text — first on mobile (top), second (right) on desktop */}
           <motion.div
             className="md:order-2"
-            initial={{ opacity: 0, y: 30 }}
-            animate={pair2InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease }}
           >
             <PainLabel>No-show leak</PainLabel>
@@ -343,8 +354,8 @@ export default function PainSolution() {
           {/* Visual — second on mobile (below), first (left) on desktop */}
           <motion.div
             className="md:order-1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={pair2InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.15 }}
           >
             <ReminderSequence />
@@ -360,8 +371,8 @@ export default function PainSolution() {
 
           {/* Text left */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={pair3InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease }}
           >
             <PainLabel>Rebooking gap</PainLabel>
@@ -386,8 +397,8 @@ export default function PainSolution() {
 
           {/* Visual right */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={pair3InView ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.15 }}
           >
             <ClientRetention />
