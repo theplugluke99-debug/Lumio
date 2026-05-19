@@ -2,100 +2,94 @@
 
 import { useEffect, useRef } from 'react';
 
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  color: string;
-  alpha: number;
-  delay: number;
-  age: number;
-}
-
-const GOLD_COLORS = ['#C4973F', '#E8B44B', '#F4D38A', '#D4A84B', '#FFFDF8'];
-
-export default function WelcomeContent() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+function GoldConfetti() {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current as HTMLCanvasElement | null;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let raf: number;
-    let started = false;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    const particles: Particle[] = Array.from({ length: 60 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: -10 - Math.random() * 120,
-      vx: (Math.random() - 0.5) * 1.2,
-      vy: 1.4 + Math.random() * 1.8,
-      size: 4 + Math.random() * 4,
-      color: GOLD_COLORS[Math.floor(Math.random() * GOLD_COLORS.length)],
-      alpha: 1,
-      delay: Math.random() * 1200,
-      age: 0,
+    const particles = Array.from({ length: 80 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 100,
+      w: 4 + Math.random() * 6,
+      h: 4 + Math.random() * 6,
+      color: Math.random() > 0.5 ? '#C4973F' : '#E8B44B',
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 4,
+      speedX: (Math.random() - 0.5) * 2,
+      speedY: 1.5 + Math.random() * 2.5,
+      opacity: 1,
+      delay: Math.random() * 80,
     }));
 
-    const start = performance.now();
+    let frame = 0;
+    let animId: number;
 
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function draw() {
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
 
-      let anyAlive = false;
-      for (const p of particles) {
-        if (elapsed < p.delay) { anyAlive = true; continue; }
-        p.age += 16;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx += (Math.random() - 0.5) * 0.04;
+      particles.forEach(p => {
+        if (frame < p.delay) return;
 
-        const fadeStart = canvas.height * 0.68;
-        if (p.y > fadeStart) {
-          p.alpha = Math.max(0, 1 - (p.y - fadeStart) / (canvas.height * 0.32));
+        p.y += p.speedY;
+        p.x += p.speedX;
+        p.rotation += p.rotSpeed;
+
+        if (p.y > canvas!.height * 0.7) {
+          p.opacity -= 0.02;
         }
 
-        if (p.alpha > 0 && p.y < canvas.height + 20) {
-          ctx.save();
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-          anyAlive = true;
-        }
-      }
+        if (p.opacity <= 0) return;
 
-      if (anyAlive) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
+        ctx!.save();
+        ctx!.globalAlpha = p.opacity;
+        ctx!.translate(p.x + p.w / 2, p.y + p.h / 2);
+        ctx!.rotate((p.rotation * Math.PI) / 180);
+        ctx!.fillStyle = p.color;
+        ctx!.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx!.restore();
+      });
 
-    raf = requestAnimationFrame(tick);
-    started = true;
+      frame++;
+
+      const alive = particles.filter(p => p.opacity > 0 && p.y < canvas!.height);
+
+      if (alive.length > 0) {
+        animId = requestAnimationFrame(draw);
+      }
+    }
+
+    animId = requestAnimationFrame(draw);
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', resize);
+      cancelAnimationFrame(animId);
     };
   }, []);
 
   return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 100,
+      }}
+    />
+  );
+}
+
+export default function WelcomeContent() {
+  return (
     <>
+      <GoldConfetti />
+
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(18px); }
@@ -116,11 +110,6 @@ export default function WelcomeContent() {
         .wc-cta-gold:hover  { background: #D4A84B !important; }
         .wc-cta-ghost:hover { border-color: rgba(196,151,63,0.7) !important; color: #E8B44B !important; }
       `}</style>
-
-      <canvas
-        ref={canvasRef}
-        style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}
-      />
 
       <div style={{
         minHeight: '100dvh',
@@ -151,7 +140,6 @@ export default function WelcomeContent() {
             marginBottom: '1.65rem',
             animation: 'fadeIn 0.5s ease 0.1s both',
           }}>
-            {/* Spinning arc */}
             <svg
               viewBox="0 0 100 100"
               style={{
@@ -168,7 +156,6 @@ export default function WelcomeContent() {
                 strokeLinecap="round"
               />
             </svg>
-            {/* Inner orb */}
             <div style={{
               position: 'absolute',
               inset: '14%',
@@ -223,7 +210,7 @@ export default function WelcomeContent() {
               Lumio is already working behind the scenes — learning your clinic, organising your clients, and getting ready to take the load off.
             </p>
             <p style={{ margin: '0 0 0.9rem' }}>
-              From today, you won't be chasing follow-ups, worrying about empty slots, or wondering who needs attention. Lumi handles it.
+              From today, you won&apos;t be chasing follow-ups, worrying about empty slots, or wondering who needs attention. Lumi handles it.
             </p>
             <p style={{ margin: 0 }}>
               This is the start of running your clinic on your terms.
