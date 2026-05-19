@@ -92,9 +92,11 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
         <div className="relative h-full w-full p-3 sm:p-5">
           <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] border border-[#C4973F]/12 bg-black/[0.08] sm:rounded-[1.75rem]">
             <SceneCaption sceneIndex={sceneIndex} />
+            <FilmSweep sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
             <div className="absolute inset-x-3 bottom-3 top-[86px] sm:inset-x-5 sm:bottom-5 sm:top-[92px]">
               <div className="relative h-full w-full">
                 <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
+                <CinematicPanelStrip sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
                 <MotionPath sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -262,6 +264,20 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
   );
 }
 
+function FilmSweep({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
+  if (reducedMotion) return null;
+
+  return (
+    <motion.div
+      key={`sweep-${sceneIndex}`}
+      className="pointer-events-none absolute inset-y-0 z-20 w-[42%] -skew-x-12 bg-gradient-to-r from-transparent via-[#F6D88C]/[0.09] to-transparent"
+      initial={{ x: '-130%', opacity: 0 }}
+      animate={{ x: '260%', opacity: [0, 1, 0] }}
+      transition={{ duration: 1.12, ease, delay: 0.08 }}
+    />
+  );
+}
+
 function PersistentRails({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
   return (
     <>
@@ -276,11 +292,48 @@ function PersistentRails({ sceneIndex, reducedMotion }: { sceneIndex: number; re
   );
 }
 
+function CinematicPanelStrip({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
+  const panels = [
+    ['DM', '11:42pm'],
+    ['Reply', 'voice matched'],
+    ['Book', 'Fri 11am'],
+    ['Sync', '9 tools'],
+    ['Reminder', 'confirmed'],
+    ['Voice', 'warm'],
+    ['Dashboard', 'live'],
+    ['Result', '£3.2k'],
+  ];
+
+  return (
+    <div className="pointer-events-none absolute inset-x-[-12%] top-[4%] z-0 hidden h-12 overflow-hidden opacity-45 sm:block">
+      <motion.div
+        className="flex gap-2"
+        animate={reducedMotion ? { x: '-4%' } : { x: ['0%', '-17%', '0%'] }}
+        transition={{ duration: 12, repeat: reducedMotion ? 0 : Infinity, ease: 'easeInOut' }}
+      >
+        {[...panels, ...panels].map(([label, value], index) => (
+          <div
+            key={`${label}-${index}`}
+            className={`w-24 shrink-0 rounded-xl border px-2.5 py-2 ${
+              index % panels.length === sceneIndex
+                ? 'border-[#E8B44B]/20 bg-[#C4973F]/10'
+                : 'border-white/[0.055] bg-white/[0.025]'
+            }`}
+          >
+            <div className="text-[8px] font-black uppercase tracking-[0.13em] text-[#E8B44B]/56">{label}</div>
+            <div className="mt-1 truncate text-[8px] font-semibold text-[#FFFDF8]/30">{value}</div>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
 function MotionPath({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
   const labels = ['DM', 'Reply', 'Book', 'Sync', 'Remind', 'Voice', 'Report', 'Result'];
 
   return (
-    <div className="pointer-events-none absolute inset-x-[5%] bottom-[6%] z-0 hidden h-12 sm:block">
+    <div className="pointer-events-none absolute inset-x-[5%] bottom-[6%] z-0 hidden h-12 opacity-70 sm:block">
       <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[#E8B44B]/22 to-transparent" />
       {!reducedMotion && (
         <>
