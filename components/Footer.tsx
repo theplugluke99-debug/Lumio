@@ -25,6 +25,28 @@ export default function Footer() {
           <a href="/privacy" className="hover:text-[#C4973F] transition-colors">Privacy Policy</a>
           <a href="/legal" className="hover:text-[#C4973F] transition-colors">Legal Notice</a>
         </nav>
+        <nav className="flex flex-col items-center md:items-start gap-3">
+          <span style={{ fontWeight: 600, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C4973F', marginBottom: 12 }}>Talk to us</span>
+          <a
+            href="https://calendly.com/hello-lumio/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#FFFDF8] hover:text-[#C4973F] transition-colors"
+            style={{ fontWeight: 500, fontSize: 13 }}
+          >
+            Book a 20 minute call →
+          </a>
+          <a
+            href="mailto:hello@lumio.london"
+            className="text-[#FFFDF8] hover:text-[#C4973F] transition-colors"
+            style={{ fontWeight: 500, fontSize: 13 }}
+          >
+            hello@lumio.london
+          </a>
+          <p style={{ fontSize: 12, color: '#8A8278', maxWidth: 200 }}>
+            No call required to get started — but always happy to chat.
+          </p>
+        </nav>
       </div>
       <div className="mx-auto max-w-6xl mt-10 pt-6 border-t border-white/[0.06] flex flex-wrap justify-center md:justify-between gap-3 px-6 md:px-0">
         <p className="text-xs text-white/20 text-center md:text-left">© {new Date().getFullYear()} Lumio. Operated by Favours Technologies Ltd (Co. No. 16265679), registered in England and Wales.</p>

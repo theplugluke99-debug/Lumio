@@ -61,6 +61,18 @@ export default function CTA() {
           <p className="text-xs text-white/30">
             Personalised to your clinic · Free Revenue Reveal · No call required
           </p>
+          <p style={{ fontWeight: 400, fontSize: 14, color: 'rgba(250,247,242,0.4)', marginTop: '1rem' }}>
+            Or{' '}
+            <a
+              href="https://calendly.com/hello-lumio/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#C4973F', textDecoration: 'none' }}
+              className="hover:opacity-80 transition-opacity"
+            >
+              speak to a human first
+            </a>{' '}→
+          </p>
         </motion.div>
 
         {/* Secondary: email */}

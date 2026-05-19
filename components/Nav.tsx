@@ -16,6 +16,15 @@ export default function Nav() {
           ))}
         </div>
         <div className="absolute right-3 top-1/2 flex min-w-0 shrink-0 -translate-y-1/2 items-center gap-2.5 md:static md:translate-y-0 md:gap-3">
+          <a
+            href="https://calendly.com/hello-lumio/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline-flex items-center transition-colors duration-150 hover:text-white"
+            style={{ fontWeight: 500, fontSize: 14, color: 'rgba(250,247,242,0.6)', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          >
+            Book a call
+          </a>
           <a href="/demo" className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[#C4973F] hover:text-[#E8B44B] transition-colors duration-200">
             See demo
           </a>

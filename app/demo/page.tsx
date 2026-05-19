@@ -569,6 +569,15 @@ export default function DemoPage() {
             <LumiLens size={22} variant="light" animated />
             <span>Ask Lumi</span>
           </button>
+          <a
+            href="https://calendly.com/hello-lumio/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center hover:text-[#C4973F] transition-colors"
+            style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 500, fontSize: 11, color: 'rgba(250,247,242,0.3)', textDecoration: 'none', marginTop: 8 }}
+          >
+            Speak to a human →
+          </a>
 
           {!isPreview && (
           <a href="/audit" className="block rounded-[1.8rem] border border-[rgba(26,24,20,0.08)] bg-[#FFFDF8]/80 p-5 shadow-[0_20px_70px_rgba(26,24,20,.05)] hover:border-[#C4973F]/35 transition-colors">

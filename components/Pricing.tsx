@@ -7,7 +7,7 @@ const STRIPE_LINKS: Record<string, string> = {
   'Full System': 'https://buy.stripe.com/5kQ14f1Z14aN0yNb6gd3i02',
 };
 
-const CALENDLY_URL = '#'; // TODO: Replace with Calendly booking link
+const CALENDLY_URL = 'https://calendly.com/hello-lumio/30min';
 
 export default function Pricing() {
   return (

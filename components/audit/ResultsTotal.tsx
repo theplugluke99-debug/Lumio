@@ -1,7 +1,7 @@
 import CountUp from '@/components/ui/CountUp';
 import { Results, GOLD_GRAD } from '@/lib/audit';
 
-const CALENDLY_URL = '#'; // TODO: Replace with Calendly booking link
+const CALENDLY_URL = 'https://calendly.com/hello-lumio/30min';
 
 interface Props { r: Results; label: string; totalVisible: boolean; }
 
