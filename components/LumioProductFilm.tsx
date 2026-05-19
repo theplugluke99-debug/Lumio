@@ -9,7 +9,7 @@ type LumioProductFilmProps = {
   humanAssets?: boolean;
 };
 
-const SCENE_MS = 5000;
+const SCENE_MS = 4200;
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const scenes = [
@@ -55,7 +55,7 @@ const scenes = [
   },
 ] as const;
 
-const layerTransition = { duration: 0.82, ease };
+const layerTransition = { duration: 0.72, ease };
 
 export default function LumioProductFilm({ humanAssets = false }: LumioProductFilmProps) {
   const [sceneIndex, setSceneIndex] = useState(0);
@@ -95,13 +95,14 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
             <div className="absolute inset-x-3 bottom-3 top-[86px] sm:inset-x-5 sm:bottom-5 sm:top-[92px]">
               <div className="relative h-full w-full">
                 <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
+                <MotionPath sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={sceneIndex}
                     className="absolute inset-0"
-                    initial={{ opacity: 0, y: 12, scale: 0.985, filter: 'blur(8px)' }}
+                    initial={{ opacity: 0, x: 22, y: 4, scale: 0.985, filter: 'blur(7px)' }}
                     animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, y: -10, scale: 1.008, filter: 'blur(8px)' }}
+                    exit={{ opacity: 0, x: -22, y: -3, scale: 1.012, filter: 'blur(7px)' }}
                     transition={layerTransition}
                   >
                     <SceneContent sceneIndex={sceneIndex} />
@@ -275,6 +276,41 @@ function PersistentRails({ sceneIndex, reducedMotion }: { sceneIndex: number; re
   );
 }
 
+function MotionPath({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
+  const labels = ['DM', 'Reply', 'Book', 'Sync', 'Remind', 'Voice', 'Report', 'Result'];
+
+  return (
+    <div className="pointer-events-none absolute inset-x-[5%] bottom-[6%] z-0 hidden h-12 sm:block">
+      <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[#E8B44B]/22 to-transparent" />
+      {!reducedMotion && (
+        <>
+          {[0, 1, 2].map((packet) => (
+            <motion.span
+              key={packet}
+              className="absolute top-1/2 h-1.5 w-10 -translate-y-1/2 rounded-full bg-gradient-to-r from-transparent via-[#F5D88A] to-transparent opacity-80 blur-[0.5px]"
+              initial={{ left: '-8%' }}
+              animate={{ left: '100%' }}
+              transition={{ duration: 3.9, repeat: Infinity, ease: 'linear', delay: packet * 1.25 }}
+            />
+          ))}
+        </>
+      )}
+      <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between">
+        {labels.map((label, index) => (
+          <span
+            key={label}
+            className={`rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-[0.12em] transition-colors duration-500 ${
+              index === sceneIndex ? 'border-[#E8B44B]/34 bg-[#C4973F]/16 text-[#E8B44B]' : 'border-white/8 bg-black/20 text-[#FFFDF8]/24'
+            }`}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProgressDots({ sceneIndex }: { sceneIndex: number }) {
   return (
     <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/8 bg-black/25 px-2.5 py-1.5 backdrop-blur-md sm:bottom-4">
@@ -327,7 +363,12 @@ function StoryAside({ eyebrow = 'automation', title, children }: { eyebrow?: str
 
 function GlassPanel({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-[1.35rem] border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.88),rgba(10,9,7,0.78))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}>
+    <div className={`relative rounded-[1.35rem] border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.88),rgba(10,9,7,0.78))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}>
+      <motion.span
+        className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#F4D58E]/55 to-transparent"
+        animate={{ opacity: [0.18, 0.72, 0.18], x: ['-18%', '18%', '-18%'] }}
+        transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+      />
       {children}
     </div>
   );
@@ -350,7 +391,11 @@ function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
         </StoryAside>
       }
     >
-      <div className="relative mx-auto w-full max-w-[450px]">
+      <motion.div
+        className="relative mx-auto w-full max-w-[450px]"
+        animate={{ y: mode === 'reply' ? [0, -3, 0] : [0, 3, 0], rotateX: [0, 0.35, 0] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+      >
         <div className="absolute -inset-5 rounded-full bg-[#E8B44B]/12 blur-3xl" />
         <div className="absolute -left-8 top-4 hidden h-32 w-32 rounded-full bg-[radial-gradient(circle_at_55%_35%,rgba(255,225,180,0.18),rgba(72,44,25,0.2)_42%,transparent_72%)] blur-md sm:block" />
         <GlassPanel className="relative overflow-hidden p-3 sm:p-4">
@@ -422,7 +467,7 @@ function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
             )}
           </div>
         </GlassPanel>
-      </div>
+      </motion.div>
     </FilmLayout>
   );
 }
@@ -475,7 +520,11 @@ function BookingScene() {
 
   return (
     <FilmLayout aside={<StoryAside eyebrow="calendar" title="Slot secured.">The conversation resolves into a real appointment, with client care handled automatically.</StoryAside>}>
-      <div className="relative mx-auto w-full max-w-[460px]">
+      <motion.div
+        className="relative mx-auto w-full max-w-[460px]"
+        animate={{ y: [3, -4, 3], scale: [0.995, 1, 0.995] }}
+        transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+      >
         <div className="absolute -inset-4 rounded-full bg-[#E8B44B]/12 blur-3xl" />
         <GlassPanel className="relative overflow-hidden p-4">
           <div className="mb-4 flex items-start justify-between">
@@ -522,7 +571,7 @@ function BookingScene() {
             ))}
           </div>
         </GlassPanel>
-      </div>
+      </motion.div>
     </FilmLayout>
   );
 }
@@ -541,10 +590,14 @@ function IntegrationsScene() {
   ];
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[620px]">
+    <motion.div
+      className="relative mx-auto h-full w-full max-w-[620px]"
+      animate={{ scale: [0.992, 1.012, 0.992], rotate: [0, 0.15, 0] }}
+      transition={{ duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
+    >
       <div className="absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E8B44B]/10 blur-3xl" />
-      <div className="absolute left-1/2 top-1/2 h-[168px] w-[168px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/10" />
-      <div className="absolute left-1/2 top-1/2 h-[238px] w-[238px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/[0.055]" />
+      <motion.div className="absolute left-1/2 top-1/2 h-[168px] w-[168px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/10" animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }} />
+      <motion.div className="absolute left-1/2 top-1/2 h-[238px] w-[238px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E8B44B]/[0.055]" animate={{ scale: [1.04, 1, 1.04], opacity: [0.35, 0.8, 0.35] }} transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }} />
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 620 330" aria-hidden="true">
         {nodes.map((_, index) => {
           const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2;
@@ -593,7 +646,7 @@ function IntegrationsScene() {
           </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }
 
@@ -607,7 +660,8 @@ function NoShowScene() {
 
   return (
     <FilmLayout aside={<MetricCallout value="67%" label="fewer no-shows" />}>
-      <GlassPanel className="mx-auto w-full max-w-[430px] p-4">
+      <motion.div animate={{ y: [2, -3, 2] }} transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}>
+        <GlassPanel className="mx-auto w-full max-w-[430px] p-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/70">reminder timeline</div>
@@ -643,7 +697,8 @@ function NoShowScene() {
             <div className="mt-1 text-[11px] font-black text-[#FFFDF8]/70">Waitlist ready</div>
           </div>
         </div>
-      </GlassPanel>
+        </GlassPanel>
+      </motion.div>
     </FilmLayout>
   );
 }
@@ -675,7 +730,8 @@ function VoiceScene() {
 
   return (
     <FilmLayout aside={<StoryAside eyebrow="training" title="Always on-brand.">Lumi is trained on how your clinic actually speaks, including what never to say.</StoryAside>}>
-      <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
+      <motion.div animate={{ y: [-2, 3, -2] }} transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}>
+        <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/70">voice profile</div>
@@ -727,7 +783,8 @@ function VoiceScene() {
             ))}
           </div>
         </div>
-      </GlassPanel>
+        </GlassPanel>
+      </motion.div>
     </FilmLayout>
   );
 }
@@ -747,7 +804,11 @@ function DashboardScene() {
   const tasks = ['Lead triaged', 'Deposit prompt queued', 'Review flow armed'];
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[690px]">
+    <motion.div
+      className="relative mx-auto h-full w-full max-w-[690px]"
+      animate={{ scale: [1.006, 1.025, 1.006], x: [0, -4, 0] }}
+      transition={{ duration: 4.1, repeat: Infinity, ease: 'easeInOut' }}
+    >
       <div className="absolute -inset-3 rounded-[1.8rem] bg-[#E8B44B]/10 blur-2xl" />
       <GlassPanel className="relative h-full overflow-hidden">
         <div className="flex h-full">
@@ -841,7 +902,7 @@ function DashboardScene() {
           </main>
         </div>
       </GlassPanel>
-    </div>
+    </motion.div>
   );
 }
 
@@ -870,7 +931,8 @@ function ResultsScene() {
 
   return (
     <FilmLayout aside={<StoryAside eyebrow="payoff" title="Running itself.">Your clinic keeps moving while the team focuses on clients, care, and outcomes.</StoryAside>}>
-      <GlassPanel className="mx-auto w-full max-w-[450px] p-4">
+      <motion.div animate={{ y: [4, -3, 4], scale: [0.996, 1.006, 0.996] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}>
+        <GlassPanel className="mx-auto w-full max-w-[450px] p-4">
         <div className="mb-4 rounded-2xl border border-[#E8B44B]/20 bg-[radial-gradient(circle_at_80%_20%,rgba(232,180,75,0.18),transparent_36%),rgba(196,151,63,0.1)] p-4">
           <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/72">recovered this month</div>
           <motion.div
@@ -911,7 +973,8 @@ function ResultsScene() {
         >
           Your clinic. Running itself.
         </motion.div>
-      </GlassPanel>
+        </GlassPanel>
+      </motion.div>
     </FilmLayout>
   );
 }
