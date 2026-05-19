@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import LumiLens from '@/components/LumiLens';
 import {
   CalendlyLogo,
@@ -22,6 +22,7 @@ type LumioProductFilmProps = {
 
 const SCENE_MS = 4200;
 const ease = [0.22, 1, 0.36, 1] as const;
+const interStack = 'var(--font-inter), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 const scenes = [
   {
@@ -83,6 +84,7 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
   return (
     <div
       className="relative h-full w-full overflow-hidden bg-[#0F0E0B] text-[#FFFDF8] [font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',sans-serif]"
+      style={{ fontFamily: interStack }}
       aria-label="Lumio automated product film"
     >
       <PersistentBackdrop sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} humanAssets={humanAssets} />
@@ -395,9 +397,12 @@ function StoryAside({ eyebrow = 'automation', title, children }: { eyebrow?: str
   );
 }
 
-function GlassPanel({ children, className = '' }: { children: ReactNode; className?: string }) {
+function GlassPanel({ children, className = '', style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   return (
-    <div className={`relative rounded-[1.35rem] border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.88),rgba(10,9,7,0.78))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}>
+    <div
+      className={`relative rounded-[1.35rem] border border-[#C4973F]/18 bg-[linear-gradient(145deg,rgba(29,25,19,0.88),rgba(10,9,7,0.78))] shadow-[0_24px_90px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,253,248,0.075)] backdrop-blur-xl ${className}`}
+      style={style}
+    >
       <motion.span
         className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-[#F4D58E]/55 to-transparent"
         animate={{ opacity: [0.18, 0.72, 0.18], x: ['-18%', '18%', '-18%'] }}
@@ -844,11 +849,12 @@ function DashboardScene() {
   return (
     <motion.div
       className="relative mx-auto h-full w-full max-w-[730px]"
+      style={{ fontFamily: interStack }}
       animate={{ scale: [1.006, 1.025, 1.006], x: [0, -4, 0] }}
       transition={{ duration: 4.1, repeat: Infinity, ease: 'easeInOut' }}
     >
       <div className="absolute -inset-3 rounded-[1.8rem] bg-[#E8B44B]/10 blur-2xl" />
-      <GlassPanel className="relative h-full overflow-hidden [font-family:var(--font-inter),Inter,ui-sans-serif,system-ui,sans-serif]">
+      <GlassPanel className="relative h-full overflow-hidden" style={{ fontFamily: interStack }}>
         <div className="flex h-full">
           <aside className="hidden w-[126px] shrink-0 border-r border-white/8 bg-[#141210]/95 p-3 sm:block">
             <div className="mb-4">
@@ -865,7 +871,7 @@ function DashboardScene() {
               </div>
             ))}
           </aside>
-          <main className="min-w-0 flex-1 bg-[#141210] p-3 sm:p-4">
+          <main className="min-w-0 flex-1 bg-[#141210] p-3 sm:p-4" style={{ fontFamily: interStack }}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <div className="text-[8px] font-bold uppercase tracking-[0.16em] text-[#E8B44B]">THIS WEEK</div>

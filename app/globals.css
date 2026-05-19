@@ -43,7 +43,7 @@ html, body {
   min-height: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce) {
   html, body {
     cursor: auto;
   }
