@@ -3,6 +3,17 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState, type ReactNode } from 'react';
 import LumiLens from '@/components/LumiLens';
+import {
+  CalendlyLogo,
+  FreshaLogo,
+  GmailLogo,
+  GoogleLogo,
+  InstagramLogo,
+  PhorestLogo,
+  StripeLogo,
+  TrustpilotLogo,
+  WhatsAppLogo,
+} from '@/components/logos/IntegrationLogos';
 import Logo from '@/components/ui/Logo';
 
 type LumioProductFilmProps = {
@@ -97,7 +108,7 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
               <div className="relative h-full w-full">
                 <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
                 <CinematicPanelStrip sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
-                <MotionPath sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
+                <MotionPath reducedMotion={Boolean(reducedMotion)} />
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={sceneIndex}
@@ -112,7 +123,6 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
                 </AnimatePresence>
               </div>
             </div>
-            <ProgressDots sceneIndex={sceneIndex} />
           </div>
         </div>
       </motion.div>
@@ -233,25 +243,26 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
     <div className="absolute left-4 right-4 top-4 z-30 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={scene.number}
-          className="min-w-0"
+          key={scene.title}
+          className="flex min-w-0 items-center gap-2 rounded-full border border-[#C4973F]/14 bg-black/18 px-2.5 py-1.5 backdrop-blur-md"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.55, ease }}
         >
-          <div className="mb-1 flex items-center gap-2">
-            <span className="text-[13px] font-bold leading-none text-[#E8B44B] tabular-nums sm:text-[15px]">{scene.number}</span>
-            <span className="h-px w-7 bg-gradient-to-r from-[#E8B44B]/80 to-transparent" />
-            <span className="truncate text-[8px] font-bold uppercase tracking-[0.18em] text-[#E8B44B]/65 sm:text-[9px]">Lumio workflow</span>
-          </div>
-          <h2 className="text-[19px] font-black leading-[1.02] tracking-[-0.03em] text-[#FFFDF8] sm:text-[23px]">{scene.title}</h2>
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E8B44B] opacity-35" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E8B44B]" />
+          </span>
+          <span className="text-[8px] font-black uppercase tracking-[0.16em] text-[#E8B44B]/76">Lumi live</span>
+          <span className="hidden h-px w-5 bg-[#E8B44B]/28 sm:block" />
+          <span className="hidden truncate text-[10px] font-bold text-[#FFFDF8]/54 sm:block">{scene.title}</span>
         </motion.div>
       </AnimatePresence>
       <AnimatePresence mode="wait" initial={false}>
         <motion.p
           key={scene.support}
-          className="hidden max-w-[235px] pt-1 text-right text-[10px] font-medium leading-relaxed text-[#faf7f2]/50 sm:block"
+          className="hidden max-w-[245px] rounded-full border border-white/[0.055] bg-black/16 px-3 py-1.5 text-right text-[9px] font-semibold leading-relaxed text-[#faf7f2]/42 backdrop-blur-md sm:block"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
@@ -329,11 +340,9 @@ function CinematicPanelStrip({ sceneIndex, reducedMotion }: { sceneIndex: number
   );
 }
 
-function MotionPath({ sceneIndex, reducedMotion }: { sceneIndex: number; reducedMotion: boolean }) {
-  const labels = ['DM', 'Reply', 'Book', 'Sync', 'Remind', 'Voice', 'Report', 'Result'];
-
+function MotionPath({ reducedMotion }: { reducedMotion: boolean }) {
   return (
-    <div className="pointer-events-none absolute inset-x-[5%] bottom-[6%] z-0 hidden h-12 opacity-70 sm:block">
+    <div className="pointer-events-none absolute inset-x-[5%] bottom-[6%] z-0 hidden h-12 opacity-55 sm:block">
       <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[#E8B44B]/22 to-transparent" />
       {!reducedMotion && (
         <>
@@ -349,30 +358,13 @@ function MotionPath({ sceneIndex, reducedMotion }: { sceneIndex: number; reduced
         </>
       )}
       <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between">
-        {labels.map((label, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <span
-            key={label}
-            className={`rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-[0.12em] transition-colors duration-500 ${
-              index === sceneIndex ? 'border-[#E8B44B]/34 bg-[#C4973F]/16 text-[#E8B44B]' : 'border-white/8 bg-black/20 text-[#FFFDF8]/24'
-            }`}
-          >
-            {label}
-          </span>
+            key={index}
+            className="h-1.5 w-1.5 rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/18 shadow-[0_0_14px_rgba(232,180,75,0.18)]"
+          />
         ))}
       </div>
-    </div>
-  );
-}
-
-function ProgressDots({ sceneIndex }: { sceneIndex: number }) {
-  return (
-    <div className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/8 bg-black/25 px-2.5 py-1.5 backdrop-blur-md sm:bottom-4">
-      {scenes.map((scene, index) => (
-        <span
-          key={scene.number}
-          className={`h-1.5 rounded-full transition-all duration-500 ${index === sceneIndex ? 'w-6 bg-[#E8B44B]' : 'w-1.5 bg-white/22'}`}
-        />
-      ))}
     </div>
   );
 }
@@ -455,7 +447,7 @@ function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
           <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#E8B44B]/[0.08] to-transparent" />
           <div className="mb-3 flex items-center justify-between border-b border-white/7 pb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#833AB4,#E1306C,#FCAF45)] text-[13px] font-black text-white">IG</div>
+              <InstagramLogo size={32} />
               <div>
                 <div className="text-[12px] font-black text-[#FFFDF8]">Instagram</div>
                 <div className="text-[10px] font-medium text-[#FFFDF8]/38">Glow Aesthetics · 11:42pm</div>
@@ -631,15 +623,15 @@ function BookingScene() {
 
 function IntegrationsScene() {
   const nodes = [
-    ['Instagram', 'IG'],
-    ['WhatsApp', 'WA'],
-    ['Google', 'G'],
-    ['Fresha', 'F'],
-    ['Phorest', 'P'],
-    ['Stripe', 'S'],
-    ['Calendly', 'C'],
-    ['Gmail', 'M'],
-    ['Trustpilot', '★'],
+    { name: 'Instagram', Logo: InstagramLogo },
+    { name: 'WhatsApp', Logo: WhatsAppLogo },
+    { name: 'Google', Logo: GoogleLogo },
+    { name: 'Fresha', Logo: FreshaLogo },
+    { name: 'Phorest', Logo: PhorestLogo },
+    { name: 'Stripe', Logo: StripeLogo },
+    { name: 'Calendly', Logo: CalendlyLogo },
+    { name: 'Gmail', Logo: GmailLogo },
+    { name: 'Trustpilot', Logo: TrustpilotLogo },
   ];
 
   return (
@@ -679,23 +671,23 @@ function IntegrationsScene() {
           <div className="mt-2 text-[12px] font-black text-[#FFFDF8]">Lumio</div>
         </div>
       </div>
-      {nodes.map((node, index) => {
+      {nodes.map(({ name, Logo: IntegrationLogo }, index) => {
         const angle = (Math.PI * 2 * index) / nodes.length - Math.PI / 2;
         const x = 50 + Math.cos(angle) * 34;
         const y = 50 + Math.sin(angle) * 34;
         return (
           <motion.div
-            key={node[0]}
+            key={name}
             className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[#15120d]/90 px-3 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.42)] backdrop-blur-xl"
             style={{ left: `${x}%`, top: `${y}%` }}
             initial={{ opacity: 0, scale: 0.86 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.12 + index * 0.06, duration: 0.45, ease }}
           >
-            <div className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 text-[10px] font-black text-[#E8B44B]">
-              {node[1]}
+            <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.035]">
+              <IntegrationLogo size={24} />
             </div>
-            <div className="text-[10px] font-bold text-[#FFFDF8]/72">{node[0]}</div>
+            <div className="text-[10px] font-bold text-[#FFFDF8]/72">{name}</div>
           </motion.div>
         );
       })}
