@@ -16,7 +16,7 @@ const scenes = [
   {
     number: '01',
     title: 'New enquiry',
-    support: 'After-hours Instagram DMs are captured the moment they arrive.',
+    support: 'While you sleep, Lumi captures the lead and understands what they need.',
   },
   {
     number: '02',
@@ -45,7 +45,7 @@ const scenes = [
   },
   {
     number: '07',
-    title: 'Live dashboard',
+    title: 'Dashboard close-up',
     support: 'Every lead, booking, automation, and recovery visible in one place.',
   },
   {
@@ -141,7 +141,7 @@ function PersistentBackdrop({
       <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(rgba(255,253,248,0.56)_0.55px,transparent_0.7px)] [background-size:9px_9px]" />
       <div
         className={`absolute left-[-10%] top-[2%] h-[62%] w-[52%] rounded-full blur-3xl transition-opacity duration-700 ${
-          sceneIndex === 0 || sceneIndex === 1 ? 'opacity-45' : 'opacity-18'
+          sceneIndex === 0 || sceneIndex === 1 ? 'opacity-60' : 'opacity-18'
         }`}
         style={{
           background: humanAssets
@@ -149,9 +149,19 @@ function PersistentBackdrop({
             : 'radial-gradient(circle at 52% 42%, rgba(255,220,162,0.18), rgba(108,70,38,0.18) 42%, transparent 70%)',
         }}
       />
-      <div className="absolute left-[4%] top-[13%] hidden h-[38%] w-[25%] rounded-[45%] bg-[#F3D7AA]/[0.045] blur-2xl sm:block" />
-      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-80" />
-      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] h-[30%] opacity-45" secondary />
+      <div
+        className={`absolute left-[3%] top-[10%] hidden h-[46%] w-[30%] rounded-[48%] bg-[radial-gradient(circle_at_58%_28%,rgba(255,225,178,0.16),rgba(112,74,42,0.14)_36%,transparent_68%)] blur-[10px] transition-opacity duration-700 sm:block ${
+          sceneIndex === 0 ? 'opacity-80' : 'opacity-20'
+        }`}
+      />
+      <div
+        className={`absolute left-[18%] top-[18%] hidden h-[19%] w-[11%] -rotate-12 rounded-full bg-[#130f0b] blur-[5px] transition-opacity duration-700 sm:block ${
+          sceneIndex === 0 ? 'opacity-65' : 'opacity-0'
+        }`}
+      />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-90" />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] h-[30%] opacity-52" secondary />
+      <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[#0F0E0B] via-[#0F0E0B]/42 to-transparent" />
     </div>
   );
 }
@@ -222,13 +232,13 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
             <span className="h-px w-7 bg-gradient-to-r from-[#E8B44B]/80 to-transparent" />
             <span className="truncate text-[8px] font-bold uppercase tracking-[0.18em] text-[#E8B44B]/65 sm:text-[9px]">Lumio workflow</span>
           </div>
-          <h2 className="text-[20px] font-black leading-[1.02] tracking-[-0.03em] text-[#FFFDF8] sm:text-[26px]">{scene.title}</h2>
+          <h2 className="text-[19px] font-black leading-[1.02] tracking-[-0.03em] text-[#FFFDF8] sm:text-[23px]">{scene.title}</h2>
         </motion.div>
       </AnimatePresence>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.p
           key={scene.support}
-          className="hidden max-w-[250px] pt-1 text-right text-[11px] font-medium leading-relaxed text-[#faf7f2]/50 sm:block"
+          className="hidden max-w-[235px] pt-1 text-right text-[10px] font-medium leading-relaxed text-[#faf7f2]/50 sm:block"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
@@ -250,6 +260,7 @@ function PersistentRails({ sceneIndex, reducedMotion }: { sceneIndex: number; re
         transition={{ duration: 4.5, repeat: reducedMotion ? 0 : Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
       />
       <div className="absolute inset-x-[7%] bottom-[15%] h-px bg-gradient-to-r from-transparent via-[#E8B44B]/16 to-transparent" />
+      <div className="absolute inset-0 rounded-[1.15rem] border border-[#C4973F]/[0.045] sm:rounded-[1.75rem]" />
     </>
   );
 }
@@ -280,21 +291,26 @@ function SceneContent({ sceneIndex }: { sceneIndex: number }) {
 
 function FilmLayout({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
   return (
-    <div className="grid h-full min-h-0 items-center gap-3 sm:grid-cols-[0.42fr_1.58fr] sm:gap-4">
+    <div className="grid h-full min-h-0 items-center gap-3 sm:grid-cols-[0.5fr_1.5fr] sm:gap-4">
       <div className="hidden min-w-0 sm:block">{aside}</div>
       <div className="min-h-0 min-w-0">{children}</div>
     </div>
   );
 }
 
-function MiniBenefit({ children }: { children: ReactNode }) {
+function StoryAside({ eyebrow = 'automation', title, children }: { eyebrow?: string; title: string; children: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-[#C4973F]/14 bg-[#0b0a08]/42 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl">
-      <div className="mb-2 flex items-center gap-2">
-        <LumiLens size={24} />
-        <span className="text-[8px] font-black uppercase tracking-[0.16em] text-[#E8B44B]/72">live</span>
+    <div className="relative rounded-2xl border border-[#C4973F]/14 bg-[#0b0a08]/34 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+      <div className="absolute -right-8 -top-8 h-20 w-20 rounded-full bg-[#E8B44B]/10 blur-2xl" />
+      <div className="relative">
+        <div className="mb-2 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#E8B44B]" />
+          <span className="text-[8px] font-black uppercase tracking-[0.16em] text-[#E8B44B]/72">{eyebrow}</span>
+        </div>
+        <h3 className="text-[15px] font-black leading-tight tracking-[-0.03em] text-[#FFFDF8]">{title}</h3>
+        <p className="mt-2 text-[10px] font-semibold leading-relaxed text-[#FFFDF8]/54">{children}</p>
+        <div className="mt-4 text-[16px] font-light text-[#E8B44B]">→</div>
       </div>
-      <p className="text-[10px] font-semibold leading-relaxed text-[#FFFDF8]/58">{children}</p>
     </div>
   );
 }
@@ -309,10 +325,20 @@ function GlassPanel({ children, className = '' }: { children: ReactNode; classNa
 
 function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
   return (
-    <FilmLayout aside={<MiniBenefit>{mode === 'enquiry' ? 'A late enquiry becomes structured lead data before the clinic opens.' : 'Lumi checks availability and answers with the warmth of your front desk.'}</MiniBenefit>}>
-      <div className="relative mx-auto w-full max-w-[430px]">
+    <FilmLayout
+      aside={
+        <StoryAside eyebrow={mode === 'enquiry' ? '11:42pm' : 'on-brand'} title={mode === 'enquiry' ? 'While the clinic sleeps.' : 'Like you would.'}>
+          {mode === 'enquiry'
+            ? 'A late enquiry becomes structured lead data before the clinic opens.'
+            : 'Lumi checks availability and replies with warmth, context, and restraint.'}
+        </StoryAside>
+      }
+    >
+      <div className="relative mx-auto w-full max-w-[450px]">
         <div className="absolute -inset-5 rounded-full bg-[#E8B44B]/12 blur-3xl" />
+        <div className="absolute -left-8 top-4 hidden h-32 w-32 rounded-full bg-[radial-gradient(circle_at_55%_35%,rgba(255,225,180,0.18),rgba(72,44,25,0.2)_42%,transparent_72%)] blur-md sm:block" />
         <GlassPanel className="relative overflow-hidden p-3 sm:p-4">
+          <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#E8B44B]/[0.08] to-transparent" />
           <div className="mb-3 flex items-center justify-between border-b border-white/7 pb-3">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#833AB4,#E1306C,#FCAF45)] text-[13px] font-black text-white">IG</div>
@@ -338,18 +364,31 @@ function ConversationScene({ mode }: { mode: 'enquiry' | 'reply' }) {
                 </motion.div>
               </>
             ) : (
-              <motion.div
-                className="flex items-center gap-2 rounded-xl border border-[#C4973F]/20 bg-[#C4973F]/10 px-3 py-2"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.58, duration: 0.45, ease }}
-              >
-                <LumiLens size={20} />
-                <div>
-                  <div className="text-[11px] font-black text-[#E8B44B]">Lead captured</div>
-                  <div className="text-[10px] text-[#FFFDF8]/42">Treatment intent: Lip filler · Priority: High</div>
-                </div>
-              </motion.div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <motion.div
+                  className="flex items-center gap-2 rounded-xl border border-[#C4973F]/20 bg-[#C4973F]/10 px-3 py-2"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.58, duration: 0.45, ease }}
+                >
+                  <LumiLens size={20} />
+                  <div>
+                    <div className="text-[10px] font-black text-[#E8B44B]">Lead captured</div>
+                    <div className="text-[9px] text-[#FFFDF8]/42">Lip filler · High intent</div>
+                  </div>
+                </motion.div>
+                <motion.div
+                  className="rounded-xl border border-white/8 bg-white/[0.045] px-3 py-2"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.72, duration: 0.45, ease }}
+                >
+                  <div className="text-[10px] font-black text-[#FFFDF8]/70">Matched workflow</div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/8">
+                    <motion.div className="h-full rounded-full bg-[#E8B44B]" initial={{ width: 0 }} animate={{ width: '82%' }} transition={{ delay: 0.9, duration: 0.55, ease }} />
+                  </div>
+                </motion.div>
+              </div>
             )}
           </div>
         </GlassPanel>
@@ -400,8 +439,8 @@ function BookingScene() {
   const items = ['Confirmation sent', 'Prep notes sent', 'Calendar updated'];
 
   return (
-    <FilmLayout aside={<MiniBenefit>The conversation resolves into a real appointment, with client care handled automatically.</MiniBenefit>}>
-      <div className="relative mx-auto w-full max-w-[440px]">
+    <FilmLayout aside={<StoryAside eyebrow="calendar" title="Slot secured.">The conversation resolves into a real appointment, with client care handled automatically.</StoryAside>}>
+      <div className="relative mx-auto w-full max-w-[460px]">
         <div className="absolute -inset-4 rounded-full bg-[#E8B44B]/12 blur-3xl" />
         <GlassPanel className="relative overflow-hidden p-4">
           <div className="mb-4 flex items-start justify-between">
@@ -424,6 +463,13 @@ function BookingScene() {
                 <Tick delay={0.28 + index * 0.16} />
                 <span className="text-[12px] font-bold text-[#FFFDF8]/74">{item}</span>
               </motion.div>
+            ))}
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {['Thu 2pm', 'Fri 11am', 'Fri 3pm'].map((slot) => (
+              <div key={slot} className={`rounded-xl border px-2 py-2 text-center text-[10px] font-black ${slot === 'Fri 11am' ? 'border-[#E8B44B]/30 bg-[#C4973F]/14 text-[#E8B44B]' : 'border-white/8 bg-white/[0.035] text-[#FFFDF8]/34'}`}>
+                {slot}
+              </div>
             ))}
           </div>
         </GlassPanel>
@@ -556,7 +602,7 @@ function VoiceScene() {
   const avoids = ['Cheap', 'Discount', 'Pushy'];
 
   return (
-    <FilmLayout aside={<MiniBenefit>Lumi is trained on how your clinic actually speaks, including what never to say.</MiniBenefit>}>
+    <FilmLayout aside={<StoryAside eyebrow="training" title="Always on-brand.">Lumi is trained on how your clinic actually speaks, including what never to say.</StoryAside>}>
       <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -618,15 +664,16 @@ function DashboardScene() {
   ];
 
   return (
-    <div className="relative mx-auto h-full w-full max-w-[660px]">
-      <GlassPanel className="h-full overflow-hidden">
+    <div className="relative mx-auto h-full w-full max-w-[690px]">
+      <div className="absolute -inset-3 rounded-[1.8rem] bg-[#E8B44B]/10 blur-2xl" />
+      <GlassPanel className="relative h-full overflow-hidden">
         <div className="flex h-full">
-          <aside className="hidden w-[112px] shrink-0 border-r border-white/8 bg-black/18 p-3 sm:block">
+          <aside className="hidden w-[118px] shrink-0 border-r border-white/8 bg-black/22 p-3 sm:block">
             <div className="mb-5">
               <Logo light width={64} />
             </div>
             {['Overview', 'Conversations', 'Bookings', 'Clients', 'Automation', 'Reports'].map((item, index) => (
-              <div key={item} className={`mb-1.5 rounded-lg px-2 py-1.5 text-[9px] font-bold ${index === 0 ? 'bg-[#C4973F]/14 text-[#E8B44B]' : 'text-[#FFFDF8]/38'}`}>
+              <div key={item} className={`mb-1.5 rounded-lg px-2 py-1.5 text-[8px] font-bold ${index === 0 ? 'bg-[#C4973F]/14 text-[#E8B44B]' : 'text-[#FFFDF8]/38'}`}>
                 {item}
               </div>
             ))}
@@ -648,13 +695,13 @@ function DashboardScene() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08, duration: 0.4, ease }}
                 >
-                  <div className="text-[16px] font-black tracking-[-0.03em] text-[#FFFDF8] sm:text-[18px]">{value}</div>
+                  <div className="text-[16px] font-black tracking-[-0.03em] text-[#FFFDF8] sm:text-[17px]">{value}</div>
                   <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#FFFDF8]/36">{label}</div>
                   <div className="mt-1 text-[9px] font-black text-[#E8B44B]/80">{delta}</div>
                 </motion.div>
               ))}
             </div>
-            <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[1.05fr_0.95fr]">
+            <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[1fr_1fr]">
               <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
                 <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">recent activity</div>
                 {['New Instagram enquiry', 'Appointment booked', 'No-show prevented', 'Review request sent'].map((item, index) => (
@@ -725,8 +772,8 @@ function ResultsScene() {
   ];
 
   return (
-    <FilmLayout aside={<MiniBenefit>Your clinic keeps moving while the team focuses on clients, care, and outcomes.</MiniBenefit>}>
-      <GlassPanel className="mx-auto w-full max-w-[440px] p-4">
+    <FilmLayout aside={<StoryAside eyebrow="payoff" title="Running itself.">Your clinic keeps moving while the team focuses on clients, care, and outcomes.</StoryAside>}>
+      <GlassPanel className="mx-auto w-full max-w-[450px] p-4">
         <div className="mb-4 rounded-2xl border border-[#E8B44B]/20 bg-[#C4973F]/10 p-4">
           <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#E8B44B]/72">recovered this month</div>
           <motion.div
