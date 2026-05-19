@@ -19,7 +19,7 @@ const stagger = {
 
 function HeroVideoFrame() {
   return (
-    <div className="relative mx-auto w-full max-w-[620px]">
+    <div className="relative mx-auto w-full max-w-[760px]">
       <div
         className="absolute inset-0 -z-10 rounded-[2rem] md:rounded-[3rem] blur-[48px] opacity-30"
         style={{ background: 'radial-gradient(ellipse, rgba(196,151,63,.55) 0%, transparent 70%)' }}
@@ -60,7 +60,7 @@ export default function Hero() {
       <Nav />
 
       <div className="relative z-10 flex flex-1 items-start px-6 pt-18 pb-20 sm:px-8 md:items-center md:px-10 md:pt-24 md:pb-28 lg:px-12 lg:pt-28 lg:pb-32 xl:px-16">
-        <div className="mx-auto grid w-full min-w-0 max-w-[1440px] grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,620px)_minmax(360px,520px)] md:justify-between md:gap-16 lg:gap-24">
+        <div className="mx-auto grid w-full min-w-0 max-w-[1500px] grid-cols-1 items-center gap-14 md:grid-cols-[minmax(0,600px)_minmax(420px,760px)] md:justify-between md:gap-12 lg:gap-16">
 
           <motion.div
             className="flex w-full min-w-0 max-w-[620px] flex-col items-center text-center md:items-start md:text-left"

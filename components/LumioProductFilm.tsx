@@ -104,7 +104,7 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
           <div className="relative h-full w-full overflow-hidden rounded-[1.15rem] border border-[#C4973F]/12 bg-black/[0.08] sm:rounded-[1.75rem]">
             <SceneCaption sceneIndex={sceneIndex} />
             <FilmSweep sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
-            <div className="absolute inset-x-3 bottom-3 top-[86px] sm:inset-x-5 sm:bottom-5 sm:top-[92px]">
+            <div className="absolute inset-x-3 bottom-3 top-[58px] sm:inset-x-5 sm:bottom-5 sm:top-[62px]">
               <div className="relative h-full w-full">
                 <PersistentRails sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
                 <CinematicPanelStrip sceneIndex={sceneIndex} reducedMotion={Boolean(reducedMotion)} />
@@ -259,18 +259,7 @@ function SceneCaption({ sceneIndex }: { sceneIndex: number }) {
           <span className="hidden truncate text-[10px] font-bold text-[#FFFDF8]/54 sm:block">{scene.title}</span>
         </motion.div>
       </AnimatePresence>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.p
-          key={scene.support}
-          className="hidden max-w-[245px] rounded-full border border-white/[0.055] bg-black/16 px-3 py-1.5 text-right text-[9px] font-semibold leading-relaxed text-[#faf7f2]/42 backdrop-blur-md sm:block"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.55, ease, delay: 0.04 }}
-        >
-          {scene.support}
-        </motion.p>
-      </AnimatePresence>
+      <div className="hidden h-px w-20 bg-gradient-to-r from-transparent via-[#E8B44B]/20 to-transparent sm:block" />
     </div>
   );
 }
@@ -836,113 +825,119 @@ function VoiceScene() {
 
 function DashboardScene() {
   const metrics = [
-    ['31', 'leads', '+22%'],
-    ['19', 'bookings', '+18%'],
-    ['2', 'no-shows', '-24%'],
-    ['£4,800', 'pipeline', '+31%'],
+    ['31', 'Leads captured', '+18% this week'],
+    ['19', 'Bookings by AI', 'AI handled'],
+    ['2', 'No-shows this week', '-77% vs before'],
+    ['£4,800', 'Pipeline value', 'Live tracking'],
   ];
-  const bars = [
-    ['Instagram reply', '96%'],
-    ['Reminder flow', '89%'],
-    ['Review request', '76%'],
+  const suggestions = [
+    ['Sophie Carter needs a rebooking nudge', 'Last visit 7 weeks ago'],
+    ['3 clients have not left a Google review', 'Emma, Charlotte and Olivia'],
   ];
-  const tasks = ['Lead triaged', 'Deposit prompt queued', 'Review flow armed'];
+  const activity = [
+    ['New DM answered', 'Instagram · Lip filler enquiry qualified', '09:32'],
+    ['Booking confirmed by AI', 'Emma Wilson · Friday 11am', '09:26'],
+    ['No-show prevented', 'WhatsApp · Appointment reminder delivered', '09:15'],
+  ];
+  const nav = ['Overview', 'Activity', 'Chats', 'Clients', 'Tasks', 'Automation', 'Reviews', 'Reports'];
 
   return (
     <motion.div
-      className="relative mx-auto h-full w-full max-w-[690px]"
+      className="relative mx-auto h-full w-full max-w-[730px]"
       animate={{ scale: [1.006, 1.025, 1.006], x: [0, -4, 0] }}
       transition={{ duration: 4.1, repeat: Infinity, ease: 'easeInOut' }}
     >
       <div className="absolute -inset-3 rounded-[1.8rem] bg-[#E8B44B]/10 blur-2xl" />
-      <GlassPanel className="relative h-full overflow-hidden">
+      <GlassPanel className="relative h-full overflow-hidden [font-family:var(--font-inter),Inter,ui-sans-serif,system-ui,sans-serif]">
         <div className="flex h-full">
-          <aside className="hidden w-[118px] shrink-0 border-r border-white/8 bg-black/22 p-3 sm:block">
-            <div className="mb-5">
-              <Logo light width={64} />
+          <aside className="hidden w-[126px] shrink-0 border-r border-white/8 bg-[#141210]/95 p-3 sm:block">
+            <div className="mb-4">
+              <Logo light width={70} />
             </div>
-            {['Overview', 'Conversations', 'Bookings', 'Clients', 'Automation', 'Reports'].map((item, index) => (
-              <div key={item} className={`mb-1.5 rounded-lg px-2 py-1.5 text-[8px] font-bold ${index === 0 ? 'bg-[#C4973F]/14 text-[#E8B44B]' : 'text-[#FFFDF8]/38'}`}>
+            {nav.map((item, index) => (
+              <div
+                key={item}
+                className={`mb-1 rounded-xl px-2 py-1.5 text-[8px] font-semibold ${
+                  index === 0 ? 'border border-[#C4973F]/30 bg-[#C4973F]/12 text-[#C4973F] shadow-[0_10px_28px_rgba(196,151,63,0.08)]' : 'text-[#FFFDF8]/42'
+                }`}
+              >
                 {item}
               </div>
             ))}
           </aside>
-          <main className="min-w-0 flex-1 p-3 sm:p-4">
-            <div className="mb-3 flex items-center justify-between">
+          <main className="min-w-0 flex-1 bg-[#141210] p-3 sm:p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <div className="text-[15px] font-black text-[#FFFDF8]">Overview</div>
-                <div className="text-[10px] font-medium text-[#FFFDF8]/36">Today · automated performance</div>
+                <div className="text-[8px] font-bold uppercase tracking-[0.16em] text-[#E8B44B]">THIS WEEK</div>
+                <div className="mt-1 max-w-[210px] truncate text-[16px] font-extrabold leading-none text-[#FFFDF8]">Glow Aesthetics London</div>
               </div>
-              <span className="rounded-full border border-[#E8B44B]/18 bg-[#C4973F]/10 px-2.5 py-1 text-[9px] font-black text-[#E8B44B]">live</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/8 bg-white/[0.04] px-2.5 py-1 text-[9px] font-medium text-[#5B8A68]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#5B8A68]" />
+                Live automation active
+              </span>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {metrics.map(([value, label, delta], index) => (
                 <motion.div
                   key={label}
-                  className="rounded-xl border border-white/8 bg-white/[0.045] p-2.5"
+                  className="rounded-xl border border-white/8 bg-white/[0.045] p-2.5 shadow-[inset_0_1px_0_rgba(255,253,248,0.035)]"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08, duration: 0.4, ease }}
                 >
-                  <div className="text-[16px] font-black tracking-[-0.03em] text-[#FFFDF8] sm:text-[17px]">{value}</div>
-                  <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.12em] text-[#FFFDF8]/36">{label}</div>
-                  <div className="mt-1 text-[9px] font-black text-[#E8B44B]/80">{delta}</div>
+                  <div className="text-[17px] font-extrabold tracking-[-0.03em] text-[#FFFDF8]">{value}</div>
+                  <div className="mt-1 text-[9px] font-semibold leading-tight text-[#FFFDF8]/50">{label}</div>
+                  <div className="mt-1 text-[8px] font-semibold text-[#C4973F]">{delta}</div>
                 </motion.div>
               ))}
             </div>
-            <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[1fr_1fr]">
+            <div className="mt-3 grid min-h-0 gap-2 sm:grid-cols-[0.92fr_1.08fr]">
               <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
-                <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">recent activity</div>
-                {['New Instagram enquiry', 'Appointment booked', 'No-show prevented', 'Review request sent'].map((item, index) => (
+                <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.12em] text-[#C4973F]">LUMI SUGGESTS</div>
+                {suggestions.map(([title, body], index) => (
                   <motion.div
-                    key={item}
-                    className="mb-2 flex items-center justify-between rounded-lg bg-black/16 px-2 py-1.5 last:mb-0"
+                    key={title}
+                    className="mb-2 flex gap-2 rounded-lg border border-white/[0.045] bg-black/12 px-2 py-2 last:mb-0"
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.35 + index * 0.08, duration: 0.32, ease }}
                   >
-                    <span className="text-[10px] font-bold text-[#FFFDF8]/66">{item}</span>
-                    <span className="text-[9px] text-[#FFFDF8]/30">{index === 0 ? '11:42pm' : index === 1 ? '11:43pm' : '09:10am'}</span>
+                    <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${index === 0 ? 'bg-[#C4973F]' : 'bg-[#5B8A68]'}`} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-[10px] font-semibold text-[#FFFDF8]/72">{title}</span>
+                      <span className="mt-0.5 block truncate text-[9px] font-normal text-[#FFFDF8]/38">{body}</span>
+                    </span>
                   </motion.div>
                 ))}
               </div>
-              <div className="grid gap-2">
-                <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
-                  <div className="mb-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">automation health</div>
-                  {bars.map(([label, width], index) => (
-                    <div key={label} className="mb-2 last:mb-0">
-                      <div className="mb-1 flex justify-between text-[9px] font-bold text-[#FFFDF8]/46">
-                        <span>{label}</span>
-                        <span>{width}</span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-white/8">
-                        <motion.div className="h-full rounded-full bg-[#E8B44B]" initial={{ width: 0 }} animate={{ width }} transition={{ delay: 0.25 + index * 0.1, duration: 0.65, ease }} />
-                      </div>
+              <div className="rounded-xl border border-white/8 bg-white/[0.04] p-3">
+                <div className="mb-2 text-[9px] font-bold uppercase tracking-[0.12em] text-[#C4973F]">TODAY</div>
+                {activity.map(([title, detail, time], index) => (
+                  <motion.div
+                    key={title}
+                    className="mb-2 flex items-center gap-2 rounded-lg bg-black/14 px-2 py-1.5 last:mb-0"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.38 + index * 0.08, duration: 0.32, ease }}
+                  >
+                    <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-[#C4973F]/15 text-[#C4973F]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-current" />
                     </div>
-                  ))}
-                </div>
-                <div className="hidden rounded-xl border border-white/8 bg-white/[0.04] p-3 sm:block">
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#FFFDF8]/42">revenue recovered</span>
-                    <span className="text-[10px] font-black text-[#E8B44B]">£3,200</span>
-                  </div>
-                  <RevenueChart />
-                </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[10px] font-semibold text-[#FFFDF8]/70">{title}</div>
+                      <div className="truncate text-[9px] font-normal text-[#FFFDF8]/36">{detail}</div>
+                    </div>
+                    <span className="text-[8px] text-[#FFFDF8]/30">{time}</span>
+                  </motion.div>
+                ))}
               </div>
             </div>
-            <div className="mt-2 hidden grid-cols-3 gap-2 sm:grid">
-              {tasks.map((task, index) => (
-                <motion.div
-                  key={task}
-                  className="rounded-xl border border-[#E8B44B]/12 bg-[#C4973F]/[0.07] px-2.5 py-2"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.62 + index * 0.08, duration: 0.32, ease }}
-                >
-                  <div className="text-[8px] font-black uppercase tracking-[0.13em] text-[#E8B44B]/64">auto</div>
-                  <div className="mt-1 truncate text-[9px] font-bold text-[#FFFDF8]/64">{task}</div>
-                </motion.div>
-              ))}
+            <div className="mt-2 hidden rounded-xl border border-white/8 bg-white/[0.04] p-3 sm:block">
+              <div className="mb-1 flex items-center justify-between">
+                <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-[#C4973F]">Revenue recovered</span>
+                <span className="text-[10px] font-extrabold text-[#E8B44B]">£3,200</span>
+              </div>
+              <RevenueChart />
             </div>
           </main>
         </div>
