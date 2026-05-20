@@ -115,9 +115,9 @@ export default function LumioProductFilm({ humanAssets = false }: LumioProductFi
                   <motion.div
                     key={sceneIndex}
                     className="absolute inset-0"
-                    initial={{ opacity: 0, x: 22, y: 4, scale: 0.985, filter: 'blur(7px)' }}
-                    animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, x: -22, y: -3, scale: 1.012, filter: 'blur(7px)' }}
+                    initial={{ opacity: 0, x: 22, y: 4, scale: 0.985 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -22, y: -3, scale: 1.012 }}
                     transition={layerTransition}
                   >
                     <SceneContent sceneIndex={sceneIndex} />
@@ -155,7 +155,7 @@ function PersistentBackdrop({
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,253,248,0.026)_1px,transparent_1px),linear-gradient(0deg,rgba(255,253,248,0.018)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
       <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(rgba(255,253,248,0.56)_0.55px,transparent_0.7px)] [background-size:9px_9px]" />
       <div
-        className={`absolute left-[-10%] top-[2%] h-[62%] w-[52%] rounded-full blur-3xl transition-opacity duration-700 ${
+        className={`absolute left-[-10%] top-[2%] h-[62%] w-[52%] rounded-full blur-2xl transition-opacity duration-700 sm:blur-3xl ${
           sceneIndex === 0 || sceneIndex === 1 ? 'opacity-60' : 'opacity-18'
         }`}
         style={{
@@ -184,8 +184,8 @@ function PersistentBackdrop({
           sceneIndex === 0 ? 'opacity-80' : 'opacity-0'
         }`}
       />
-      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-90" />
-      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] h-[30%] opacity-52" secondary />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-24%] bottom-[5%] h-[34%] opacity-62 sm:opacity-90" />
+      <GoldWaves reducedMotion={reducedMotion} className="absolute inset-x-[-36%] bottom-[-11%] hidden h-[30%] opacity-52 sm:block" secondary />
       <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-[#0F0E0B] via-[#0F0E0B]/42 to-transparent" />
     </div>
   );

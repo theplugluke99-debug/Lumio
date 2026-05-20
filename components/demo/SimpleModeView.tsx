@@ -95,7 +95,7 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
         </div>
       )}
 
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '2rem 1.5rem' }}>
+      <div style={{ width: '100%', maxWidth: isMobile ? '100%' : 560, boxSizing: 'border-box', margin: '0 auto', padding: isMobile ? '2rem 1rem' : '2rem 1.5rem', overflowX: 'hidden' }}>
 
         {/* ── Status indicator ─────────────────────────────── */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -125,8 +125,9 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
           {/* Card 1: Money */}
           <div style={{
             background: dCardBg, border: `1px solid ${dCardBorder}`,
-            borderRadius: '1.25rem', padding: '1.5rem 1.75rem',
+            borderRadius: '1.25rem', padding: isMobile ? '1.25rem' : '1.5rem 1.75rem',
             display: 'flex', alignItems: 'center', gap: '1.25rem',
+            width: '100%', boxSizing: 'border-box',
           }}>
             <div style={{
               width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
@@ -153,8 +154,9 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
           {/* Card 2: Lumi working */}
           <div style={{
             background: dCardBg, border: `1px solid ${dCardBorder}`,
-            borderRadius: '1.25rem', padding: '1.5rem 1.75rem',
+            borderRadius: '1.25rem', padding: isMobile ? '1.25rem' : '1.5rem 1.75rem',
             display: 'flex', alignItems: 'center', gap: '1.25rem',
+            width: '100%', boxSizing: 'border-box',
           }}>
             <div style={{
               width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
@@ -179,8 +181,9 @@ export default function SimpleModeView({ dm, onSwitchToFull, onOpenLumi, isMobil
           {/* Card 3: Action needed */}
           <div style={{
             background: dCardBg, border: `1px solid ${dCardBorder}`,
-            borderRadius: '1.25rem', padding: '1.5rem 1.75rem',
+            borderRadius: '1.25rem', padding: isMobile ? '1.25rem' : '1.5rem 1.75rem',
             transition: 'all 300ms',
+            width: '100%', boxSizing: 'border-box',
           }}>
             {cardState === 'good' || !primary ? (
               /* ── All good state ─────────────────────────── */

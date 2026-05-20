@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import LumiLens from '@/components/LumiLens';
 
 interface Props {
   onChoose: (mode: 'simple' | 'full') => void;
@@ -19,64 +18,70 @@ export default function SimpleModeOverlay({ onChoose, dm }: Props) {
 
   const cardBase = (which: 'simple' | 'full') => ({
     flex: '1 1 260px' as const,
-    maxWidth: 280,
-    borderRadius: '1.5rem',
-    padding: '2rem',
+    width: '100%',
+    maxWidth: 'min(300px, calc(100vw - 40px))',
+    minHeight: 210,
+    boxSizing: 'border-box' as const,
+    borderRadius: '1.65rem',
+    padding: '1.65rem',
     cursor: 'pointer' as const,
-    transition: 'all 200ms',
-    background: hovered === which ? 'rgba(196,151,63,0.08)' : 'rgba(255,253,248,0.03)',
-    border: `1px solid ${hovered === which ? 'rgba(196,151,63,0.5)' : 'rgba(255,253,248,0.1)'}`,
+    transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease',
+    transform: hovered === which ? 'translateY(-3px)' : 'translateY(0)',
+    background: hovered === which
+      ? 'linear-gradient(145deg, rgba(196,151,63,0.11), rgba(255,253,248,0.045))'
+      : 'linear-gradient(145deg, rgba(255,253,248,0.055), rgba(255,253,248,0.025))',
+    border: `1px solid ${hovered === which ? 'rgba(196,151,63,0.52)' : 'rgba(255,253,248,0.12)'}`,
+    boxShadow: hovered === which ? '0 24px 80px rgba(0,0,0,0.34)' : '0 18px 60px rgba(0,0,0,0.24)',
     textAlign: 'left' as const,
   });
 
   return (
-    <>
-      <style>{`
-        @keyframes simpleSpinArc { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes simpleBreath { 0%,100% { opacity: 0.75; } 50% { opacity: 1; } }
-      `}</style>
+    <div style={{
+      position: 'fixed', inset: 0, width: '100vw', maxWidth: '100vw', background: '#0F0E0B', zIndex: 100,
+      overflowY: 'auto',
+      overflowX: 'hidden',
+      opacity: fading ? 0 : 1, transition: 'opacity 220ms ease',
+    }}>
       <div style={{
-        position: 'fixed', inset: 0, background: '#0F0E0B', zIndex: 100,
+        width: '100vw',
+        maxWidth: '100vw',
+        boxSizing: 'border-box',
+        minHeight: '100dvh',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        padding: '2rem', opacity: fading ? 0 : 1, transition: 'opacity 220ms ease',
+        padding: 'clamp(1.25rem, 5vw, 2.5rem)',
+        position: 'relative',
       }}>
-        {/* Orb + spinning arc */}
-        <div style={{ position: 'relative', width: 88, height: 88, marginBottom: '2rem' }}>
-          <div style={{ position: 'absolute', inset: 0, animation: 'simpleSpinArc 3s linear infinite', pointerEvents: 'none' }}>
-            <svg viewBox="0 0 88 88" fill="none" width={88} height={88}>
-              <path d="M44 5 A39 39 0 0 1 83 44" stroke="#C4973F" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-              <path d="M44 83 A39 39 0 0 1 5 44" stroke="rgba(196,151,63,0.2)" strokeWidth="1" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <div style={{ position: 'absolute', inset: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <LumiLens size={52} variant="light" animated />
-          </div>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(circle at 50% 20%, rgba(196,151,63,0.18), transparent 36%), radial-gradient(circle at 72% 70%, rgba(232,180,75,0.08), transparent 38%)' }} />
+
+        <div style={{ position: 'relative', width: 72, height: 72, marginBottom: '1.65rem', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'radial-gradient(circle at 36% 30%, #FFFDF8 0%, #F4D38A 34%, rgba(196,151,63,0.72) 64%, rgba(15,14,11,0.2) 100%)', border: '1px solid rgba(244,211,138,0.38)', boxShadow: '0 0 34px rgba(232,180,75,0.22), inset 0 1px 2px rgba(255,255,255,0.48)' }}>
+          <span style={{ position: 'absolute', inset: 15, borderRadius: '50%', border: '1px solid rgba(255,253,248,0.55)', borderLeftColor: 'transparent', borderBottomColor: 'transparent', opacity: 0.78 }} />
         </div>
 
-        {/* Heading */}
         <h2 style={{
-          fontFamily: 'var(--font-display, "Playfair Display", serif)',
-          fontStyle: 'italic', fontWeight: 700,
-          fontSize: 'clamp(24px, 4vw, 40px)', color: '#FFFDF8',
-          textAlign: 'center', margin: 0,
+          position: 'relative',
+          fontFamily: 'var(--font-inter, Inter, sans-serif)',
+          fontStyle: 'normal', fontWeight: 800,
+          fontSize: 'clamp(28px, 5vw, 44px)', color: '#FFFDF8',
+          lineHeight: 1.05,
+          letterSpacing: '-0.04em',
+          textAlign: 'center', margin: 0, maxWidth: 'calc(100vw - 40px)',
         }}>
-          How do you like to run things?
+          Choose your demo experience
         </h2>
 
-        {/* Sub */}
         <p style={{
+          position: 'relative',
           fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 400,
-          fontSize: 16, color: 'rgba(250,247,242,0.45)', lineHeight: 1.8,
-          maxWidth: 440, textAlign: 'center', margin: '1rem auto 2.5rem',
+          fontSize: 15, color: 'rgba(250,247,242,0.52)', lineHeight: 1.7,
+          maxWidth: 'min(420px, calc(100vw - 40px))', textAlign: 'center', margin: '0.85rem auto 2.15rem',
         }}>
-          You can always switch later — this just sets you up the right way from the start.
+          Start simple or explore the full Lumio system.
         </p>
 
-        {/* Choice cards */}
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: 600 }}>
+        <div style={{ position: 'relative', display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: 'min(640px, calc(100vw - 40px))', boxSizing: 'border-box' }}>
 
-          {/* Card 1 — Simple */}
-          <div
+          <button
+            type="button"
             onClick={() => choose('simple')}
             onMouseEnter={() => setHovered('simple')}
             onMouseLeave={() => setHovered(null)}
@@ -99,10 +104,10 @@ export default function SimpleModeOverlay({ onChoose, dm }: Props) {
             <div style={{ marginTop: 16, fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 600, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5B8A68' }}>
               Recommended for most
             </div>
-          </div>
+          </button>
 
-          {/* Card 2 — Full */}
-          <div
+          <button
+            type="button"
             onClick={() => choose('full')}
             onMouseEnter={() => setHovered('full')}
             onMouseLeave={() => setHovered(null)}
@@ -125,9 +130,9 @@ export default function SimpleModeOverlay({ onChoose, dm }: Props) {
             <div style={{ marginTop: 16, fontFamily: 'var(--font-inter, Inter, sans-serif)', fontWeight: 600, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(250,247,242,0.3)' }}>
               For the detail-oriented
             </div>
-          </div>
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

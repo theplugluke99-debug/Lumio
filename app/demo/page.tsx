@@ -472,7 +472,7 @@ export default function DemoPage() {
   const filteredFeed = actFilter === 'all' ? FULL_FEED : FULL_FEED.filter(i => i.category === actFilter);
 
   return (
-    <div className="demo-wrapper antialiased overflow-x-hidden" style={{ backgroundColor: dBg, color: dText, minHeight: '100dvh' }}>
+    <div className="demo-wrapper antialiased overflow-x-hidden" style={{ backgroundColor: dBg, color: dText, minHeight: '100dvh', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
       <input ref={logoInputRef} type="file" accept="image/*" className="sr-only" onChange={handleLogoUpload} />
       {isClient && <PWASetup />}
 
@@ -590,10 +590,10 @@ export default function DemoPage() {
       </aside>
 
       {/* ─── Mobile layout (< md) ─────────────────────────── */}
-      <div className="md:hidden" style={{ minHeight: '100dvh', background: dBg, position: 'relative' }}>
+      <div className="md:hidden" style={{ minHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflowX: 'hidden', background: dBg, position: 'relative' }}>
 
         {/* Mobile fixed top bar */}
-        <header style={{ position: 'fixed', top: bh, left: 0, right: 0, zIndex: 40, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 10px', background: dTopbarBg, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${dCardBorder}` }}>
+        <header style={{ position: 'fixed', top: bh, left: 0, width: '100vw', maxWidth: '100vw', zIndex: 40, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '0 10px', boxSizing: 'border-box', background: dTopbarBg, backdropFilter: 'blur(20px)', borderBottom: `1px solid ${dCardBorder}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0, flex: 1 }}>
             {logoPreviewUrl ? clinicMark(34, 12) : <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#5B8A68', flexShrink: 0, display: 'inline-block' }} />}
             <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: 15, color: dText, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'calc(100vw - 176px)' }}>{clinicName}</span>

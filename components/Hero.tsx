@@ -19,13 +19,16 @@ const stagger = {
 
 function HeroVideoFrame() {
   return (
-    <div className="relative mx-auto w-full max-w-[760px]">
+    <div className="relative mx-auto w-full max-w-[min(100%,760px)]">
       <div
-        className="absolute inset-0 -z-10 rounded-[2rem] md:rounded-[3rem] blur-[48px] opacity-30"
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] opacity-24 blur-[34px] md:rounded-[3rem] md:opacity-30 md:blur-[48px]"
         style={{ background: 'radial-gradient(ellipse, rgba(196,151,63,.55) 0%, transparent 70%)' }}
       />
-      <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-[#211E19]/88 p-2.5 shadow-[0_34px_100px_rgba(0,0,0,.42)] backdrop-blur-2xl">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.55rem] border border-[#C4973F]/20 bg-[#0A0907] sm:aspect-[16/13] md:rounded-[2.35rem]">
+      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#211E19]/88 p-2 shadow-[0_24px_74px_rgba(0,0,0,.36)] backdrop-blur-xl md:rounded-[3rem] md:p-2.5 md:shadow-[0_34px_100px_rgba(0,0,0,.42)] md:backdrop-blur-2xl">
+        <div
+          className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.55rem] border border-[#C4973F]/20 bg-[#0A0907] sm:aspect-[16/13] md:rounded-[2.35rem]"
+          style={{ contain: 'layout paint', transform: 'translateZ(0)' }}
+        >
           <LumioProductFilm />
         </div>
       </div>
@@ -35,7 +38,7 @@ function HeroVideoFrame() {
 
 export default function Hero() {
   return (
-    <section className="relative flex min-h-[100svh] md:min-h-[110svh] w-full max-w-full flex-col overflow-hidden bg-[#1A1814]">
+    <section className="relative flex min-h-[100svh] w-full max-w-[100vw] flex-col overflow-hidden bg-[#1A1814] md:min-h-[110svh]">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-20"
           style={{ background: 'radial-gradient(ellipse at center, #C4973F 0%, transparent 65%)' }} />
